@@ -65,6 +65,11 @@ final class FloatingPanel {
         p.level = .floating
         p.hidesOnDeactivate = false
         p.isReleasedWhenClosed = false
+        // Off, and deliberately: AppKit's window restoration encodes the contents of a text view
+        // into ~/Library/Saved Application State/ so it can redraw the window after a relaunch.
+        // For this app that file would be the user's pasted text — often a password — written to
+        // disk by a feature nobody asked for. The converter is meant to start empty anyway.
+        p.isRestorable = false
         if let minSize {
             p.contentMinSize = minSize
             p.acceptsMouseMovedEvents = true  // so SwiftUI `.help` tooltips track inside the panel

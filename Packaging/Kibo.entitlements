@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- Kibo is a 94-entry table lookup with a menu-bar window. It needs nothing from the system
+       but the pasteboard (which the sandbox allows outright) and its own preferences.
+
+       So it runs sandboxed, and the list below is deliberately empty of everything else. There is
+       no com.apple.security.network.client and no network.server: with the sandbox on, "Kibo
+       makes no network connections" stops being a promise in a README and becomes something the
+       kernel enforces — the app could not phone home if a future commit tried to.
+
+       Nothing else belongs here. Adding files.user-selected, Apple Events, or any device
+       entitlement would widen what a compromised build could reach, and no feature in SPEC.md
+       asks for one. -->
+  <key>com.apple.security.app-sandbox</key><true/>
+</dict>
+</plist>
