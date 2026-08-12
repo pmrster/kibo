@@ -70,7 +70,7 @@ A dictionary-backed judgement was considered and rejected for the MVP — writte
 - **Pinnable window**: The converter can float above other apps, so it stays open while the user switches away to paste.
 - **Three conversion modes**: Mixed, EN → TH, TH → EN.
 - **Live conversion**: Output updates locally on every input change.
-- **One-click copy**: A prominent copy button with “คัดลอกแล้ว” feedback.
+- **One-click copy**: A prominent copy button with “Copied” feedback, retracted as soon as the result changes.
 - **Explicit paste**: A paste button reads the clipboard only after the user asks it to.
 - **Swap direction**: Quick toggle between EN → TH and TH → EN.
 - **Clear input**: Reset the input field.
@@ -82,9 +82,10 @@ A dictionary-backed judgement was considered and rejected for the MVP — writte
 
 ## Design
 
-- **Fonts**: Prefer system fonts in the native utility. Reconsider bundled IBM Plex fonts only if branding justifies the app-size and rendering cost.
+- **Fonts**: Prefer system fonts, and bundle none. English chrome uses the system font so the app looks native. Thai content — the input, the result, examples, and the privacy line — uses **Noto Sans Thai**, which macOS ships: the system's Thai face crowds vowel and tone marks at these sizes, and reading those marks is precisely what this app asks of people. Where the family is unavailable, every call falls back to the system font.
 - **Colors**: Warm sunset-mango palette in both light and dark modes.
-- **Branding**: App name is “ใครลืมเปลี่ยนภาษา” in the converter and distribution metadata.
+- **Branding**: The app presents as “Who Forgot To Change Lang” in the converter, the About and Settings windows, and distribution metadata. Interface chrome is English; Thai remains where it is content rather than labelling — the conversion examples and the privacy line. “ใครลืมเปลี่ยนภาษา” stays the project's Thai name in prose.
+- **Mascot**: A mango 8-bit cat, sibling to Tama's yellow one and built from the same sprite geometry. It blinks when idle, breathes a pixel once there is a result, and shuts its eyes contentedly after a copy, with a small bubble showing which way the text is being pushed. The menu-bar glyph is the same cat flattened to a silhouette, so the two cannot drift apart.
 - **Visual style**: A compact, native macOS surface with restrained use of the sunset-mango palette, rounded sections, clear focus states, and clean spacing.
 
 ## Keyboard mapping

@@ -24,7 +24,18 @@ swift test --filter RunJudgeTests/test_neutral_runs_are_never_converted   # one 
 swift Tools/dump-kedmanee.swift               # re-dump the key table from macOS layout data
 swift Tools/dump-kedmanee.swift --json        # same, as the Fixtures mapping array
 Packaging/package.sh [version]                # → dist/WhoForgotToChangeLang.app + .dmg
+
+# Design review. Opt-in behind a compile flag, so it is absent from normal debug AND release
+# builds — renders the surfaces to PNGs offscreen and exits:
+swift run -Xswiftc -DWFCL_SNAPSHOT WhoForgotToChangeLang --snapshot [dir]   # → ./assets
 ```
+
+`--snapshot` exists because screen capture needs a permission a terminal often lacks, which
+otherwise makes "does this actually look right?" unanswerable without a human at the keyboard.
+**Read its output with that limit in mind:** `ImageRenderer` cannot draw AppKit-backed controls,
+so `Picker`, `TextEditor` and `ScrollView` come out as yellow no-entry blocks or blank boxes. That
+is the renderer, not a bug. Everything else — layout, palette, typography, the mascot — is
+faithful.
 
 The app has no Dock icon (`LSUIElement`, plus `setActivationPolicy(.accessory)` so `swift run`
 behaves the same as the packaged build). Look at the top-right menu bar. Left-click the glyph
@@ -49,6 +60,25 @@ Two targets, with a deliberate split:
 
 `ConverterModel` lives in Core, not the shell, because it is logic. The shell supplies it a
 `SystemClipboard`; tests supply an `InMemoryClipboard` that counts accesses.
+
+### Design
+
+- **Palette** (`Theme.swift`) — Tama's neutrals verbatim so the two apps read as siblings in the
+  menu bar; the accent is mango where Tama's is yellow. Colors come from an NSColor dynamic
+  provider via `Color(light:dark:)`, so they re-resolve when the appearance is forced.
+- **Type** — `AppFont.ui` for English chrome (system font, stays native); `AppFont.thai` for
+  anything that can contain Thai. The latter is **Noto Sans Thai**, which macOS ships: the system
+  Thai face crowds vowel and tone marks at 11–13pt, and those marks are the whole point here.
+  Nothing is bundled, and the helper falls back to the system font if the family is missing.
+- **Mascot** (`CatSprite.swift`, `CatView.swift`) — a mango 8-bit cat sharing Tama's proven sprite
+  geometry. Two poses only, eyes open and eyes shut; state is carried by the bubble and a
+  one-pixel bob. A head-on cat drawn at 18x14 was tried first and rendered as an anonymous blob,
+  and Tama's mid-stride walk frame reads as a glitch when held static — both are recorded in
+  `CatSprite.swift` so they are not retried.
+- **Menu-bar glyph** — the same grid flattened to a silhouette, sharing `CatSprite` so the glyph
+  and the mascot cannot drift into two different cats.
+- **Language** — chrome is English, matching the app's English name. Thai stays where it is
+  content rather than labelling: the conversion examples and the privacy capsule.
 
 `AppSettings` is an `ObservableObject` while `ConverterModel` is `@Observable`. That is not an
 oversight: `StatusItemController` is AppKit and needs to *subscribe* to appearance changes

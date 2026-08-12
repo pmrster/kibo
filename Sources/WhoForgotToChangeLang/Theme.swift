@@ -38,6 +38,10 @@ enum Palette {
     /// Mode tints, used only as small direction indicators.
     static let thai      = Color(light: 0xC2603F, dark: 0xD97757)
     static let latin     = Color(light: 0x3A7BA5, dark: 0x4A8FBF)
+
+    /// The mascot's eyes and nose. Near-black in both appearances rather than `text`, because the
+    /// sprite needs its features to stay dark against the mango body even in dark mode.
+    static let catFeature = Color(light: 0x1B1A18, dark: 0x241F1A)
 }
 
 /// Multiplies a hardcoded point size by the current font-size factor. Reading the shared settings
@@ -45,3 +49,34 @@ enum Palette {
 /// re-evaluate their bodies (and so recompute sizes) when it changes.
 @MainActor
 func scaled(_ size: CGFloat) -> CGFloat { size * CGFloat(AppSettings.shared.fontScale) }
+
+/// Typography.
+///
+/// The system font renders Thai through Thonburi, whose vowel marks and tone marks sit tight
+/// against the consonant at small sizes — exactly the detail this app asks people to read.
+/// Noto Sans Thai spaces them properly, and macOS ships it, so it costs nothing to use and no
+/// font has to be bundled (SPEC.md: "Prefer system fonts in the native utility").
+enum AppFont {
+    /// Resolved once. On a Mac without the family — it is present on macOS 14+, but this is not
+    /// worth crashing or looking wrong over — every call quietly falls back to the system font.
+    static let thaiFamily: String? = {
+        NSFont(name: "Noto Sans Thai", size: 12) != nil ? "Noto Sans Thai" : nil
+    }()
+
+    /// For anything that can contain Thai: the input, the result, examples, Thai chrome. Latin
+    /// glyphs inside the same string fall back automatically, so mixed text stays consistent.
+    @MainActor
+    static func thai(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
+        guard let thaiFamily else { return .system(size: scaled(size), weight: weight) }
+        return .custom(thaiFamily, fixedSize: scaled(size)).weight(weight)
+    }
+
+    /// For English-only chrome — titles, buttons, section headings. Stays on the system font so
+    /// the app still looks native next to every other macOS utility.
+    @MainActor
+    static func ui(_ size: CGFloat,
+                   weight: Font.Weight = .regular,
+                   design: Font.Design = .default) -> Font {
+        .system(size: scaled(size), weight: weight, design: design)
+    }
+}

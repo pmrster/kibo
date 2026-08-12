@@ -5,6 +5,29 @@ All notable changes to this project are recorded here. Format loosely follows
 
 ## Unreleased
 
+### Changed
+
+- **Mascot.** A mango 8-bit cat, sibling to Tama's yellow one and built from the same sprite
+  geometry, now sits in the converter header, the About window and Settings. It blinks when idle,
+  breathes a pixel once there is a result, and shuts its eyes after a copy, with a small bubble
+  showing the direction (`ก⇄A`, `ก`, `A`, or `✓`).
+- **Menu-bar glyph** is now that same cat as a silhouette, replacing the pixel keyboard. Both are
+  generated from one grid (`CatSprite`), so they cannot drift apart.
+- **The app presents in English.** Title is "Who Forgot To Change Lang" in the header, About,
+  Settings, the right-click menu, window titles and `CFBundleDisplayName`; buttons and section
+  headings are English too. Thai remains where it is content rather than labelling — the
+  conversion examples and the privacy capsule.
+- **Thai text uses Noto Sans Thai**, which macOS ships, instead of the system Thai face, whose
+  vowel and tone marks crowd at 11–13pt — the marks this app exists to help people read. Nothing
+  is bundled; the helper falls back to the system font where the family is missing.
+
+### Added
+
+- `--snapshot` design-review mode behind the `WFCL_SNAPSHOT` compile flag: renders the converter,
+  About, Settings and a mascot sheet to PNGs offscreen, in light and dark. Absent from normal
+  debug and release builds. Exists because screen capture needs a permission a terminal often
+  lacks.
+
 ## 0.1.0 — 2026-08-12
 
 First slice: the converter and the menu-bar app.

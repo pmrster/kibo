@@ -33,7 +33,8 @@ refuse it on first launch — right-click the app → **Open** once, and it will
 
 ## Using it
 
-The app has no Dock icon. Look for the small keyboard glyph in the menu bar.
+The app has no Dock icon. Look for the small pixel cat in the menu bar — it is the same cat that
+sits in the converter window, which blinks while it waits and shuts its eyes after a copy.
 
 - **Left-click** the glyph to open the converter.
 - **Right-click** for About, Settings, and Quit.
@@ -105,6 +106,9 @@ in the test suite and written up in `CLAUDE.md`.
 swift build
 swift test
 swift run WhoForgotToChangeLang
+
+# Render the UI to PNGs without a display, for design review (light + dark):
+swift run -Xswiftc -DWFCL_SNAPSHOT WhoForgotToChangeLang --snapshot ./assets
 ```
 
 The key table is not hand-written — it is dumped from macOS's own layout data:
@@ -121,8 +125,9 @@ See `CLAUDE.md` for architecture, `SPEC.md` for product behaviour, `PLAN.md` for
 ## Related
 
 A spin-off of [**Tama**](https://github.com/pmrster/tama), a menu-bar pixel cat that watches local
-AI agent sessions. This app forks Tama's shell — the SwiftPM layout, theming, panel chrome, and
-packaging — so the two look like siblings in the menu bar. Separate repos, separate releases.
+AI agent sessions. This app forks Tama's shell — the SwiftPM layout, theming, panel chrome,
+packaging, and the cat's sprite geometry — so the two look like siblings in the menu bar. Tama's
+cat is yellow and paces about; this one is mango and sits still. Separate repos, separate releases.
 
 ## License
 

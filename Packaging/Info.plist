@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
   <key>CFBundleName</key><string>WhoForgotToChangeLang</string>
-  <key>CFBundleDisplayName</key><string>ใครลืมเปลี่ยนภาษา</string>
+  <key>CFBundleDisplayName</key><string>Who Forgot To Change Lang</string>
   <key>CFBundleIdentifier</key><string>pmrster.whoforgottochangelang</string>
   <key>CFBundleExecutable</key><string>WhoForgotToChangeLang</string>
   <key>CFBundleIconFile</key><string>AppIcon</string>
