@@ -44,6 +44,12 @@ enum Snapshot {
             write(ConverterView(model: model).environment(\.colorScheme,
                                                           name == "dark" ? .dark : .light),
                   to: directory, "converter-\(name)")
+            // Empty as well as filled: the mascot only peeks when there is no result, so a
+            // filled-only snapshot never shows the state most users see first.
+            let empty = ConverterModel(mode: .mixed, clipboard: SystemClipboard())
+            write(ConverterView(model: empty).environment(\.colorScheme,
+                                                          name == "dark" ? .dark : .light),
+                  to: directory, "converter-empty-\(name)")
             write(AboutView().frame(width: 320, height: 360)
                     .environment(\.colorScheme, name == "dark" ? .dark : .light),
                   to: directory, "about-\(name)")

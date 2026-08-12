@@ -50,12 +50,14 @@ struct ConverterView: View {
 
     // MARK: - Header
 
-    /// Sits in the INPUT label row, which puts its bottom edge exactly on the top of the field —
-    /// so sliding it down hides it *behind* the field. `alignment: .bottom` on the row keeps that
-    /// edge aligned however tall the label is.
+    /// Sits in the INPUT label row and deliberately overhangs into the field below it. The field
+    /// is drawn after this row and is opaque, so it paints over the overhang — which is what makes
+    /// the ghost look like it is behind the field rather than clipped in mid-air.
     private var ghost: some View {
         GhostView(mood: mascotMood)
-            .padding(.bottom, -4)
+            .padding(.bottom, -GhostView.hiddenExtent)
+            // Inset from the field's rounded corner, which it otherwise overhangs.
+            .padding(.trailing, 14)
     }
 
     private var header: some View {
@@ -155,7 +157,7 @@ struct ConverterView: View {
             .focused($inputFocused)
             .frame(height: scaled(64))
             .padding(6)
-            .background(Palette.panelEdge.opacity(0.45), in: RoundedRectangle(cornerRadius: 8))
+            .background(Palette.fieldFill, in: RoundedRectangle(cornerRadius: 8))
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
                     .strokeBorder(inputFocused ? Palette.mango : Color.clear, lineWidth: 1.5)
@@ -173,7 +175,7 @@ struct ConverterView: View {
         }
         .frame(height: scaled(64))
         .padding(6)
-        .background(Palette.panelEdge.opacity(0.45), in: RoundedRectangle(cornerRadius: 8))
+        .background(Palette.fieldFill, in: RoundedRectangle(cornerRadius: 8))
         .accessibilityLabel("Result")
         .accessibilityValue(model.output.isEmpty ? "No result yet" : model.output)
     }

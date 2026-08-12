@@ -4,40 +4,49 @@ import Foundation
 /// expression can change without redrawing the body.
 ///
 /// A ghost because it is what the app is about — the wrong layout haunting your sentence — and
-/// because "boo" is a peekaboo joke that a converter can actually act out. It is original art,
-/// unlike the first mascot, which borrowed Tama's cat sprite and looked it: scaled up in the About
-/// window that geometry is visibly built for a 24×15 menu-bar pet, not for display.
+/// because "boo" is a peekaboo joke a converter can act out.
 ///
-/// Legend: `#` ink and outline · `o` body · `y` mouth · `.` empty
+/// **One colour, features cut out of it**, the same construction Tama uses: a solid silhouette
+/// with the eyes and mouth as holes that let the panel show through. An earlier version drew the
+/// ghost with a contrasting outline and a yellow mouth and it read as cluttered at this size —
+/// three tones fighting inside 20×16 pixels. A silhouette has one job and does it.
+///
+/// Legend: `Y` body · `.` empty
 ///
 /// **Why the peekaboo is done by occlusion.** Three attempts drew the ghost covering its face with
-/// its own paws, and at this resolution every one of them read as spectacles — an outlined square
-/// over a face is a *lens*, not a hand, and no amount of reshaping fixed it. Hiding the ghost
-/// behind the input field instead and letting it rise reads instantly, needs no hand pixels, and
-/// makes the field itself part of the joke.
+/// its own paws, and at this resolution every one read as spectacles — an outlined square over a
+/// face is a *lens*, not a hand. Hiding the ghost behind the input field and letting it rise
+/// reads instantly, needs no hand pixels, and makes the field part of the joke.
 enum GhostSprite {
-    static let columns = 20
+    static let columns = 16
 
+    /// Dome and shoulders. Narrower and taller than the first mono attempt, which was 20 wide by
+    /// 16 and read as a rounded hill rather than a ghost — a ghost needs to be taller than it is
+    /// broad, with a hem you can actually see.
     private static let dome = [
-        "......########......",
-        "....##oooooooo##....",
-        "...#oooooooooooo#...",
-        "..#oooooooooooooo#..",
-        ".#oooooooooooooooo#.",
-        ".#oooooooooooooooo#.",
+        "....YYYYYYYY....",
+        "..YYYYYYYYYYYY..",
+        ".YYYYYYYYYYYYYY.",
+        "YYYYYYYYYYYYYYYY",
+        "YYYYYYYYYYYYYYYY",
+        "YYYYYYYYYYYYYYYY",
+        "YYYYYYYYYYYYYYYY",
     ]
 
+    /// Body, then two rows of scallop. The gaps widen as they go down so the hem reads as three
+    /// rounded tails rather than as teeth.
     private static let hem = [
-        "#oooooooooooooooooo#",
-        ".#oooooooooooooooo#.",
-        "..##ooo##oo##ooo##..",
-        "....###..##..###....",
+        "YYYYYYYYYYYYYYYY",
+        "YYYYYYYYYYYYYYYY",
+        "YYYYYYYYYYYYYYYY",
+        "YYYY..YYYY..YYYY",
+        "YYY....YY....YYY",
     ]
 
     enum Eyes {
-        /// Ordinary. Used while it waits.
+        /// Ordinary, while it waits.
         case open
-        /// Blinking, and also the contented look after a copy.
+        /// Blinking, and the contented look after a copy.
         case shut
         /// Wide — it has spotted a result.
         case wide
@@ -45,46 +54,40 @@ enum GhostSprite {
         var rows: [String] {
             switch self {
             case .open:
-                return ["#oooooooooooooooooo#",
-                        "#ooo##oooooooo##ooo#",
-                        "#ooo##oooooooo##ooo#",
-                        "#oooooooooooooooooo#"]
+                return ["YY...YYYYYY...YY",
+                        "YY...YYYYYY...YY"]
             case .shut:
-                return ["#oooooooooooooooooo#",
-                        "#oooooooooooooooooo#",
-                        "#ooo##oooooooo##ooo#",
-                        "#oooooooooooooooooo#"]
+                return ["YYYYYYYYYYYYYYYY",
+                        "YY...YYYYYY...YY"]
             case .wide:
-                return ["#oooooooooooooooooo#",
-                        "#ooo###oooooo###ooo#",
-                        "#ooo###oooooo###ooo#",
-                        "#oooooooooooooooooo#"]
+                return ["YY...YYYYYY...YY",
+                        "YY...YYYYYY...YY"]
             }
         }
     }
 
     enum Mouth {
-        /// Closed — a plain line.
+        /// Closed.
         case line
-        /// A small open mouth.
+        /// Open, as when it pops up.
         case small
-        /// Rounder and happier.
+        /// Small and pleased.
         case round
 
         var rows: [String] {
             switch self {
             case .line:
-                return ["#oooooooooooooooooo#",
-                        "#ooooo########ooooo#",
-                        "#oooooooooooooooooo#"]
+                return ["YYYYYYYYYYYYYYYY",
+                        "YYYYYY....YYYYYY",
+                        "YYYYYYYYYYYYYYYY"]
             case .small:
-                return ["#ooooo########ooooo#",
-                        "#ooooo#yyyyyy#ooooo#",
-                        "#ooooo########ooooo#"]
+                return ["YYYYYY....YYYYYY",
+                        "YYYYYY....YYYYYY",
+                        "YYYYYYYYYYYYYYYY"]
             case .round:
-                return ["#ooooooo####ooooooo#",
-                        "#ooooooo#yy#ooooooo#",
-                        "#ooooooo####ooooooo#"]
+                return ["YYYYYYYYYYYYYYYY",
+                        "YYYYYYY..YYYYYYY",
+                        "YYYYYYYYYYYYYYYY"]
             }
         }
     }
@@ -93,6 +96,6 @@ enum GhostSprite {
         dome + eyes.rows + mouth.rows + hem
     }
 
-    /// Total rows in an assembled sprite: 6 dome + 4 eyes + 3 mouth + 4 hem.
+    /// 7 dome + 2 eyes + 3 mouth + 5 hem.
     static let rowCount = 17
 }
