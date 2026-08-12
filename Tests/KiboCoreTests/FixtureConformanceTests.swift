@@ -41,7 +41,7 @@ final class FixtureConformanceTests: XCTestCase {
     }
 
     func test_fixture_is_the_version_this_suite_understands() throws {
-        XCTAssertEqual(try loadFixture().version, 1)
+        XCTAssertEqual(try loadFixture().version, 2)
     }
 
     /// The fixture carries the whole key table, so a port can verify its mapping before it ever
@@ -86,5 +86,64 @@ final class FixtureConformanceTests: XCTestCase {
         for mode in ConversionMode.allCases {
             XCTAssertTrue(modes.contains(mode.rawValue), "no fixture case covers \(mode.rawValue)")
         }
+    }
+
+    // MARK: - The fixture must carry the accuracy contract, not a sample of it
+
+    /// The point of these three tests.
+    ///
+    /// The fixture used to hold 24 cases while the real behaviour contract — 36 strings of correct
+    /// text that must survive untouched, and the recall corpora — lived only in Swift. A Windows
+    /// port could pass every case in the file and still mangle `array[i]`, `C:\Users\alice` and
+    /// `HTML`, which is the one failure SPEC.md calls unacceptable. A contract a port can satisfy
+    /// while breaking the promise is not a contract.
+    ///
+    /// So: whatever `AccuracyCorpus` asserts against this implementation, the fixture must ask of
+    /// every implementation. These tests fail if the JSON drifts from the Swift.
+    func test_fixture_carries_every_precision_case() throws {
+        let mixedCases = try mixedCasesByInput()
+        for text in AccuracyCorpus.mustSurvive {
+            let match = mixedCases[text]
+            XCTAssertNotNil(match, "precision string '\(text)' is missing from the fixture")
+            XCTAssertEqual(match, text, "the fixture lets '\(text)' be mangled")
+        }
+    }
+
+    func test_fixture_carries_every_recall_case() throws {
+        let mixedCases = try mixedCasesByInput()
+        for word in AccuracyCorpus.englishCaught {
+            let wreckage = AccuracyCorpus.mistypedOnThaiLayout(word)
+            XCTAssertEqual(mixedCases[wreckage], word,
+                           "the fixture does not require '\(wreckage)' → '\(word)'")
+        }
+        for word in AccuracyCorpus.thaiCaught {
+            let wreckage = AccuracyCorpus.mistypedOnUSLayout(word)
+            XCTAssertEqual(mixedCases[wreckage], word,
+                           "the fixture does not require '\(wreckage)' → '\(word)'")
+        }
+    }
+
+    /// The misses are part of the contract too. A port that "improves" on them has changed the
+    /// gate, and needs to re-measure precision before claiming it did better.
+    func test_fixture_carries_every_known_miss() throws {
+        let mixedCases = try mixedCasesByInput()
+        for word in AccuracyCorpus.englishMissed {
+            let wreckage = AccuracyCorpus.mistypedOnThaiLayout(word)
+            XCTAssertEqual(mixedCases[wreckage], wreckage,
+                           "the fixture does not pin the known miss '\(word)'")
+        }
+        for word in AccuracyCorpus.thaiMissed {
+            let wreckage = AccuracyCorpus.mistypedOnUSLayout(word)
+            XCTAssertEqual(mixedCases[wreckage], wreckage,
+                           "the fixture does not pin the known miss '\(word)'")
+        }
+    }
+
+    private func mixedCasesByInput() throws -> [String: String] {
+        Dictionary(
+            try loadFixture().cases
+                .filter { $0.mode == ConversionMode.mixed.rawValue }
+                .map { ($0.input, $0.output) },
+            uniquingKeysWith: { first, _ in first })
     }
 }
