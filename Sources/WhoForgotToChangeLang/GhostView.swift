@@ -30,17 +30,17 @@ struct GhostView: View {
     /// does not exist, which is what silently pushed it out of the top of the About window.
     var isStandalone = false
 
-    private static let px: CGFloat = 2.5
+    private static let px: CGFloat = 2.0
     private static let width = CGFloat(GhostSprite.columns) * px
     private static let height = CGFloat(GhostSprite.rowCount) * px
 
     /// How far the caller must overlap this view into the surface below it. While waiting, exactly
     /// this much of the ghost is covered; rising lifts it clear.
     ///
-    /// Both eye rows have to stay above the edge or the whole joke dies — cover them and it reads
-    /// as a bump rather than as something looking at you. Eight rows leaves the eyes visible with
-    /// the mouth still hidden, which is the pose that reads as peeking.
-    static let hiddenExtent: CGFloat = 8 * px
+    /// All three eye rows have to stay above the edge or the whole joke dies — cover them and it
+    /// reads as a bump rather than as something looking at you. Ten rows leaves the eyes visible
+    /// with the mouth still hidden, which is the pose that reads as peeking.
+    static let hiddenExtent: CGFloat = 10 * px
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 0.4)) { timeline in
@@ -71,25 +71,18 @@ struct GhostView: View {
 
     private func path(at time: Double) -> Path {
         let eyes: GhostSprite.Eyes
-        let mouth: GhostSprite.Mouth
         switch mood {
-        case .waiting:
+        case .waiting, .risen:
             // Blinks about every four seconds, for one tick.
-            let blinking = time.truncatingRemainder(dividingBy: 4.0) < 0.4
-            eyes = blinking ? .shut : .open
-            mouth = .line
-        case .risen:
-            eyes = .wide
-            mouth = .small
+            eyes = time.truncatingRemainder(dividingBy: 4.0) < 0.4 ? .shut : .open
         case .pleased:
             eyes = .shut
-            mouth = .round
         }
-        return Self.build(GhostSprite.rows(eyes: eyes, mouth: mouth))
+        return Self.build(GhostSprite.rows(eyes: eyes))
     }
 
     /// Rasterises a grid into one silhouette path. Cached per (eyes, mouth) pair, since this runs
-    /// on every timeline tick and there are only nine possible combinations.
+    /// on every timeline tick and there are only two possible faces.
     private static func build(_ grid: [String]) -> Path {
         if let cached = cache[grid.joined()] { return cached }
         var path = Path()

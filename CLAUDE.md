@@ -93,9 +93,15 @@ Two targets, with a deliberate split:
     off, hanging above the field with a gap. Occlusion by a real surface is what sells it.
   - `hiddenExtent` is load-bearing: cover the eye rows and it reads as a bump rather than as
     something looking at you.
-  - Colour history: an outlined body with a yellow mouth read as cluttered at 16px, and the first
-    mono attempt was 20 wide by 16 tall and read as a rounded hill. A ghost has to be taller than
-    it is broad, with a hem you can see.
+  - Proportions follow `icon.png` in the repo root — the reference art. Four things in it carry
+    the character and earlier attempts missed all four: taller than wide, a dome that tapers in
+    single steps, *round* eyes (rectangles read as a visor), and a tiny four-pixel mouth above
+    deep tails. Keep the mouth band the same width as the dome; letting it run full width puts a
+    step in the silhouette and gives the ghost shoulders.
+  - Colour history: an outlined body with a yellow mouth read as cluttered, and the first mono
+    attempt was 20 wide by 16 tall and read as a rounded hill.
+  - One expression, as in the reference. A second mouth shape for the risen state was tried and at
+    2×2 read as a nose; mood is carried by position and by whether the eyes are shut.
 - **Menu-bar glyph** (`MenuBarIcon.swift`) — a keycap outline with `ก`, and deliberately **not**
   the mascot. A glyph up there has to *identify* the app; matching a sibling app defeats the
   purpose. A cat silhouette was tried and was indistinguishable from Tama's at 18px. Rejected
