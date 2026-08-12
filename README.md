@@ -34,8 +34,9 @@ refuse it on first launch — right-click the app → **Open** once, and it will
 ## Using it
 
 The app has no Dock icon. Look for the small keycap glyph — a `ก` in a rounded box — in the menu
-bar. Open it and you'll meet the mascot: a mango pixel cat that blinks while it waits and shuts
-its eyes after a copy.
+bar. Open it and you'll meet the mascot: a small pixel ghost hiding behind the input box with just
+its eyes over the edge. It rises when there's something to show you, and shuts its eyes after a
+copy.
 
 - **Left-click** the glyph to open the converter.
 - **Right-click** for About, Settings, and Quit.
@@ -126,9 +127,9 @@ See `CLAUDE.md` for architecture, `SPEC.md` for product behaviour, `PLAN.md` for
 ## Related
 
 A spin-off of [**Tama**](https://github.com/pmrster/tama), a menu-bar pixel cat that watches local
-AI agent sessions. This app forks Tama's shell — the SwiftPM layout, theming, panel chrome,
-packaging, and the cat's sprite geometry — so the two look like siblings in the menu bar. Tama's
-cat is yellow and paces about; this one is mango and sits still. Separate repos, separate releases.
+AI agent sessions. This app forks Tama's shell — the SwiftPM layout, theming, panel chrome and
+packaging — and follows its approach to pixel-art character work, but the ghost is its own. Tama
+keeps the cat; this one gets the ghost. Separate repos, separate releases.
 
 ## License
 

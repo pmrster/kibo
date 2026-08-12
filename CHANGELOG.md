@@ -7,10 +7,14 @@ All notable changes to this project are recorded here. Format loosely follows
 
 ### Changed
 
-- **Mascot.** A mango 8-bit cat, sibling to Tama's yellow one and built from the same sprite
-  geometry, now sits in the converter header, the About window and Settings. It blinks when idle,
-  breathes a pixel once there is a result, and shuts its eyes after a copy, with a small bubble
-  showing the direction (`ก⇄A`, `ก`, `A`, or `✓`).
+- **Mascot.** An original 8-bit ghost — the wrong layout haunting your sentence. It hides behind
+  the input field with just its eyes over the edge, rises when there is a result, and shuts its
+  eyes contentedly after a copy. Body and outline swap between light and dark so it is always the
+  opposite of what it sits on, with one warm yellow for the mouth. Replaces a first attempt that
+  borrowed Tama's cat sprite and looked it once enlarged — that geometry is built for a 24×15
+  menu-bar pet, not for display.
+- **Title font** is the system font's condensed black weight instead of rounded heavy, which read
+  as a toy. The narrower letters also carry a five-word name without shrinking it.
 - **Menu-bar glyph** is now a keycap outline with `ก` on it, replacing the pixel keyboard. It is
   deliberately not the mascot: next to Tama in a real menu bar, two side-view pixel cats are
   indistinguishable at 18px, so neither icon identified its app. The outline is what makes it

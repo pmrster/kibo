@@ -8,10 +8,10 @@ struct SettingsView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            HStack(spacing: 7) {
-                CatView(mood: .idle, mode: .mixed)
+            HStack(alignment: .center, spacing: 8) {
+                GhostView(mood: .risen)
                 Text("Settings")
-                    .font(AppFont.ui(16, weight: .heavy, design: .rounded))
+                    .font(AppFont.title(17))
                     .foregroundStyle(Palette.text)
             }
 

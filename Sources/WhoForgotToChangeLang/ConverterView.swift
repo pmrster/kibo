@@ -19,16 +19,16 @@ struct ConverterView: View {
     /// `nil` in the pinned panel, which is resizable; fixed in the popover, which is not.
     var fixedWidth: CGFloat? = 360
 
-    private var mascotMood: CatView.Mood {
-        if model.didCopy { return .happy }
-        return model.output.isEmpty ? .idle : .alert
+    private var mascotMood: GhostView.Mood {
+        if model.didCopy { return .pleased }
+        return model.output.isEmpty ? .waiting : .risen
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             header
             modeRow
-            field(title: "INPUT", accessory: { EmptyView() }) { inputEditor }
+            field(title: "INPUT", accessory: { ghost }) { inputEditor }
             field(title: "RESULT", accessory: { directionBadge }) { outputPanel }
             actionRow
             examples
@@ -50,11 +50,18 @@ struct ConverterView: View {
 
     // MARK: - Header
 
+    /// Sits in the INPUT label row, which puts its bottom edge exactly on the top of the field —
+    /// so sliding it down hides it *behind* the field. `alignment: .bottom` on the row keeps that
+    /// edge aligned however tall the label is.
+    private var ghost: some View {
+        GhostView(mood: mascotMood)
+            .padding(.bottom, -4)
+    }
+
     private var header: some View {
         HStack(alignment: .center, spacing: 7) {
-            CatView(mood: mascotMood, mode: model.mode)
             Text("Who Forgot To Change Lang")
-                .font(AppFont.ui(13, weight: .heavy, design: .rounded))
+                .font(AppFont.title(15))
                 .foregroundStyle(Palette.text)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
@@ -126,12 +133,13 @@ struct ConverterView: View {
     private func field(title: String,
                        @ViewBuilder accessory: () -> some View,
                        @ViewBuilder content: () -> some View) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack(spacing: 6) {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .bottom, spacing: 6) {
                 Text(title)
                     .font(AppFont.ui(10, weight: .heavy))
                     .tracking(0.8)
                     .foregroundStyle(Palette.dim)
+                    .padding(.bottom, 4)
                 Spacer(minLength: 4)
                 accessory()
             }

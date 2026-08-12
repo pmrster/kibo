@@ -66,21 +66,29 @@ Two targets, with a deliberate split:
 - **Palette** (`Theme.swift`) — Tama's neutrals verbatim so the two apps read as siblings in the
   menu bar; the accent is mango where Tama's is yellow. Colors come from an NSColor dynamic
   provider via `Color(light:dark:)`, so they re-resolve when the appearance is forced.
-- **Type** — `AppFont.ui` for English chrome (system font, stays native); `AppFont.thai` for
+- **Type** — `AppFont.title` for the app's name: the system font's condensed black weight. It
+  started as rounded heavy and read as a toy; this is a utility. `AppFont.ui` for other English
+  chrome (plain system font, stays native); `AppFont.thai` for
   anything that can contain Thai. The latter is **Noto Sans Thai**, which macOS ships: the system
   Thai face crowds vowel and tone marks at 11–13pt, and those marks are the whole point here.
   Nothing is bundled, and the helper falls back to the system font if the family is missing.
-- **Mascot** (`CatSprite.swift`, `CatView.swift`) — a mango 8-bit cat sharing Tama's proven sprite
-  geometry. Two poses only, eyes open and eyes shut; state is carried by the bubble and a
-  one-pixel bob. A head-on cat drawn at 18x14 was tried first and rendered as an anonymous blob,
-  and Tama's mid-stride walk frame reads as a glitch when held static — both are recorded in
-  `CatSprite.swift` so they are not retried.
+- **Mascot** (`GhostSprite.swift`, `GhostView.swift`) — an original 8-bit ghost, assembled from
+  interchangeable bands (dome / eyes / mouth / hem) so the expression changes without redrawing
+  the body. Body and outline swap between appearances so it is always the opposite of what it sits
+  on; one warm yellow marks the mouth. **It must be laid out directly above whatever it hides
+  behind** — the peekaboo is a clip, not a pose. Currently that is the input field.
+  - An earlier mascot borrowed Tama's cat sprite and looked it once enlarged: that geometry is
+    built for a 24×15 menu-bar pet, not for display.
+  - Three attempts drew the ghost covering its face with its own paws. Every one read as
+    spectacles — at this resolution an outlined square over a face is a *lens*, not a hand.
+    Occlusion solved in one attempt what reshaping could not solve in three.
+  - The drop distance is load-bearing: at nine rows only the dome cleared the edge and it read as
+    a bump. Both eye rows have to show.
 - **Menu-bar glyph** (`MenuBarIcon.swift`) — a keycap outline with `ก`, and deliberately **not**
-  the mascot. The cat silhouette was tried and is unusable in practice: next to Tama in a real
-  menu bar, two side-view pixel cats are indistinguishable at 18px, so neither icon says which app
-  it is. The menu bar needs a shape that *identifies*; matching the mascot is the wrong goal
-  there. Rejected alternatives, all rendered at true size first: a pixel keycap (read as a
-  monitor), pixel swap arrows (a smudge), and `ก⇄A` (too wide for what it added).
+  the mascot. A glyph up there has to *identify* the app; matching a sibling app defeats the
+  purpose. A cat silhouette was tried and was indistinguishable from Tama's at 18px. Rejected
+  alternatives, all rendered at true size first: a pixel keycap (read as a monitor), pixel swap
+  arrows (a smudge), and `ก⇄A` (too wide for what it added).
 - **Language** — chrome is English, matching the app's English name. Thai stays where it is
   content rather than labelling: the conversion examples and the privacy capsule.
 

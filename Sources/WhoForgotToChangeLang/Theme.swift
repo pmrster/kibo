@@ -39,9 +39,14 @@ enum Palette {
     static let thai      = Color(light: 0xC2603F, dark: 0xD97757)
     static let latin     = Color(light: 0x3A7BA5, dark: 0x4A8FBF)
 
-    /// The mascot's eyes and nose. Near-black in both appearances rather than `text`, because the
-    /// sprite needs its features to stay dark against the mango body even in dark mode.
-    static let catFeature = Color(light: 0x1B1A18, dark: 0x241F1A)
+    // The mascot's colours. Body and ink swap between appearances so the ghost is always the
+    // opposite of what it sits on — midnight on the light panel, pale on the dark one. A fixed
+    // colour would have it disappearing in one mode or the other, and a ghost that vanishes is
+    // funny exactly once.
+    static let ghostBody  = Color(light: 0x1E202C, dark: 0xF2EEE6)
+    static let ghostInk   = Color(light: 0xF7F4EF, dark: 0x1A1C26)
+    /// The one warm note in the sprite, and the only place this yellow is used.
+    static let ghostMouth = Color(light: 0xE8A32D, dark: 0xF2B23D)
 }
 
 /// Multiplies a hardcoded point size by the current font-size factor. Reading the shared settings
@@ -71,12 +76,27 @@ enum AppFont {
         return .custom(thaiFamily, fixedSize: scaled(size)).weight(weight)
     }
 
-    /// For English-only chrome — titles, buttons, section headings. Stays on the system font so
-    /// the app still looks native next to every other macOS utility.
+    /// For English-only chrome — buttons, section headings. Stays on the system font so the app
+    /// still looks native next to every other macOS utility.
     @MainActor
     static func ui(_ size: CGFloat,
                    weight: Font.Weight = .regular,
                    design: Font.Design = .default) -> Font {
         .system(size: scaled(size), weight: weight, design: design)
+    }
+
+    /// The app's name. Condensed black rather than the rounded weight it started with, which read
+    /// as a toy — this is a utility, and the narrower letters also carry a five-word title without
+    /// having to shrink it.
+    @MainActor
+    static func title(_ size: CGFloat) -> Font {
+        let base = NSFont.systemFont(ofSize: scaled(size), weight: .black)
+        guard let condensed = NSFont(
+            descriptor: base.fontDescriptor.withSymbolicTraits([.condensed]),
+            size: scaled(size)
+        ) else {
+            return .system(size: scaled(size), weight: .black)
+        }
+        return Font(condensed)
     }
 }
