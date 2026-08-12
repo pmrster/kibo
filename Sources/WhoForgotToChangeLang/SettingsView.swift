@@ -9,7 +9,7 @@ struct SettingsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack(alignment: .center, spacing: 8) {
-                GhostView(mood: .risen)
+                GhostView(mood: .risen, isStandalone: true)
                 Text("Settings")
                     .font(AppFont.title(17))
                     .foregroundStyle(Palette.text)

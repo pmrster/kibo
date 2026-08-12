@@ -66,10 +66,13 @@ Two targets, with a deliberate split:
 - **Palette** (`Theme.swift`) — Tama's neutrals verbatim so the two apps read as siblings in the
   menu bar; the accent is mango where Tama's is yellow. Colors come from an NSColor dynamic
   provider via `Color(light:dark:)`, so they re-resolve when the appearance is forced.
-- **Type** — `AppFont.title` for the app's name: **Space Grotesk**, the one non-system face.
-  It is **not bundled**, so it renders only where installed and otherwise falls back to the system
-  font's condensed black — see the warning below. `AppFont.ui` for other English chrome (plain
-  system font, stays native); `AppFont.thai` for
+- **Type** — `AppFont.title` for the app's name: the system font at heavy weight, the same face
+  as the `INPUT` / `RESULT` labels. It arrived by elimination — rounded heavy read as a toy,
+  condensed black as dated, and Space Grotesk looked right but lived in one developer's
+  `~/Library/Fonts`, so every other Mac would have fallen back silently. **Do not depend on a face
+  the app cannot guarantee.** If this ever wants more character without bundling anything, macOS
+  also ships Avenir Next and Chakra Petch (the latter covers Thai). `AppFont.ui` for other English
+  chrome; `AppFont.thai` for
   anything that can contain Thai. The latter is **Noto Sans Thai**, which macOS ships: the system
   Thai face crowds vowel and tone marks at 11–13pt, and those marks are the whole point here.
   Nothing is bundled, and the helper falls back to the system font if the family is missing.

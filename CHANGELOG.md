@@ -13,9 +13,10 @@ All notable changes to this project are recorded here. Format loosely follows
   construction Tama uses, flipping between midnight and pale so it is always the opposite of what
   it sits on. Replaces a first attempt that borrowed Tama's cat sprite and looked it once
   enlarged — that geometry is built for a 24×15 menu-bar pet, not for display.
-- **Title font** is Space Grotesk, replacing rounded heavy (which read as a toy) and then the
-  system condensed black. Note it is **not bundled**: where the font is not installed the title
-  falls back to condensed black.
+- **Title font** is the system font at heavy weight — the same face as the section labels.
+  Rounded heavy read as a toy and condensed black read as dated; Space Grotesk looked right but is
+  not a system face, so the shipped build would have fallen back on every Mac but the one it was
+  designed on. Nothing is bundled.
 - **Input and result fills are opaque** rather than a 45% blend, so the mascot can hide behind the
   input field without showing through it.
 - **Menu-bar glyph** is now a keycap outline with `ก` on it, replacing the pixel keyboard. It is

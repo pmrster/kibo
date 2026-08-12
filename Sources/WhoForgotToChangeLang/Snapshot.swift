@@ -70,7 +70,8 @@ enum Snapshot {
             ForEach(["waiting", "risen", "pleased"], id: \.self) { label in
                 VStack(spacing: 12) {
                     GhostView(mood: label == "waiting" ? .waiting
-                                  : label == "risen" ? .risen : .pleased)
+                                  : label == "risen" ? .risen : .pleased,
+                              isStandalone: label != "waiting")
                         .scaleEffect(3.2, anchor: .top)
                         .frame(width: 150, height: 130, alignment: .top)
                     Text(label)

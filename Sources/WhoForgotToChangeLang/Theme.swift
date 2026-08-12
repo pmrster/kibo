@@ -86,33 +86,22 @@ enum AppFont {
         .system(size: scaled(size), weight: weight, design: design)
     }
 
-    /// Space Grotesk, if it is installed. Resolved once.
+    /// The app's name — the same system font as the `INPUT` and `RESULT` labels, just larger and
+    /// not letter-spaced.
     ///
-    /// **This is not a system font.** It is currently present only in the developer's
-    /// `~/Library/Fonts`, so on any other Mac `title` falls back — see the note there. Shipping
-    /// the intended look means bundling the face with the app.
-    static let titleFamily: String? = {
-        NSFont(name: "Space Grotesk", size: 12) != nil ? "Space Grotesk" : nil
-    }()
-
-    /// The app's name. Space Grotesk: a grotesque with enough character to not look like every
-    /// other utility, and squarer than the rounded weight this started with, which read as a toy.
+    /// It got here by elimination, and the eliminations are the point. Rounded heavy read as a
+    /// toy. Condensed black read as dated. Space Grotesk looked right but lives in one developer's
+    /// `~/Library/Fonts`: not a system face, so the shipped build would have quietly fallen back
+    /// on every other Mac and looked nothing like the design that was approved. **Any face this
+    /// app cannot guarantee is a face it should not depend on** — and bundling one to fix that
+    /// buys a resource, a registration step, a packaging change and a licence file, which is a lot
+    /// for a title.
     ///
-    /// Falls back to the system font's condensed black — the closest thing macOS ships, and the
-    /// weight this used before Space Grotesk. The fallback is what every machine without the font
-    /// installed will actually render, so it has to be a deliberate choice rather than a shrug.
+    /// The system font is guaranteed everywhere, is what the rest of the interface already uses,
+    /// and is not dated. If this ever wants more character without bundling anything, macOS also
+    /// ships Avenir Next and Chakra Petch — both system faces, and Chakra Petch covers Thai too.
     @MainActor
     static func title(_ size: CGFloat) -> Font {
-        if let titleFamily {
-            return .custom(titleFamily, fixedSize: scaled(size)).weight(.bold)
-        }
-        let base = NSFont.systemFont(ofSize: scaled(size), weight: .black)
-        guard let condensed = NSFont(
-            descriptor: base.fontDescriptor.withSymbolicTraits([.condensed]),
-            size: scaled(size)
-        ) else {
-            return .system(size: scaled(size), weight: .black)
-        }
-        return Font(condensed)
+        .system(size: scaled(size), weight: .heavy)
     }
 }

@@ -25,6 +25,11 @@ struct GhostView: View {
 
     let mood: Mood
 
+    /// Set where there is nothing below to hide behind — the About and Settings windows. The
+    /// ghost then draws fully inside its own frame instead of lifting clear of an overlap that
+    /// does not exist, which is what silently pushed it out of the top of the About window.
+    var isStandalone = false
+
     private static let px: CGFloat = 2.5
     private static let width = CGFloat(GhostSprite.columns) * px
     private static let height = CGFloat(GhostSprite.rowCount) * px
@@ -60,7 +65,7 @@ struct GhostView: View {
             // A slow float, so it looks like it is hovering rather than stuck to the edge.
             return time.truncatingRemainder(dividingBy: 3.2) < 1.6 ? 0 : -1
         case .risen, .pleased:
-            return -Self.hiddenExtent
+            return isStandalone ? 0 : -Self.hiddenExtent
         }
     }
 
