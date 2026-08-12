@@ -1,9 +1,10 @@
 import XCTest
 @testable import KiboCore
 
-/// The mapping table is the one piece of this app that cannot be reasoned about — it is
-/// transcribed data. These tests pin it against macOS's own layout data, which
-/// `Tools/dump-kedmanee.swift` reads from `com.apple.keylayout.Thai`.
+/// The mapping table is the one piece of this app that cannot be reasoned about — it is data, and
+/// it is *dumped* rather than transcribed: `Tools/dump-kedmanee.swift` reads it from
+/// `com.apple.keylayout.Thai` via `UCKeyTranslate`. These tests pin the table against the shape
+/// that dump must have. Regenerate it with the tool; never hand-edit it.
 final class KedmaneeMappingTests: XCTestCase {
 
     // MARK: - Structure

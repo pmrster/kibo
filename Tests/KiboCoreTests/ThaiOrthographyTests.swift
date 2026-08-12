@@ -72,8 +72,7 @@ final class ThaiOrthographyTests: XCTestCase {
     /// word starts with a letter that maps to a vowel mark, leaving it with no consonant to
     /// attach to.
     func test_common_english_words_mistyped_on_the_thai_layout_are_caught() {
-        for word in ["email", "meeting", "hello", "thanks", "update", "when", "the", "you",
-                     "project", "review", "design", "test", "build", "morning", "today"] {
+        for word in AccuracyCorpus.englishCaught {
             let mistyped = Self.mistypedOnThaiLayout(word)
             XCTAssertFalse(ThaiOrthography.isWellFormed(mistyped),
                            "'\(word)' mistypes to '\(mistyped)', which the gate thinks is fine")
@@ -82,8 +81,7 @@ final class ThaiOrthographyTests: XCTestCase {
 
     /// What the user would have seen had they typed this English word with the Thai layout active.
     static func mistypedOnThaiLayout(_ english: String) -> String {
-        String(String.UnicodeScalarView(
-            english.unicodeScalars.compactMap { KedmaneeMapping.thai(forQwerty: $0) }))
+        AccuracyCorpus.mistypedOnThaiLayout(english)
     }
 
     // MARK: - Known limitations
@@ -104,10 +102,12 @@ final class ThaiOrthographyTests: XCTestCase {
     /// perfectly ordinary Thai spelling, so the gate has nothing to object to. Recorded here so
     /// the miss rate is visible rather than folded into a passing suite.
     ///
-    /// Measured over a 26-word sample of everyday English, the gate catches 17. These nine are
-    /// the misses. Switching to the explicit TH → EN mode converts them.
+    /// The rate itself is measured end-to-end in `MeasuredAccuracyTests` — 15 of 24 — and the
+    /// corpus is shared, so these two files can no longer disagree about it. (They used to: this
+    /// comment claimed "17 of a 26-word sample" while the docs claimed 16 of 25 and the lists
+    /// added up to 24.) Switching to the explicit TH → EN mode converts them.
     func test_known_limitation_consonant_heavy_english_words_are_kept() {
-        for word in ["about", "please", "sorry", "code", "ok", "and", "report", "great", "work"] {
+        for word in AccuracyCorpus.englishMissed {
             let mistyped = Self.mistypedOnThaiLayout(word)
             XCTAssertTrue(ThaiOrthography.isWellFormed(mistyped),
                           "'\(word)' → '\(mistyped)' is now caught; move it to the caught list")
