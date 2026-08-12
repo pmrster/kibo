@@ -3,23 +3,23 @@ import SwiftUI
 /// The product's central promise, stated on the surface rather than buried in an About box.
 /// Shown both on the converter itself and in the About window.
 ///
-/// Kept in Thai: it is the reassurance the app's Thai audience actually reads, and unlike the
-/// buttons around it, it is a claim rather than chrome.
+/// Phrased the same way as Tama's badge, since the two apps make the same promise and a user who
+/// runs both should recognise it at a glance.
 struct PrivacyCapsule: View {
     var size: CGFloat = 9
 
     var body: some View {
         HStack(spacing: 5) {
             Image(systemName: "lock.shield.fill").font(AppFont.ui(size))
-            Text("ทำงานบนเครื่องนี้ · ไม่ต่ออินเทอร์เน็ต")
-                .font(AppFont.thai(size, weight: .semibold))
+            Text("Local-only · No network")
+                .font(AppFont.ui(size, weight: .semibold))
         }
         .foregroundStyle(Palette.green)
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
         .background(Palette.green.opacity(0.12), in: Capsule())
         .accessibilityElement()
-        .accessibilityLabel("Runs on this Mac. Never connects to the internet.")
+        .accessibilityLabel("Runs entirely on this Mac. Never connects to the internet.")
     }
 }
 

@@ -80,7 +80,7 @@ Two targets, with a deliberate split:
   the app cannot guarantee.** If this ever wants more character without bundling anything, macOS
   also ships Avenir Next and Chakra Petch (the latter covers Thai). `AppFont.ui` for other English
   chrome; `AppFont.thai` for
-  anything that can contain Thai. The latter is **Noto Sans Thai**, which macOS ships: the system
+  the input and result fields, which can contain Thai. That is **Noto Sans Thai**, which macOS ships: the system
   Thai face crowds vowel and tone marks at 11–13pt, and those marks are the whole point here.
   Nothing is bundled, and the helper falls back to the system font if the family is missing.
 - **Mascot** (`GhostSprite.swift`, `GhostView.swift`) — an original 8-bit ghost. **One colour,
@@ -107,8 +107,9 @@ Two targets, with a deliberate split:
   purpose. A cat silhouette was tried and was indistinguishable from Tama's at 18px. Rejected
   alternatives, all rendered at true size first: a pixel keycap (read as a monitor), pixel swap
   arrows (a smudge), and `ก⇄A` (too wide for what it added).
-- **Language** — chrome is English, matching the app's English name. Thai stays where it is
-  content rather than labelling: the text being converted and the privacy capsule.
+- **Language** — the interface is entirely English, matching the app's English name. Thai appears
+  only in the text being converted, which is why `AppFont.thai` is now used only by the input and
+  result fields.
 
 `AppSettings` is an `ObservableObject` while `ConverterModel` is `@Observable`. That is not an
 oversight: `StatusItemController` is AppKit and needs to *subscribe* to appearance changes
