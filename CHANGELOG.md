@@ -11,7 +11,7 @@ All notable changes to this project are recorded here. Format loosely follows
   the input field with just its eyes over the edge, rises when there is a result, and shuts its
   eyes contentedly after a copy. A single colour with the features cut out as holes, the same
   construction Tama uses, flipping between midnight and pale so it is always the opposite of what
-  it sits on. Replaces a first attempt that borrowed Tama's cat sprite and looked it once
+  it sits on. Proportions follow `icon.png`, the reference art now kept in the repository root. Replaces a first attempt that borrowed Tama's cat sprite and looked it once
   enlarged — that geometry is built for a 24×15 menu-bar pet, not for display.
 - **Title font** is the system font at heavy weight — the same face as the section labels.
   Rounded heavy read as a toy and condensed black read as dated; Space Grotesk looked right but is

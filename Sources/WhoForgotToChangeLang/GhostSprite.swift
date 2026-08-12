@@ -9,7 +9,16 @@ import Foundation
 /// **One colour, features cut out of it**, the same construction Tama uses: a solid silhouette
 /// with the eyes and mouth as holes that let the panel show through. An earlier version drew the
 /// ghost with a contrasting outline and a yellow mouth and it read as cluttered at this size —
-/// three tones fighting inside 20×16 pixels. A silhouette has one job and does it.
+/// three tones fighting inside a 16-pixel sprite.
+///
+/// Proportions follow `icon.png`, the reference art in the repository root. Four things in it
+/// carry the character, and earlier attempts missed all four:
+///
+/// - **Taller than wide** (20 × 22, not 16 × 17). A squat ghost reads as a rounded hill.
+/// - **A dome that tapers**, narrow at the crown and widening in single steps.
+/// - **Round eyes**, three by three — rectangles read as a visor.
+/// - **A tiny smile and deep scalloped tails.** The mouth is four pixels, not a slab, and the
+///   tails hang far enough to be unmistakable.
 ///
 /// Legend: `Y` body · `.` empty
 ///
@@ -18,84 +27,70 @@ import Foundation
 /// face is a *lens*, not a hand. Hiding the ghost behind the input field and letting it rise
 /// reads instantly, needs no hand pixels, and makes the field part of the joke.
 enum GhostSprite {
-    static let columns = 16
+    static let columns = 20
 
-    /// Dome and shoulders. Narrower and taller than the first mono attempt, which was 20 wide by
-    /// 16 and read as a rounded hill rather than a ghost — a ghost needs to be taller than it is
-    /// broad, with a hem you can actually see.
+    /// The crown, tapering out in single steps.
     private static let dome = [
-        "....YYYYYYYY....",
-        "..YYYYYYYYYYYY..",
-        ".YYYYYYYYYYYYYY.",
-        "YYYYYYYYYYYYYYYY",
-        "YYYYYYYYYYYYYYYY",
-        "YYYYYYYYYYYYYYYY",
-        "YYYYYYYYYYYYYYYY",
+        "........YYYY........",
+        "......YYYYYYYY......",
+        ".....YYYYYYYYYY.....",
+        "....YYYYYYYYYYYY....",
+        "...YYYYYYYYYYYYYY...",
+        "..YYYYYYYYYYYYYYYY..",
+        "..YYYYYYYYYYYYYYYY..",
+        ".YYYYYYYYYYYYYYYYYY.",
+        ".YYYYYYYYYYYYYYYYYY.",
     ]
 
-    /// Body, then two rows of scallop. The gaps widen as they go down so the hem reads as three
-    /// rounded tails rather than as teeth.
+    /// Body, then the tails. The gaps widen as they descend so the hem reads as four rounded
+    /// lobes rather than as teeth.
     private static let hem = [
-        "YYYYYYYYYYYYYYYY",
-        "YYYYYYYYYYYYYYYY",
-        "YYYYYYYYYYYYYYYY",
-        "YYYY..YYYY..YYYY",
-        "YYY....YY....YYY",
+        "YYYYYYYYYYYYYYYYYYYY",
+        "YYYYYYYYYYYYYYYYYYYY",
+        "YYYYYYYYYYYYYYYYYYYY",
+        "YYYYY.YYYY.YYYY.YYYY",
+        "YYYY...YY...YY...YYY",
+        "YYYY...YY...YY...YYY",
     ]
 
     enum Eyes {
-        /// Ordinary, while it waits.
+        /// Ordinary — three by three, so they read as round rather than as a slot.
         case open
         /// Blinking, and the contented look after a copy.
         case shut
-        /// Wide — it has spotted a result.
-        case wide
 
         var rows: [String] {
             switch self {
             case .open:
-                return ["YY...YYYYYY...YY",
-                        "YY...YYYYYY...YY"]
+                return [".YYY...YYYYYY...YYY.",
+                        ".YYY...YYYYYY...YYY.",
+                        ".YYY...YYYYYY...YYY."]
             case .shut:
-                return ["YYYYYYYYYYYYYYYY",
-                        "YY...YYYYYY...YY"]
-            case .wide:
-                return ["YY...YYYYYY...YY",
-                        "YY...YYYYYY...YY"]
+                return [".YYYYYYYYYYYYYYYYYY.",
+                        ".YYY...YYYYYY...YYY.",
+                        ".YYYYYYYYYYYYYYYYYY."]
             }
         }
     }
 
-    enum Mouth {
-        /// Closed.
-        case line
-        /// Open, as when it pops up.
-        case small
-        /// Small and pleased.
-        case round
+    /// A four-pixel smile, and the only expression the mouth has.
+    ///
+    /// The reference art wears one face, and copying that is the point: a second mouth shape was
+    /// tried for the risen state and at 2×2 it read as a nose, not as surprise. The moods are
+    /// carried by where the ghost is and whether its eyes are shut — which is plenty.
+    /// Held at the same width as the dome above it. Letting these rows run the full twenty
+    /// columns put a step in the silhouette level with the mouth, which made the ghost look like
+    /// it had shoulders; the body should not widen until the hem.
+    private static let mouth = [
+        ".YYYYYYYYYYYYYYYYYY.",
+        ".YYYYYYY.YY.YYYYYYY.",
+        ".YYYYYYYY..YYYYYYYY.",
+    ]
 
-        var rows: [String] {
-            switch self {
-            case .line:
-                return ["YYYYYYYYYYYYYYYY",
-                        "YYYYYY....YYYYYY",
-                        "YYYYYYYYYYYYYYYY"]
-            case .small:
-                return ["YYYYYY....YYYYYY",
-                        "YYYYYY....YYYYYY",
-                        "YYYYYYYYYYYYYYYY"]
-            case .round:
-                return ["YYYYYYYYYYYYYYYY",
-                        "YYYYYYY..YYYYYYY",
-                        "YYYYYYYYYYYYYYYY"]
-            }
-        }
+    static func rows(eyes: Eyes) -> [String] {
+        dome + eyes.rows + mouth + hem
     }
 
-    static func rows(eyes: Eyes, mouth: Mouth) -> [String] {
-        dome + eyes.rows + mouth.rows + hem
-    }
-
-    /// 7 dome + 2 eyes + 3 mouth + 5 hem.
-    static let rowCount = 17
+    /// 9 dome + 3 eyes + 3 mouth + 6 hem.
+    static let rowCount = 21
 }
