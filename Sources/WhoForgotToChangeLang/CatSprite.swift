@@ -1,9 +1,9 @@
 import Foundation
 
-/// The mascot's pixel grids, in one place because two very different renderers consume them:
-/// `CatView` draws them in colour with the eyes picked out, and `MenuBarIcon` flattens them into a
-/// single-colour silhouette. Keeping one copy is what stops the menu-bar glyph and the mascot from
-/// drifting into two different cats.
+/// The mascot's pixel grids, kept apart from `CatView` so the poses can be read as data.
+///
+/// Note the menu-bar glyph is deliberately *not* built from these — see `MenuBarIcon` for why a
+/// cat silhouette turned out to be unusable next to Tama in a real menu bar.
 ///
 /// Geometry is shared with Tama's `PetView` — a side-view cat, ears and tail reading against the
 /// background rather than notched out of a silhouette. A first attempt drew a head-on cat at 18x14

@@ -72,17 +72,18 @@ enum Snapshot {
                         .foregroundStyle(Palette.dim)
                 }
             }
-            // The status-item glyph, at menu-bar size and blown up beside it. It is a template
-            // image, so what matters is whether the silhouette still reads as a cat once the
-            // colour and the eyes are gone.
+            // The status-item glyph, at true menu-bar size and blown up beside it. It is
+            // deliberately not the mascot — see `MenuBarIcon` — so what matters here is whether
+            // it stays legible at 18px, not whether it matches the cat.
             VStack(spacing: 12) {
-                VStack(spacing: 14) {
+                VStack(spacing: 18) {
                     Image(nsImage: MenuBarIcon.image())
                         .renderingMode(.template)
                         .foregroundStyle(Palette.text)
-                    Image(nsImage: MenuBarIcon.image(pixelSize: 7))
+                    Image(nsImage: MenuBarIcon.image())
                         .renderingMode(.template)
                         .foregroundStyle(Palette.text)
+                        .scaleEffect(4)
                 }
                 .frame(height: 130)
                 Text("menu bar")

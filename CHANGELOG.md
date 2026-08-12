@@ -11,8 +11,10 @@ All notable changes to this project are recorded here. Format loosely follows
   geometry, now sits in the converter header, the About window and Settings. It blinks when idle,
   breathes a pixel once there is a result, and shuts its eyes after a copy, with a small bubble
   showing the direction (`ก⇄A`, `ก`, `A`, or `✓`).
-- **Menu-bar glyph** is now that same cat as a silhouette, replacing the pixel keyboard. Both are
-  generated from one grid (`CatSprite`), so they cannot drift apart.
+- **Menu-bar glyph** is now a keycap outline with `ก` on it, replacing the pixel keyboard. It is
+  deliberately not the mascot: next to Tama in a real menu bar, two side-view pixel cats are
+  indistinguishable at 18px, so neither icon identified its app. The outline is what makes it
+  findable — nothing else up there has a border — and it depicts the key you forgot to press.
 - **The app presents in English.** Title is "Who Forgot To Change Lang" in the header, About,
   Settings, the right-click menu, window titles and `CFBundleDisplayName`; buttons and section
   headings are English too. Thai remains where it is content rather than labelling — the
