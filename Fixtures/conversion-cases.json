@@ -1,6 +1,21 @@
 {
-  "version": 1,
+  "version": 2,
   "description": "Behaviour contract for the Thai Kedmanee <-> US QWERTY converter. Any implementation claiming to be this app must reproduce every case exactly. The mapping table was dumped from macOS layout data (see Tools/dump-kedmanee.swift); the mixed-mode cases encode the orthographic gate, including its documented limitations.",
+  "schema": {
+    "version": "Bumped whenever the shape of this file changes. Readers must refuse a version they do not understand.",
+    "mapping": "The whole Kedmanee <-> US QWERTY key table, as { qwerty, kedmanee } pairs. Each value is exactly ONE Unicode scalar, and the table is a bijection. Verify this before running any case: a port is most likely to go wrong here.",
+    "cases": "Behaviour cases: { name, mode, input, output }. Feed `input` to the converter in `mode`; the result must equal `output` exactly, compared as Unicode scalars.",
+    "modes": {
+      "englishToThai": "Mechanical whole-string flip, QWERTY keystrokes -> Kedmanee. Never consults the gate.",
+      "thaiToEnglish": "Mechanical whole-string flip, the other way. Never consults the gate.",
+      "mixed": "Per-run judgement: convert a run only if it is malformed in its own script. This is where precision and recall live, and where a port will differ if its gate differs."
+    },
+    "notes": [
+      "Walk unicodeScalars, never grapheme clusters: Thai combining marks fuse with the consonant before them, so a per-character loop is handed clusters that appear in no table.",
+      "Cases named 'precision:' are the promise that correct text is never mangled. They matter more than the 'recall:' cases — mangling correct text is a worse failure than leaving a mistyping, because the user can see and fix the latter.",
+      "Cases named 'known miss:' record text the mixed gate deliberately leaves alone. A port that 'fixes' them has almost certainly broken a precision case; check both before celebrating."
+    ]
+  },
   "mapping": [
     {
       "kedmanee": "ฟ",
@@ -523,6 +538,546 @@
       "mode": "mixed",
       "input": "Fi'giupo",
       "output": "Fi'giupo"
+    },
+    {
+      "name": "precision: leaves 'HTML' untouched",
+      "mode": "mixed",
+      "input": "HTML",
+      "output": "HTML"
+    },
+    {
+      "name": "precision: leaves 'XML' untouched",
+      "mode": "mixed",
+      "input": "XML",
+      "output": "XML"
+    },
+    {
+      "name": "precision: leaves 'SQL' untouched",
+      "mode": "mixed",
+      "input": "SQL",
+      "output": "SQL"
+    },
+    {
+      "name": "precision: leaves 'PDF' untouched",
+      "mode": "mixed",
+      "input": "PDF",
+      "output": "PDF"
+    },
+    {
+      "name": "precision: leaves 'SMS' untouched",
+      "mode": "mixed",
+      "input": "SMS",
+      "output": "SMS"
+    },
+    {
+      "name": "precision: leaves 'npm' untouched",
+      "mode": "mixed",
+      "input": "npm",
+      "output": "npm"
+    },
+    {
+      "name": "precision: leaves 'nth' untouched",
+      "mode": "mixed",
+      "input": "nth",
+      "output": "nth"
+    },
+    {
+      "name": "precision: leaves 'PM' untouched",
+      "mode": "mixed",
+      "input": "PM",
+      "output": "PM"
+    },
+    {
+      "name": "precision: leaves 'TV' untouched",
+      "mode": "mixed",
+      "input": "TV",
+      "output": "TV"
+    },
+    {
+      "name": "precision: leaves 'ok' untouched",
+      "mode": "mixed",
+      "input": "ok",
+      "output": "ok"
+    },
+    {
+      "name": "precision: leaves 'https://example.com' untouched",
+      "mode": "mixed",
+      "input": "https://example.com",
+      "output": "https://example.com"
+    },
+    {
+      "name": "precision: leaves 'http://example.com' untouched",
+      "mode": "mixed",
+      "input": "http://example.com",
+      "output": "http://example.com"
+    },
+    {
+      "name": "precision: leaves 'user@example.com' untouched",
+      "mode": "mixed",
+      "input": "user@example.com",
+      "output": "user@example.com"
+    },
+    {
+      "name": "precision: leaves 'README.md' untouched",
+      "mode": "mixed",
+      "input": "README.md",
+      "output": "README.md"
+    },
+    {
+      "name": "precision: leaves 'index.html' untouched",
+      "mode": "mixed",
+      "input": "index.html",
+      "output": "index.html"
+    },
+    {
+      "name": "precision: leaves 'C:\\Users\\pmr' untouched",
+      "mode": "mixed",
+      "input": "C:\\Users\\pmr",
+      "output": "C:\\Users\\pmr"
+    },
+    {
+      "name": "precision: leaves 'v1.2.3' untouched",
+      "mode": "mixed",
+      "input": "v1.2.3",
+      "output": "v1.2.3"
+    },
+    {
+      "name": "precision: leaves 'a/b' untouched",
+      "mode": "mixed",
+      "input": "a/b",
+      "output": "a/b"
+    },
+    {
+      "name": "precision: leaves 'array[i]' untouched",
+      "mode": "mixed",
+      "input": "array[i]",
+      "output": "array[i]"
+    },
+    {
+      "name": "precision: leaves 'let x = 1;' untouched",
+      "mode": "mixed",
+      "input": "let x = 1;",
+      "output": "let x = 1;"
+    },
+    {
+      "name": "precision: leaves 'foo(bar)' untouched",
+      "mode": "mixed",
+      "input": "foo(bar)",
+      "output": "foo(bar)"
+    },
+    {
+      "name": "precision: leaves 'hello' untouched",
+      "mode": "mixed",
+      "input": "hello",
+      "output": "hello"
+    },
+    {
+      "name": "precision: leaves 'world' untouched",
+      "mode": "mixed",
+      "input": "world",
+      "output": "world"
+    },
+    {
+      "name": "precision: leaves 'rhythm' untouched",
+      "mode": "mixed",
+      "input": "rhythm",
+      "output": "rhythm"
+    },
+    {
+      "name": "precision: leaves 'don't' untouched",
+      "mode": "mixed",
+      "input": "don't",
+      "output": "don't"
+    },
+    {
+      "name": "precision: leaves 'email' untouched",
+      "mode": "mixed",
+      "input": "email",
+      "output": "email"
+    },
+    {
+      "name": "precision: leaves 'meeting' untouched",
+      "mode": "mixed",
+      "input": "meeting",
+      "output": "meeting"
+    },
+    {
+      "name": "precision: leaves 'thank you' untouched",
+      "mode": "mixed",
+      "input": "thank you",
+      "output": "thank you"
+    },
+    {
+      "name": "precision: leaves '2024' untouched",
+      "mode": "mixed",
+      "input": "2024",
+      "output": "2024"
+    },
+    {
+      "name": "precision: leaves ':)' untouched",
+      "mode": "mixed",
+      "input": ":)",
+      "output": ":)"
+    },
+    {
+      "name": "precision: leaves '3.14' untouched",
+      "mode": "mixed",
+      "input": "3.14",
+      "output": "3.14"
+    },
+    {
+      "name": "precision: leaves '100%' untouched",
+      "mode": "mixed",
+      "input": "100%",
+      "output": "100%"
+    },
+    {
+      "name": "precision: leaves '42' untouched",
+      "mode": "mixed",
+      "input": "42",
+      "output": "42"
+    },
+    {
+      "name": "precision: leaves 'ครับ' untouched",
+      "mode": "mixed",
+      "input": "ครับ",
+      "output": "ครับ"
+    },
+    {
+      "name": "precision: leaves 'สวัสดีครับ' untouched",
+      "mode": "mixed",
+      "input": "สวัสดีครับ",
+      "output": "สวัสดีครับ"
+    },
+    {
+      "name": "precision: leaves 'ขอบคุณมาก' untouched",
+      "mode": "mixed",
+      "input": "ขอบคุณมาก",
+      "output": "ขอบคุณมาก"
+    },
+    {
+      "name": "recall en: fixes 'email'",
+      "mode": "mixed",
+      "input": "ำทฟรส",
+      "output": "email"
+    },
+    {
+      "name": "recall en: fixes 'meeting'",
+      "mode": "mixed",
+      "input": "ทำำะรืเ",
+      "output": "meeting"
+    },
+    {
+      "name": "recall en: fixes 'hello'",
+      "mode": "mixed",
+      "input": "้ำสสน",
+      "output": "hello"
+    },
+    {
+      "name": "recall en: fixes 'thanks'",
+      "mode": "mixed",
+      "input": "ะ้ฟืาห",
+      "output": "thanks"
+    },
+    {
+      "name": "recall en: fixes 'update'",
+      "mode": "mixed",
+      "input": "ียกฟะำ",
+      "output": "update"
+    },
+    {
+      "name": "recall en: fixes 'when'",
+      "mode": "mixed",
+      "input": "ไ้ำื",
+      "output": "when"
+    },
+    {
+      "name": "recall en: fixes 'the'",
+      "mode": "mixed",
+      "input": "ะ้ำ",
+      "output": "the"
+    },
+    {
+      "name": "recall en: fixes 'you'",
+      "mode": "mixed",
+      "input": "ันี",
+      "output": "you"
+    },
+    {
+      "name": "recall en: fixes 'project'",
+      "mode": "mixed",
+      "input": "ยพน่ำแะ",
+      "output": "project"
+    },
+    {
+      "name": "recall en: fixes 'review'",
+      "mode": "mixed",
+      "input": "พำอรำไ",
+      "output": "review"
+    },
+    {
+      "name": "recall en: fixes 'design'",
+      "mode": "mixed",
+      "input": "กำหรเื",
+      "output": "design"
+    },
+    {
+      "name": "recall en: fixes 'test'",
+      "mode": "mixed",
+      "input": "ะำหะ",
+      "output": "test"
+    },
+    {
+      "name": "recall en: fixes 'build'",
+      "mode": "mixed",
+      "input": "ิีรสก",
+      "output": "build"
+    },
+    {
+      "name": "recall en: fixes 'morning'",
+      "mode": "mixed",
+      "input": "ทนพืรืเ",
+      "output": "morning"
+    },
+    {
+      "name": "recall en: fixes 'today'",
+      "mode": "mixed",
+      "input": "ะนกฟั",
+      "output": "today"
+    },
+    {
+      "name": "recall th: fixes 'สวัสดี'",
+      "mode": "mixed",
+      "input": "l;ylfu",
+      "output": "สวัสดี"
+    },
+    {
+      "name": "recall th: fixes 'อยากกินกาแฟ'",
+      "mode": "mixed",
+      "input": "vpkddbodkca",
+      "output": "อยากกินกาแฟ"
+    },
+    {
+      "name": "recall th: fixes 'สวัสดีครับ'",
+      "mode": "mixed",
+      "input": "l;ylfu8iy[",
+      "output": "สวัสดีครับ"
+    },
+    {
+      "name": "known miss en: leaves 'about' wreckage alone",
+      "mode": "mixed",
+      "input": "ฟินีะ",
+      "output": "ฟินีะ"
+    },
+    {
+      "name": "known miss en: leaves 'please' wreckage alone",
+      "mode": "mixed",
+      "input": "ยสำฟหำ",
+      "output": "ยสำฟหำ"
+    },
+    {
+      "name": "known miss en: leaves 'sorry' wreckage alone",
+      "mode": "mixed",
+      "input": "หนพพั",
+      "output": "หนพพั"
+    },
+    {
+      "name": "known miss en: leaves 'and' wreckage alone",
+      "mode": "mixed",
+      "input": "ฟืก",
+      "output": "ฟืก"
+    },
+    {
+      "name": "known miss en: leaves 'report' wreckage alone",
+      "mode": "mixed",
+      "input": "พำยนพะ",
+      "output": "พำยนพะ"
+    },
+    {
+      "name": "known miss en: leaves 'great' wreckage alone",
+      "mode": "mixed",
+      "input": "เพำฟะ",
+      "output": "เพำฟะ"
+    },
+    {
+      "name": "known miss en: leaves 'work' wreckage alone",
+      "mode": "mixed",
+      "input": "ไนพา",
+      "output": "ไนพา"
+    },
+    {
+      "name": "known miss th: leaves 'ผม' wreckage alone",
+      "mode": "mixed",
+      "input": "z,",
+      "output": "z,"
+    },
+    {
+      "name": "known miss th: leaves 'แมว' wreckage alone",
+      "mode": "mixed",
+      "input": "c,;",
+      "output": "c,;"
+    },
+    {
+      "name": "known miss th: leaves 'ไป' wreckage alone",
+      "mode": "mixed",
+      "input": "wx",
+      "output": "wx"
+    },
+    {
+      "name": "known miss th: leaves 'กิน' wreckage alone",
+      "mode": "mixed",
+      "input": "dbo",
+      "output": "dbo"
+    },
+    {
+      "name": "known miss th: leaves 'ทำงาน' wreckage alone",
+      "mode": "mixed",
+      "input": "me'ko",
+      "output": "me'ko"
+    },
+    {
+      "name": "known miss th: leaves 'วันนี้' wreckage alone",
+      "mode": "mixed",
+      "input": ";yoouh",
+      "output": ";yoouh"
+    },
+    {
+      "name": "known miss th: leaves 'พรุ่งนี้' wreckage alone",
+      "mode": "mixed",
+      "input": "ri6j'ouh",
+      "output": "ri6j'ouh"
+    },
+    {
+      "name": "explicit: 'สวัสดี' typed on the US layout",
+      "mode": "thaiToEnglish",
+      "input": "สวัสดี",
+      "output": "l;ylfu"
+    },
+    {
+      "name": "explicit: 'อยากกินกาแฟ' typed on the US layout",
+      "mode": "thaiToEnglish",
+      "input": "อยากกินกาแฟ",
+      "output": "vpkddbodkca"
+    },
+    {
+      "name": "explicit: 'ขอบคุณ' typed on the US layout",
+      "mode": "thaiToEnglish",
+      "input": "ขอบคุณ",
+      "output": "-v[86I"
+    },
+    {
+      "name": "explicit: recovers 'ขอบคุณ'",
+      "mode": "englishToThai",
+      "input": "-v[86I",
+      "output": "ขอบคุณ"
+    },
+    {
+      "name": "explicit: 'สวัสดีครับ' typed on the US layout",
+      "mode": "thaiToEnglish",
+      "input": "สวัสดีครับ",
+      "output": "l;ylfu8iy["
+    },
+    {
+      "name": "explicit: recovers 'สวัสดีครับ'",
+      "mode": "englishToThai",
+      "input": "l;ylfu8iy[",
+      "output": "สวัสดีครับ"
+    },
+    {
+      "name": "explicit: 'โรงเรียน' typed on the US layout",
+      "mode": "thaiToEnglish",
+      "input": "โรงเรียน",
+      "output": "Fi'giupo"
+    },
+    {
+      "name": "explicit: recovers 'โรงเรียน'",
+      "mode": "englishToThai",
+      "input": "Fi'giupo",
+      "output": "โรงเรียน"
+    },
+    {
+      "name": "explicit: 'ผม' typed on the US layout",
+      "mode": "thaiToEnglish",
+      "input": "ผม",
+      "output": "z,"
+    },
+    {
+      "name": "explicit: recovers 'ผม'",
+      "mode": "englishToThai",
+      "input": "z,",
+      "output": "ผม"
+    },
+    {
+      "name": "explicit: 'แมว' typed on the US layout",
+      "mode": "thaiToEnglish",
+      "input": "แมว",
+      "output": "c,;"
+    },
+    {
+      "name": "explicit: recovers 'แมว'",
+      "mode": "englishToThai",
+      "input": "c,;",
+      "output": "แมว"
+    },
+    {
+      "name": "explicit: 'ไป' typed on the US layout",
+      "mode": "thaiToEnglish",
+      "input": "ไป",
+      "output": "wx"
+    },
+    {
+      "name": "explicit: recovers 'ไป'",
+      "mode": "englishToThai",
+      "input": "wx",
+      "output": "ไป"
+    },
+    {
+      "name": "explicit: 'กิน' typed on the US layout",
+      "mode": "thaiToEnglish",
+      "input": "กิน",
+      "output": "dbo"
+    },
+    {
+      "name": "explicit: recovers 'กิน'",
+      "mode": "englishToThai",
+      "input": "dbo",
+      "output": "กิน"
+    },
+    {
+      "name": "explicit: 'ทำงาน' typed on the US layout",
+      "mode": "thaiToEnglish",
+      "input": "ทำงาน",
+      "output": "me'ko"
+    },
+    {
+      "name": "explicit: recovers 'ทำงาน'",
+      "mode": "englishToThai",
+      "input": "me'ko",
+      "output": "ทำงาน"
+    },
+    {
+      "name": "explicit: 'วันนี้' typed on the US layout",
+      "mode": "thaiToEnglish",
+      "input": "วันนี้",
+      "output": ";yoouh"
+    },
+    {
+      "name": "explicit: recovers 'วันนี้'",
+      "mode": "englishToThai",
+      "input": ";yoouh",
+      "output": "วันนี้"
+    },
+    {
+      "name": "explicit: 'พรุ่งนี้' typed on the US layout",
+      "mode": "thaiToEnglish",
+      "input": "พรุ่งนี้",
+      "output": "ri6j'ouh"
+    },
+    {
+      "name": "explicit: recovers 'พรุ่งนี้'",
+      "mode": "englishToThai",
+      "input": "ri6j'ouh",
+      "output": "พรุ่งนี้"
     }
   ]
 }
