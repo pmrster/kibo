@@ -1,102 +1,85 @@
 import SwiftUI
-import WhoForgotToChangeLangCore
 
-/// The mascot: a small ghost that hides behind the input field and peeks over the top of it.
+/// The mascot: a small ghost that perches on the top edge of the input field, tails tucked
+/// behind it.
 ///
-/// Drawn from `GhostSprite` into a `Canvas`, so there is no image asset to manage or to get wrong
-/// at 2x. See `GhostSprite` for why drawing it covering its own eyes did not work.
-///
-/// **It does not clip itself.** The hiding is done by the caller overlapping this view into an
-/// opaque surface drawn after it, which then paints over the lower part — so the ghost is behind a
-/// real edge rather than cut off in mid-air. Clipping was tried first and looked exactly like what
-/// it was: a sprite with its bottom sliced off, floating above the field with a gap. That means
-/// two obligations on the caller: place it immediately above an opaque surface, and overlap it
-/// into that surface by `hiddenExtent`.
+/// **Never scale this view.** It is drawn from a pixel grid into a `Canvas`, so a `scaleEffect`
+/// rasterises at the natural size and then stretches the result — which is what made the ghost
+/// look broken and jagged next to Tama's crisp cat. To show it larger, pass a larger
+/// `pixelSize`; every rectangle then lands on a whole pixel and the edges stay sharp. Tama does
+/// the same thing, and that is the entire difference.
 struct GhostView: View {
 
     enum Mood: Equatable {
-        /// Nothing typed yet: only the top of its head shows.
-        case waiting
-        /// A result is on screen: it rises fully into view.
-        case risen
-        /// Just copied: risen, eyes shut, pleased with itself.
+        /// Ordinary. Blinks now and then.
+        case idle
+        /// Just copied — eyes shut, pleased with itself.
         case pleased
     }
 
-    let mood: Mood
+    var mood: Mood = .idle
 
-    /// Set where there is nothing below to hide behind — the About and Settings windows. The
-    /// ghost then draws fully inside its own frame instead of lifting clear of an overlap that
-    /// does not exist, which is what silently pushed it out of the top of the About window.
-    var isStandalone = false
+    /// Whole numbers only. See the warning above.
+    var pixelSize: CGFloat = 2
 
-    private static let px: CGFloat = 2.0
-    private static let width = CGFloat(GhostSprite.columns) * px
-    private static let height = CGFloat(GhostSprite.rowCount) * px
-
-    /// How far the caller must overlap this view into the surface below it. While waiting, exactly
-    /// this much of the ghost is covered; rising lifts it clear.
+    /// How far the caller should overlap this view into the surface below, so the tails tuck
+    /// behind its edge rather than the ghost floating above it.
     ///
-    /// All three eye rows have to stay above the edge or the whole joke dies — cover them and it
-    /// reads as a bump rather than as something looking at you. Ten rows leaves the eyes visible
-    /// with the mouth still hidden, which is the pose that reads as peeking.
-    static let hiddenExtent: CGFloat = 10 * px
+    /// Two rows, not ten. An earlier version sank most of the ghost behind the field so only its
+    /// eyes showed, which raised the obvious question of why the mascot was hiding — it read as
+    /// something broken rather than as something perching. The reference art sits *on* the line.
+    static func tailTuck(pixelSize: CGFloat = 2) -> CGFloat { 2 * pixelSize }
 
     var body: some View {
+        let width = CGFloat(GhostSprite.columns) * pixelSize
+        let height = CGFloat(GhostSprite.rowCount) * pixelSize
+
         TimelineView(.periodic(from: .now, by: 0.4)) { timeline in
             let time = timeline.date.timeIntervalSinceReferenceDate
             Canvas { context, _ in
-                context.fill(path(at: time), with: .color(Palette.ghost))
+                context.fill(Self.path(eyes: eyes(at: time), pixelSize: pixelSize),
+                             with: .color(Palette.ghost))
             }
-            .frame(width: Self.width, height: Self.height)
-            .offset(y: drop(at: time))
+            .frame(width: width, height: height)
+            .offset(y: float(at: time))
         }
-        .frame(width: Self.width, height: Self.height, alignment: .top)
-        .animation(.easeOut(duration: 0.24), value: mood)
-        // Decoration: the state it mirrors is already announced by the result field.
+        .frame(width: width, height: height)
+        // Decoration: everything it reflects is already announced by the result field.
         .accessibilityHidden(true)
     }
 
-    /// Vertical shift. Zero leaves the ghost overlapped into the surface below (peeking); lifting
-    /// it by `hiddenExtent` clears that surface entirely (risen).
-    private func drop(at time: Double) -> CGFloat {
+    private func eyes(at time: Double) -> GhostSprite.Eyes {
         switch mood {
-        case .waiting:
-            // A slow float, so it looks like it is hovering rather than stuck to the edge.
-            return time.truncatingRemainder(dividingBy: 3.2) < 1.6 ? 0 : -1
-        case .risen, .pleased:
-            return isStandalone ? 0 : -Self.hiddenExtent
-        }
-    }
-
-    private func path(at time: Double) -> Path {
-        let eyes: GhostSprite.Eyes
-        switch mood {
-        case .waiting, .risen:
-            // Blinks about every four seconds, for one tick.
-            eyes = time.truncatingRemainder(dividingBy: 4.0) < 0.4 ? .shut : .open
         case .pleased:
-            eyes = .shut
+            return .shut
+        case .idle:
+            // A blink roughly every four seconds, lasting one tick.
+            return time.truncatingRemainder(dividingBy: 4.0) < 0.4 ? .shut : .open
         }
-        return Self.build(GhostSprite.rows(eyes: eyes))
     }
 
-    /// Rasterises a grid into one silhouette path. Cached per (eyes, mouth) pair, since this runs
-    /// on every timeline tick and there are only two possible faces.
-    private static func build(_ grid: [String]) -> Path {
-        if let cached = cache[grid.joined()] { return cached }
+    /// A single pixel of drift, so it hovers rather than sitting welded to the edge. Whole pixels
+    /// only, for the same reason the sprite is never scaled.
+    private func float(at time: Double) -> CGFloat {
+        time.truncatingRemainder(dividingBy: 3.2) < 1.6 ? 0 : -pixelSize
+    }
+
+    /// Rasterises the grid into one silhouette path. Cached per (eyes, pixel size), since this
+    /// runs on every timeline tick and there are only a handful of combinations.
+    private static func path(eyes: GhostSprite.Eyes, pixelSize: CGFloat) -> Path {
+        let key = "\(eyes)-\(pixelSize)"
+        if let cached = cache[key] { return cached }
+
         var path = Path()
-        for (row, line) in grid.enumerated() {
+        for (row, line) in GhostSprite.rows(eyes: eyes).enumerated() {
             for (column, character) in line.enumerated() where character == "Y" {
-                // The 0.3 overdraw closes hairline seams between adjacent pixels at fractional
-                // scale factors.
-                path.addRect(CGRect(x: CGFloat(column) * px,
-                                    y: CGFloat(row) * px,
-                                    width: px + 0.3,
-                                    height: px + 0.3))
+                path.addRect(CGRect(x: CGFloat(column) * pixelSize,
+                                    y: CGFloat(row) * pixelSize,
+                                    width: pixelSize,
+                                    height: pixelSize))
             }
         }
-        cache[grid.joined()] = path
+        cache[key] = path
         return path
     }
 
