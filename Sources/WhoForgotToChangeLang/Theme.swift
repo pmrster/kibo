@@ -39,14 +39,15 @@ enum Palette {
     static let thai      = Color(light: 0xC2603F, dark: 0xD97757)
     static let latin     = Color(light: 0x3A7BA5, dark: 0x4A8FBF)
 
-    // The mascot's colours. Body and ink swap between appearances so the ghost is always the
-    // opposite of what it sits on — midnight on the light panel, pale on the dark one. A fixed
-    // colour would have it disappearing in one mode or the other, and a ghost that vanishes is
-    // funny exactly once.
-    static let ghostBody  = Color(light: 0x1E202C, dark: 0xF2EEE6)
-    static let ghostInk   = Color(light: 0xF7F4EF, dark: 0x1A1C26)
-    /// The one warm note in the sprite, and the only place this yellow is used.
-    static let ghostMouth = Color(light: 0xE8A32D, dark: 0xF2B23D)
+    /// The mascot: one colour, and the features are holes cut in it. Midnight on the light panel,
+    /// pale on the dark one — always the opposite of what it sits on, since a fixed colour would
+    /// have it disappearing in one mode, and a ghost that vanishes is funny exactly once.
+    static let ghost = Color(light: 0x1E202C, dark: 0xF2EEE6)
+
+    /// The input and result surfaces. Opaque, not `panelEdge` at 45% as it once was, because the
+    /// mascot hides *behind* the input field — a translucent fill would show it through.
+    /// These are that former blend, flattened.
+    static let fieldFill = Color(light: 0xEDE8E1, dark: 0x221F1B)
 }
 
 /// Multiplies a hardcoded point size by the current font-size factor. Reading the shared settings
@@ -85,11 +86,26 @@ enum AppFont {
         .system(size: scaled(size), weight: weight, design: design)
     }
 
-    /// The app's name. Condensed black rather than the rounded weight it started with, which read
-    /// as a toy — this is a utility, and the narrower letters also carry a five-word title without
-    /// having to shrink it.
+    /// Space Grotesk, if it is installed. Resolved once.
+    ///
+    /// **This is not a system font.** It is currently present only in the developer's
+    /// `~/Library/Fonts`, so on any other Mac `title` falls back — see the note there. Shipping
+    /// the intended look means bundling the face with the app.
+    static let titleFamily: String? = {
+        NSFont(name: "Space Grotesk", size: 12) != nil ? "Space Grotesk" : nil
+    }()
+
+    /// The app's name. Space Grotesk: a grotesque with enough character to not look like every
+    /// other utility, and squarer than the rounded weight this started with, which read as a toy.
+    ///
+    /// Falls back to the system font's condensed black — the closest thing macOS ships, and the
+    /// weight this used before Space Grotesk. The fallback is what every machine without the font
+    /// installed will actually render, so it has to be a deliberate choice rather than a shrug.
     @MainActor
     static func title(_ size: CGFloat) -> Font {
+        if let titleFamily {
+            return .custom(titleFamily, fixedSize: scaled(size)).weight(.bold)
+        }
         let base = NSFont.systemFont(ofSize: scaled(size), weight: .black)
         guard let condensed = NSFont(
             descriptor: base.fontDescriptor.withSymbolicTraits([.condensed]),

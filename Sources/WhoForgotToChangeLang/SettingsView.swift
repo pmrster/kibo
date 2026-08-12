@@ -50,7 +50,7 @@ struct SettingsView: View {
                 }
                 .padding(10)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Palette.panelEdge.opacity(0.5), in: RoundedRectangle(cornerRadius: 8))
+                .background(Palette.fieldFill, in: RoundedRectangle(cornerRadius: 8))
             }
 
             Spacer(minLength: 4)

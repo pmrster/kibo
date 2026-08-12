@@ -4,9 +4,14 @@ import WhoForgotToChangeLangCore
 /// The mascot: a small ghost that hides behind the input field and peeks over the top of it.
 ///
 /// Drawn from `GhostSprite` into a `Canvas`, so there is no image asset to manage or to get wrong
-/// at 2x. The peekaboo is done by sliding the sprite down and clipping it — see `GhostSprite` for
-/// why drawing it covering its own eyes did not work — which means the view must be laid out
-/// directly above whatever it is meant to be hiding behind.
+/// at 2x. See `GhostSprite` for why drawing it covering its own eyes did not work.
+///
+/// **It does not clip itself.** The hiding is done by the caller overlapping this view into an
+/// opaque surface drawn after it, which then paints over the lower part — so the ghost is behind a
+/// real edge rather than cut off in mid-air. Clipping was tried first and looked exactly like what
+/// it was: a sprite with its bottom sliced off, floating above the field with a gap. That means
+/// two obligations on the caller: place it immediately above an opaque surface, and overlap it
+/// into that surface by `hiddenExtent`.
 struct GhostView: View {
 
     enum Mood: Equatable {
@@ -20,56 +25,46 @@ struct GhostView: View {
 
     let mood: Mood
 
-    private static let px: CGFloat = 2.0
+    private static let px: CGFloat = 2.5
     private static let width = CGFloat(GhostSprite.columns) * px
     private static let height = CGFloat(GhostSprite.rowCount) * px
 
-    /// How far down the sprite sits while waiting.
+    /// How far the caller must overlap this view into the surface below it. While waiting, exactly
+    /// this much of the ghost is covered; rising lifts it clear.
     ///
-    /// Both eye rows have to clear the edge or the whole joke dies: at nine rows only the dome
-    /// showed and it read as a bump, not as something looking at you. Seven leaves the eyes fully
-    /// visible with the mouth still hidden, which is the pose that reads as peeking.
-    private static let hiddenDrop: CGFloat = 7 * px
+    /// Both eye rows have to stay above the edge or the whole joke dies — cover them and it reads
+    /// as a bump rather than as something looking at you. Eight rows leaves the eyes visible with
+    /// the mouth still hidden, which is the pose that reads as peeking.
+    static let hiddenExtent: CGFloat = 8 * px
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 0.4)) { timeline in
             let time = timeline.date.timeIntervalSinceReferenceDate
             Canvas { context, _ in
-                let paths = paths(at: time)
-                context.fill(paths.body, with: .color(Palette.ghostBody))
-                context.fill(paths.ink, with: .color(Palette.ghostInk))
-                context.fill(paths.mouth, with: .color(Palette.ghostMouth))
+                context.fill(path(at: time), with: .color(Palette.ghost))
             }
             .frame(width: Self.width, height: Self.height)
             .offset(y: drop(at: time))
         }
-        // Clipped to its own frame so the part that has slid down is hidden, which is what makes
-        // it look like it is behind the field below rather than sinking into the background.
         .frame(width: Self.width, height: Self.height, alignment: .top)
-        .clipped()
-        .animation(.easeOut(duration: 0.22), value: mood)
+        .animation(.easeOut(duration: 0.24), value: mood)
         // Decoration: the state it mirrors is already announced by the result field.
         .accessibilityHidden(true)
     }
 
+    /// Vertical shift. Zero leaves the ghost overlapped into the surface below (peeking); lifting
+    /// it by `hiddenExtent` clears that surface entirely (risen).
     private func drop(at time: Double) -> CGFloat {
         switch mood {
         case .waiting:
             // A slow float, so it looks like it is hovering rather than stuck to the edge.
-            let bob: CGFloat = time.truncatingRemainder(dividingBy: 3.2) < 1.6 ? 0 : -1
-            return Self.hiddenDrop + bob
+            return time.truncatingRemainder(dividingBy: 3.2) < 1.6 ? 0 : -1
         case .risen, .pleased:
-            return 0
+            return -Self.hiddenExtent
         }
     }
 
-    private struct Paths {
-        var body = Path()
-        var ink = Path()
-        var mouth = Path()
-    }
-
-    private func paths(at time: Double) -> Paths {
+    private func path(at time: Double) -> Path {
         let eyes: GhostSprite.Eyes
         let mouth: GhostSprite.Mouth
         switch mood {
@@ -88,30 +83,24 @@ struct GhostView: View {
         return Self.build(GhostSprite.rows(eyes: eyes, mouth: mouth))
     }
 
-    /// Rasterises a grid into three paths, one per colour. Cached per (eyes, mouth) pair, since
-    /// this runs on every timeline tick and there are only nine possible combinations.
-    private static func build(_ grid: [String]) -> Paths {
+    /// Rasterises a grid into one silhouette path. Cached per (eyes, mouth) pair, since this runs
+    /// on every timeline tick and there are only nine possible combinations.
+    private static func build(_ grid: [String]) -> Path {
         if let cached = cache[grid.joined()] { return cached }
-        var paths = Paths()
+        var path = Path()
         for (row, line) in grid.enumerated() {
-            for (column, character) in line.enumerated() {
+            for (column, character) in line.enumerated() where character == "Y" {
                 // The 0.3 overdraw closes hairline seams between adjacent pixels at fractional
                 // scale factors.
-                let rect = CGRect(x: CGFloat(column) * px,
-                                  y: CGFloat(row) * px,
-                                  width: px + 0.3,
-                                  height: px + 0.3)
-                switch character {
-                case "o": paths.body.addRect(rect)
-                case "#": paths.ink.addRect(rect)
-                case "y": paths.mouth.addRect(rect)
-                default: continue
-                }
+                path.addRect(CGRect(x: CGFloat(column) * px,
+                                    y: CGFloat(row) * px,
+                                    width: px + 0.3,
+                                    height: px + 0.3))
             }
         }
-        cache[grid.joined()] = paths
-        return paths
+        cache[grid.joined()] = path
+        return path
     }
 
-    @MainActor private static var cache: [String: Paths] = [:]
+    @MainActor private static var cache: [String: Path] = [:]
 }

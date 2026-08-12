@@ -9,12 +9,15 @@ All notable changes to this project are recorded here. Format loosely follows
 
 - **Mascot.** An original 8-bit ghost — the wrong layout haunting your sentence. It hides behind
   the input field with just its eyes over the edge, rises when there is a result, and shuts its
-  eyes contentedly after a copy. Body and outline swap between light and dark so it is always the
-  opposite of what it sits on, with one warm yellow for the mouth. Replaces a first attempt that
-  borrowed Tama's cat sprite and looked it once enlarged — that geometry is built for a 24×15
-  menu-bar pet, not for display.
-- **Title font** is the system font's condensed black weight instead of rounded heavy, which read
-  as a toy. The narrower letters also carry a five-word name without shrinking it.
+  eyes contentedly after a copy. A single colour with the features cut out as holes, the same
+  construction Tama uses, flipping between midnight and pale so it is always the opposite of what
+  it sits on. Replaces a first attempt that borrowed Tama's cat sprite and looked it once
+  enlarged — that geometry is built for a 24×15 menu-bar pet, not for display.
+- **Title font** is Space Grotesk, replacing rounded heavy (which read as a toy) and then the
+  system condensed black. Note it is **not bundled**: where the font is not installed the title
+  falls back to condensed black.
+- **Input and result fills are opaque** rather than a 45% blend, so the mascot can hide behind the
+  input field without showing through it.
 - **Menu-bar glyph** is now a keycap outline with `ก` on it, replacing the pixel keyboard. It is
   deliberately not the mascot: next to Tama in a real menu bar, two side-view pixel cats are
   indistinguishable at 18px, so neither icon identified its app. The outline is what makes it

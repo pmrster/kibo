@@ -66,24 +66,33 @@ Two targets, with a deliberate split:
 - **Palette** (`Theme.swift`) — Tama's neutrals verbatim so the two apps read as siblings in the
   menu bar; the accent is mango where Tama's is yellow. Colors come from an NSColor dynamic
   provider via `Color(light:dark:)`, so they re-resolve when the appearance is forced.
-- **Type** — `AppFont.title` for the app's name: the system font's condensed black weight. It
-  started as rounded heavy and read as a toy; this is a utility. `AppFont.ui` for other English
-  chrome (plain system font, stays native); `AppFont.thai` for
+- **Type** — `AppFont.title` for the app's name: **Space Grotesk**, the one non-system face.
+  It is **not bundled**, so it renders only where installed and otherwise falls back to the system
+  font's condensed black — see the warning below. `AppFont.ui` for other English chrome (plain
+  system font, stays native); `AppFont.thai` for
   anything that can contain Thai. The latter is **Noto Sans Thai**, which macOS ships: the system
   Thai face crowds vowel and tone marks at 11–13pt, and those marks are the whole point here.
   Nothing is bundled, and the helper falls back to the system font if the family is missing.
 - **Mascot** (`GhostSprite.swift`, `GhostView.swift`) — an original 8-bit ghost, assembled from
   interchangeable bands (dome / eyes / mouth / hem) so the expression changes without redrawing
-  the body. Body and outline swap between appearances so it is always the opposite of what it sits
-  on; one warm yellow marks the mouth. **It must be laid out directly above whatever it hides
-  behind** — the peekaboo is a clip, not a pose. Currently that is the input field.
+  the body. **One colour, features cut out as holes**, the same construction Tama uses; it flips
+  between midnight and pale so it is always the opposite of what it sits on.
+  **`GhostView` does not clip itself.** The caller must place it immediately above an opaque
+  surface and overlap it into that surface by `GhostView.hiddenExtent`; the surface, drawn after,
+  paints over the overhang. Currently that surface is the input field, which is why
+  `Palette.fieldFill` is opaque rather than the translucent blend it used to be.
   - An earlier mascot borrowed Tama's cat sprite and looked it once enlarged: that geometry is
     built for a 24×15 menu-bar pet, not for display.
   - Three attempts drew the ghost covering its face with its own paws. Every one read as
     spectacles — at this resolution an outlined square over a face is a *lens*, not a hand.
     Occlusion solved in one attempt what reshaping could not solve in three.
-  - The drop distance is load-bearing: at nine rows only the dome cleared the edge and it read as
-    a bump. Both eye rows have to show.
+  - Clipping the sprite instead was tried and looked exactly like what it was: a bottom sliced
+    off, hanging above the field with a gap. Occlusion by a real surface is what sells it.
+  - `hiddenExtent` is load-bearing: cover the eye rows and it reads as a bump rather than as
+    something looking at you.
+  - Colour history: an outlined body with a yellow mouth read as cluttered at 16px, and the first
+    mono attempt was 20 wide by 16 tall and read as a rounded hill. A ghost has to be taller than
+    it is broad, with a hem you can see.
 - **Menu-bar glyph** (`MenuBarIcon.swift`) — a keycap outline with `ก`, and deliberately **not**
   the mascot. A glyph up there has to *identify* the app; matching a sibling app defeats the
   purpose. A cat silhouette was tried and was indistinguishable from Tama's at 18px. Rejected
