@@ -31,6 +31,13 @@ All notable changes to this project are recorded here. Format loosely follows
   vowel and tone marks crowd at 11–13pt — the marks this app exists to help people read. Nothing
   is bundled; the helper falls back to the system font where the family is missing.
 
+- **Accent is near-monochrome** — the same midnight/pale pair as the mascot — replacing mango,
+  which fought everything around it once the ghost arrived. Green remains on the copy
+  confirmation and privacy badge.
+- **The mode control is hand-rolled.** A segmented `Picker` paints its selection with the system
+  accent colour, so the selected mode rendered in whatever colour the user had set system-wide.
+- **Removed the example presets row**, making the converter shorter and simpler to scan.
+
 ### Added
 
 - `--snapshot` design-review mode behind the `WFCL_SNAPSHOT` compile flag: renders the converter,

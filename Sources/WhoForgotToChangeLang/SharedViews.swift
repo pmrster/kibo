@@ -34,7 +34,7 @@ struct PanelCloseButton: View {
                 .foregroundStyle(Palette.text)
                 .padding(.horizontal, 22)
                 .padding(.vertical, 7)
-                .background(Palette.mango.opacity(0.18), in: RoundedRectangle(cornerRadius: 8))
+                .background(Palette.accent.opacity(0.18), in: RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Close window")

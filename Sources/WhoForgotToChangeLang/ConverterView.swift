@@ -30,7 +30,6 @@ struct ConverterView: View {
             field(title: "INPUT", accessory: { ghost }) { inputEditor }
             field(title: "RESULT", accessory: { directionBadge }) { outputPanel }
             actionRow
-            examples
             PrivacyCapsule()
         }
         .padding(14)
@@ -83,21 +82,11 @@ struct ConverterView: View {
 
     private var modeRow: some View {
         HStack(spacing: 8) {
-            Picker("", selection: $model.mode) {
-                Text("Mixed").tag(ConversionMode.mixed)
-                Text("EN → TH").tag(ConversionMode.englishToThai)
-                Text("TH → EN").tag(ConversionMode.thaiToEnglish)
-            }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .font(AppFont.ui(11))
-            .accessibilityLabel("Conversion mode")
-            .onChange(of: model.mode) { _, newMode in settings.lastMode = newMode }
-
+            modePicker
             Button(action: model.swapDirection) {
                 Image(systemName: "arrow.left.arrow.right")
                     .font(AppFont.ui(11, weight: .semibold))
-                    .foregroundStyle(model.mode == .mixed ? Palette.dim.opacity(0.4) : Palette.mango)
+                    .foregroundStyle(model.mode == .mixed ? Palette.dim.opacity(0.4) : Palette.accent)
             }
             .buttonStyle(.plain)
             // Mixed has no opposite direction, so there is nothing to swap.
@@ -108,15 +97,59 @@ struct ConverterView: View {
         }
     }
 
-    /// A quiet reminder of what the result field is showing, tinted per script.
+    /// Hand-rolled rather than a segmented `Picker`.
+    ///
+    /// A segmented picker paints its selection with the *system* accent colour — whatever the
+    /// user has set in System Settings — so on a Mac with a yellow accent the selected mode came
+    /// out bright yellow, wrecking a deliberately near-monochrome palette. There is no supported
+    /// way to override that on macOS. Twenty lines of buttons buys the theme back.
+    private var modePicker: some View {
+        HStack(spacing: 2) {
+            ForEach(Array(ConversionMode.allCases.enumerated()), id: \.element) { index, mode in
+                let isSelected = model.mode == mode
+                Button {
+                    model.mode = mode
+                } label: {
+                    Text(Self.label(for: mode))
+                        .font(AppFont.ui(11, weight: isSelected ? .semibold : .regular))
+                        .foregroundStyle(isSelected ? Palette.panel : Palette.text)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 4)
+                        .background(isSelected ? Palette.accent : Color.clear,
+                                    in: RoundedRectangle(cornerRadius: 6))
+                        .contentShape(RoundedRectangle(cornerRadius: 6))
+                }
+                .buttonStyle(.plain)
+                .keyboardShortcut(KeyEquivalent(Character("\(index + 1)")), modifiers: .command)
+                .help("\(Self.label(for: mode)) (⌘\(index + 1))")
+                .accessibilityLabel(Self.label(for: mode))
+                .accessibilityAddTraits(isSelected ? [.isSelected] : [])
+            }
+        }
+        .padding(2)
+        .background(Palette.fieldFill, in: RoundedRectangle(cornerRadius: 8))
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Conversion mode")
+        .onChange(of: model.mode) { _, newMode in settings.lastMode = newMode }
+    }
+
+    private static func label(for mode: ConversionMode) -> String {
+        switch mode {
+        case .mixed: return "Mixed"
+        case .englishToThai: return "EN → TH"
+        case .thaiToEnglish: return "TH → EN"
+        }
+    }
+
+    /// A quiet reminder of what the result field is showing.
     @ViewBuilder private var directionBadge: some View {
         switch model.mode {
         case .mixed:
             badge("only what looks mistyped", tint: Palette.dim)
         case .englishToThai:
-            badge("EN → TH", tint: Palette.thai)
+            badge("EN → TH", tint: Palette.dim)
         case .thaiToEnglish:
-            badge("TH → EN", tint: Palette.latin)
+            badge("TH → EN", tint: Palette.dim)
         }
     }
 
@@ -159,7 +192,7 @@ struct ConverterView: View {
             .background(Palette.fieldFill, in: RoundedRectangle(cornerRadius: 8))
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .strokeBorder(inputFocused ? Palette.mango : Color.clear, lineWidth: 1.5)
+                    .strokeBorder(inputFocused ? Palette.accent : Color.clear, lineWidth: 1.5)
             )
             .accessibilityLabel("Text you typed")
     }
@@ -202,10 +235,10 @@ struct ConverterView: View {
                     Text(model.didCopy ? "Copied" : "Copy")
                 }
                 .font(AppFont.ui(12, weight: .semibold))
-                .foregroundStyle(model.didCopy ? Palette.green : Palette.mango)
+                .foregroundStyle(model.didCopy ? Palette.green : Palette.accent)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 6)
-                .background((model.didCopy ? Palette.green : Palette.mango).opacity(0.15),
+                .background((model.didCopy ? Palette.green : Palette.accent).opacity(0.15),
                             in: RoundedRectangle(cornerRadius: 8))
             }
             .buttonStyle(.plain)
@@ -234,39 +267,4 @@ struct ConverterView: View {
         .accessibilityLabel(title)
     }
 
-    // MARK: - Examples
-
-    private static let presets: [(label: String, input: String, mode: ConversionMode)] = [
-        ("l;ylfu ไำะ ครับ", "l;ylfu ไำะ ครับ 2024 :)", .mixed),
-        ("vpkddbodkca", "vpkddbodkca", .englishToThai),
-        ("ะ้ฟืา", "ะ้ฟืา", .thaiToEnglish),
-    ]
-
-    private var examples: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("TRY ONE")
-                .font(AppFont.ui(10, weight: .heavy))
-                .tracking(0.8)
-                .foregroundStyle(Palette.dim)
-            HStack(spacing: 6) {
-                ForEach(Self.presets, id: \.label) { preset in
-                    Button {
-                        model.mode = preset.mode
-                        model.input = preset.input
-                        settings.lastMode = preset.mode
-                    } label: {
-                        Text(preset.label)
-                            .font(AppFont.thai(10))
-                            .foregroundStyle(Palette.dim)
-                            .lineLimit(1)
-                            .padding(.horizontal, 7)
-                            .padding(.vertical, 3)
-                            .background(Palette.track.opacity(0.5), in: Capsule())
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Example: \(preset.label)")
-                }
-            }
-        }
-    }
 }
