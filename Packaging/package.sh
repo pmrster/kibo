@@ -42,26 +42,54 @@ echo "==> Assembling app bundle: $APP"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BUILD_DIR/$APP_NAME" "$APP/Contents/MacOS/$APP_NAME"
-sed "s/0\.1\.0/$VERSION/" Packaging/Info.plist > "$APP/Contents/Info.plist"
 
-# The app icon is optional; without it macOS shows the generic application icon.
-if [ -f Packaging/AppIcon.icns ]; then
-  cp Packaging/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
+# Version is injected, never edited into Packaging/Info.plist by hand — the plist's own value is
+# a placeholder. PlistBuddy sets the key by name; an earlier `sed "s/0\.1\.0/$VERSION/"` matched a
+# hardcoded literal, so bumping the plist would have silently stopped the substitution.
+# CFBundleVersion is the commit count: monotonic, needs no bookkeeping, and distinct per build.
+BUILD_NUMBER="$(git rev-list --count HEAD 2>/dev/null || echo 1)"
+cp Packaging/Info.plist "$APP/Contents/Info.plist"
+/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$APP/Contents/Info.plist"
+/usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" "$APP/Contents/Info.plist"
+echo "    version $VERSION (build $BUILD_NUMBER)"
+
+# The app icon is built from icon.png rather than committed as a binary .icns — one source of
+# truth for the artwork, and nothing to regenerate by hand when the mascot changes. Info.plist
+# declares CFBundleIconFile, so without this every DMG shipped a blank generic icon.
+ICON_SRC="icon.png"
+if [ -f "$ICON_SRC" ]; then
+  echo "==> Building AppIcon.icns from $ICON_SRC"
+  ICONSET="$DIST/.AppIcon.iconset"
+  rm -rf "$ICONSET"
+  mkdir -p "$ICONSET"
+  for size in 16 32 128 256 512; do
+    sips -z $size $size "$ICON_SRC" --out "$ICONSET/icon_${size}x${size}.png" >/dev/null
+    sips -z $((size * 2)) $((size * 2)) "$ICON_SRC" \
+      --out "$ICONSET/icon_${size}x${size}@2x.png" >/dev/null
+  done
+  iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/AppIcon.icns"
+  rm -rf "$ICONSET"
 else
-  echo "    (no Packaging/AppIcon.icns — the bundle will use the generic icon)"
+  echo "WARN: $ICON_SRC missing — the bundle will use the generic icon."
 fi
 
 # Note there is no SwiftPM resource bundle to copy. The package declares no resources: the only
 # data file is Fixtures/conversion-cases.json, which is read by the test suite from the repo and
 # never ships inside the app.
 
-# ---- Optional: code signing + notarization (Gatekeeper trust) -------------------------------
+# ---- Code signing + notarization (Gatekeeper trust) -----------------------------------------
+# The entitlements are applied on BOTH paths. They are what puts the app in the App Sandbox with
+# no network entitlement, so signing without them would ship an unsandboxed build — which is what
+# happened while this file referenced an entitlements file that did not exist.
+if [ ! -f "$ENTITLEMENTS" ]; then
+  echo "ERROR: $ENTITLEMENTS is missing. It is what sandboxes the app; refusing to ship without it." >&2
+  exit 1
+fi
+
 if [ -n "$SIGN_IDENTITY" ]; then
-  echo "==> Code-signing app (hardened runtime): $SIGN_IDENTITY"
-  ENT_ARGS=()
-  [ -f "$ENTITLEMENTS" ] && ENT_ARGS=(--entitlements "$ENTITLEMENTS")
+  echo "==> Code-signing app (hardened runtime + sandbox): $SIGN_IDENTITY"
   codesign --force --options runtime --timestamp \
-    "${ENT_ARGS[@]}" --sign "$SIGN_IDENTITY" "$APP"
+    --entitlements "$ENTITLEMENTS" --sign "$SIGN_IDENTITY" "$APP"
   codesign --verify --deep --strict --verbose=2 "$APP"
 else
   # Re-sign ad-hoc AFTER assembling the bundle. The linker ad-hoc-signs the bare binary, but
@@ -70,9 +98,18 @@ else
   # ordinary "unidentified developer", which the user clears with right-click → Open. It is
   # still NOT notarized; only a Developer ID plus notarization removes the prompt entirely.
   echo "==> Ad-hoc signing app (no SIGN_IDENTITY → not notarized; users right-click → Open once)"
-  codesign --force --sign - "$APP"
+  codesign --force --entitlements "$ENTITLEMENTS" --sign - "$APP"
   codesign --verify --strict "$APP" && echo "    ad-hoc signature valid" \
     || echo "WARN: ad-hoc signature did not verify"
+fi
+
+# Prove the sandbox actually made it into the signature, rather than trusting that it did.
+if codesign -d --entitlements - --xml "$APP" 2>/dev/null | plutil -convert xml1 -o - - \
+   | grep -q "com.apple.security.app-sandbox"; then
+  echo "    sandbox entitlement present"
+else
+  echo "ERROR: the signed app is NOT sandboxed." >&2
+  exit 1
 fi
 
 echo "==> Creating DMG"
