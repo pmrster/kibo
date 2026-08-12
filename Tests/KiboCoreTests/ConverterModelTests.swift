@@ -1,5 +1,5 @@
 import XCTest
-@testable import WhoForgotToChangeLangCore
+@testable import KiboCore
 
 @MainActor
 final class ConverterModelTests: XCTestCase {

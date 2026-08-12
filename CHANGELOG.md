@@ -7,6 +7,14 @@ All notable changes to this project are recorded here. Format loosely follows
 
 ### Changed
 
+- **The app is now called Kibo**, after its mascot. "Who Forgot To Change Lang" becomes the
+  subtitle, shown under the name in About. The rename goes all the way through — SwiftPM package,
+  targets, source directories, the `.app`, the bundle identifier and the snapshot flag — because a
+  half-rename is exactly the confusion the one-name rule exists to prevent. The repo directory
+  stays `who-forget-to-change-lang`.
+- Preferences reset once as a result: the defaults keys moved from `wfcl.*` to `kibo.*` and the
+  bundle identifier changed, so theme, text size and last mode return to their defaults.
+
 - **Mascot.** **Kibo**, an original 8-bit ghost — the wrong layout haunting your sentence. Says
   "boo~" after a copy, as Tama's cat says "meow~". It perches on the
   top edge of the input field with its tails tucked behind, blinks while it waits, and shuts its
@@ -40,7 +48,7 @@ All notable changes to this project are recorded here. Format loosely follows
 
 ### Added
 
-- `--snapshot` design-review mode behind the `WFCL_SNAPSHOT` compile flag: renders the converter,
+- `--snapshot` design-review mode behind the `KIBO_SNAPSHOT` compile flag: renders the converter,
   About, Settings and a mascot sheet to PNGs offscreen, in light and dark. Absent from normal
   debug and release builds. Exists because screen capture needs a permission a terminal often
   lacks.

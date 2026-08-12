@@ -1,5 +1,5 @@
 import SwiftUI
-import WhoForgotToChangeLangCore
+import KiboCore
 
 /// Appearance and text-size pickers, themed like the rest of the app. Observes
 /// `AppSettings.shared`, so picking a value updates this window and everything else at once.

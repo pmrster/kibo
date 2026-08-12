@@ -1,7 +1,9 @@
-# ใครลืมเปลี่ยนภาษา
+# Kibo
+
+**Who Forgot To Change Lang** · ใครลืมเปลี่ยนภาษา
 
 A macOS menu-bar utility that fixes text typed with the wrong keyboard layout — Thai Kedmanee
-against US QWERTY, in either direction.
+against US QWERTY, in either direction. Named after its mascot, a small pixel ghost.
 
 Type `l;ylfu` when you meant `สวัสดี`? Paste it in and get it back.
 
@@ -96,7 +98,7 @@ in the test suite and written up in `CLAUDE.md`.
 ## Privacy
 
 - **No network.** Not for updates, not for analytics. Check it yourself:
-  `lsof -p $(pgrep -x WhoForgotToChangeLang) -i`
+  `lsof -p $(pgrep -x Kibo) -i`
 - **The clipboard is touched only when you ask.** Read on Paste, written on Copy, never watched or
   polled.
 - **Nothing you type is stored.** Preferences hold your theme, text size, and last mode. That's it.
@@ -106,10 +108,10 @@ in the test suite and written up in `CLAUDE.md`.
 ```bash
 swift build
 swift test
-swift run WhoForgotToChangeLang
+swift run Kibo
 
 # Render the UI to PNGs without a display, for design review (light + dark):
-swift run -Xswiftc -DWFCL_SNAPSHOT WhoForgotToChangeLang --snapshot ./assets
+swift run -Xswiftc -DKIBO_SNAPSHOT Kibo --snapshot ./assets
 ```
 
 The key table is not hand-written — it is dumped from macOS's own layout data:

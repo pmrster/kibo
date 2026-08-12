@@ -2,10 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>CFBundleName</key><string>WhoForgotToChangeLang</string>
-  <key>CFBundleDisplayName</key><string>Who Forgot To Change Lang</string>
-  <key>CFBundleIdentifier</key><string>pmrster.whoforgottochangelang</string>
-  <key>CFBundleExecutable</key><string>WhoForgotToChangeLang</string>
+  <key>CFBundleName</key><string>Kibo</string>
+  <key>CFBundleDisplayName</key><string>Kibo</string>
+  <key>CFBundleIdentifier</key><string>pmrster.kibo</string>
+  <key>CFBundleExecutable</key><string>Kibo</string>
   <key>CFBundleIconFile</key><string>AppIcon</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>0.1.0</string>

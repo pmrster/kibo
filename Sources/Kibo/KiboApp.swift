@@ -1,8 +1,8 @@
 import SwiftUI
-import WhoForgotToChangeLangCore
+import KiboCore
 
 @main
-struct WhoForgotToChangeLangApp: App {
+struct KiboApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
 
     // A menu-bar-only app (`LSUIElement`) has no real window scene. The status item and its
@@ -21,9 +21,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         AppSettings.shared.applyAppearance()
 
-        // Design-review tooling, opt-in behind the WFCL_SNAPSHOT compile flag (absent from normal
+        // Design-review tooling, opt-in behind the KIBO_SNAPSHOT compile flag (absent from normal
         // debug and release builds). Renders the surfaces to PNGs and exits.
-        #if WFCL_SNAPSHOT
+        #if KIBO_SNAPSHOT
         Snapshot.renderIfRequested()
         #endif
 
@@ -37,7 +37,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         // The pinned panel shows the same converter, resizable rather than fixed-width. It can
         // only be built now, since it needs the model.
-        Panels.pinned = FloatingPanel(title: "Who Forgot To Change Lang",
+        Panels.pinned = FloatingPanel(title: "Kibo",
                                       size: NSSize(width: 380, height: 520),
                                       minSize: NSSize(width: 340, height: 420)) {
             ConverterView(model: model, fixedWidth: nil)

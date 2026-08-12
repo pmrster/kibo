@@ -62,17 +62,17 @@ already proven the pattern. The gain is that the whole suite runs from the termi
 who-forget-to-change-lang/
   Package.swift
   Sources/
-    WhoForgotToChangeLangCore/          # all logic, zero AppKit — fully unit-tested
+    KiboCore/          # all logic, zero AppKit — fully unit-tested
       Models/{ConversionMode,ConversionResult}.swift
       Conversion/{KedmaneeMapping,KeyboardConverter,RunSplitter}.swift
       Conversion/{ThaiOrthography,LatinOrthography,RunJudge}.swift
       Converter/{ConverterModel,Clipboard}.swift
       Settings/SettingsStore.swift
-    WhoForgotToChangeLang/              # SwiftUI/AppKit shell — thin, not unit-tested
-      WhoForgotToChangeLangApp.swift
+    Kibo/              # SwiftUI/AppKit shell — thin, not unit-tested
+      KiboApp.swift
       {Theme,AppSettings,SystemClipboard}.swift
       {AppChrome,ConverterView,SettingsView}.swift
-  Tests/WhoForgotToChangeLangCoreTests/
+  Tests/KiboCoreTests/
   Fixtures/conversion-cases.json         # portable behavior contract
   Tools/dump-kedmanee.swift              # dumps the key table from macOS layout data
   Packaging/{Info.plist,package.sh}
@@ -113,7 +113,7 @@ wrong.
 - ~~Add `MenuBarExtra` with `.window` style~~ — **superseded**: an `NSStatusItem` with a popover, because `MenuBarExtra` has no right-click hook and a menu-bar-only app needs somewhere to put About / Settings / Quit. Input, live output, mode picker, Copy, Paste, Swap, and Clear all present, plus a pinnable floating panel.
 - ~~Make the app menu-bar-only with an accessible icon and control labels.~~
 
-Exit condition met: `swift run WhoForgotToChangeLang` and the packaged `.app` both complete the
+Exit condition met: `swift run Kibo` and the packaged `.app` both complete the
 paste → convert → copy flow with no network sockets open.
 
 Carried into Slice 2: app icon artwork, and a signing identity for a notarized build.
@@ -168,7 +168,7 @@ Exit condition: macOS and Windows pass the same conversion cases and provide equ
 - **Close on focus loss, or stay open?** Both, rather than choosing. The popover is transient by
   default; a Pin button opens the same view in a floating `NSPanel` that survives switching apps.
 - **App name in metadata.** The Thai title is the display name (`CFBundleDisplayName`, window
-  titles, the status-item accessibility label); `WhoForgotToChangeLang` is the identifier
+  titles, the status-item accessibility label); `Kibo` is the identifier
   everywhere a Latin name is required — bundle name, executable, targets.
 
 Still open, for Slice 2:
