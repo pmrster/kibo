@@ -105,29 +105,12 @@ final class KeyboardConverterTests: XCTestCase {
         XCTAssertEqual(convert("-v[86I", .mixed), "ขอบคุณ")
     }
 
-    /// End-to-end precision. SPEC.md: "mangling correct text is a worse failure than leaving a
-    /// mistyping, because the user can see and fix the latter." Every string here is text a user
-    /// might plausibly paste in, and Mixed must hand all of it back untouched.
-    ///
-    /// Kept at the converter level rather than only on the gates, because this is the promise the
-    /// user actually experiences.
+    /// End-to-end precision — the corpus itself is `AccuracyCorpus.mustSurvive` and the assertion
+    /// with its count guard lives in `MeasuredAccuracyTests`, alongside the two recall figures it
+    /// trades against. Kept as a pointer rather than a second copy of the same 36 strings: two
+    /// copies drift, and this is the one number the project refuses to let drift.
     func test_mixed_returns_correct_text_completely_unchanged() {
-        let mustSurvive = [
-            // Acronyms and vowel-less abbreviations
-            "HTML", "XML", "SQL", "PDF", "SMS", "npm", "nth", "PM", "TV", "ok",
-            // URLs, paths, filenames, versions
-            "https://example.com", "http://example.com", "user@example.com",
-            "README.md", "index.html", "C:\\Users\\pmr", "v1.2.3", "a/b",
-            // Code
-            "array[i]", "let x = 1;", "foo(bar)",
-            // Ordinary English
-            "hello", "world", "rhythm", "don't", "email", "meeting", "thank you",
-            // Numbers and punctuation
-            "2024", ":)", "3.14", "100%", "42",
-            // Correct Thai, including an unsegmented phrase
-            "ครับ", "สวัสดีครับ", "ขอบคุณมาก",
-        ]
-        for text in mustSurvive {
+        for text in AccuracyCorpus.mustSurvive {
             XCTAssertEqual(convert(text, .mixed), text, "Mixed mangled correct text: '\(text)'")
         }
     }

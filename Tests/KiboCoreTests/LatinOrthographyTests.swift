@@ -80,8 +80,7 @@ final class LatinOrthographyTests: XCTestCase {
 
     /// What the user would have seen had they typed this Thai word with the US layout active.
     static func mistypedOnUSLayout(_ thai: String) -> String {
-        String(String.UnicodeScalarView(
-            thai.unicodeScalars.compactMap { KedmaneeMapping.qwerty(forThai: $0) }))
+        AccuracyCorpus.mistypedOnUSLayout(thai)
     }
 
     // MARK: - Things that must not be mangled
