@@ -33,8 +33,9 @@ refuse it on first launch — right-click the app → **Open** once, and it will
 
 ## Using it
 
-The app has no Dock icon. Look for the small pixel cat in the menu bar — it is the same cat that
-sits in the converter window, which blinks while it waits and shuts its eyes after a copy.
+The app has no Dock icon. Look for the small keycap glyph — a `ก` in a rounded box — in the menu
+bar. Open it and you'll meet the mascot: a mango pixel cat that blinks while it waits and shuts
+its eyes after a copy.
 
 - **Left-click** the glyph to open the converter.
 - **Right-click** for About, Settings, and Quit.

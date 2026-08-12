@@ -75,8 +75,12 @@ Two targets, with a deliberate split:
   one-pixel bob. A head-on cat drawn at 18x14 was tried first and rendered as an anonymous blob,
   and Tama's mid-stride walk frame reads as a glitch when held static — both are recorded in
   `CatSprite.swift` so they are not retried.
-- **Menu-bar glyph** — the same grid flattened to a silhouette, sharing `CatSprite` so the glyph
-  and the mascot cannot drift into two different cats.
+- **Menu-bar glyph** (`MenuBarIcon.swift`) — a keycap outline with `ก`, and deliberately **not**
+  the mascot. The cat silhouette was tried and is unusable in practice: next to Tama in a real
+  menu bar, two side-view pixel cats are indistinguishable at 18px, so neither icon says which app
+  it is. The menu bar needs a shape that *identifies*; matching the mascot is the wrong goal
+  there. Rejected alternatives, all rendered at true size first: a pixel keycap (read as a
+  monitor), pixel swap arrows (a smudge), and `ก⇄A` (too wide for what it added).
 - **Language** — chrome is English, matching the app's English name. Thai stays where it is
   content rather than labelling: the conversion examples and the privacy capsule.
 
