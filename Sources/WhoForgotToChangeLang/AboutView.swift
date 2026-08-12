@@ -12,15 +12,16 @@ struct AboutView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // The mascot on its own, larger than the header uses it.
-            CatView(mood: .alert, mode: .mixed)
-                .scaleEffect(2.0)
-                .frame(height: 60)
-                .padding(.top, 20)
+            // The mascot on its own, larger than the converter uses it, and fully risen — there is
+            // nothing here for it to hide behind.
+            GhostView(mood: .risen)
+                .scaleEffect(2.2)
+                .frame(height: 78)
+                .padding(.top, 18)
 
             VStack(spacing: 6) {
                 Text("Who Forgot To Change Lang")
-                    .font(AppFont.ui(17, weight: .heavy, design: .rounded))
+                    .font(AppFont.title(18))
                     .foregroundStyle(Palette.text)
                     .multilineTextAlignment(.center)
                 Text("v\(version) · build \(build)")

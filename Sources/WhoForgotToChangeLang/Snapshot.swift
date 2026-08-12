@@ -56,25 +56,22 @@ enum Snapshot {
         print("Wrote snapshots to \(directory.path)")
     }
 
-    /// The three mascot moods, blown up so the pixel art can actually be judged. At the size it
-    /// appears in the header, a sprite that reads as a blob and one that reads as a cat look
-    /// identical on a screenshot.
+    /// The mascot's moods, blown up so the pixel art can actually be judged, plus the status-item
+    /// glyph at true menu-bar size. At the size these appear in the app, a sprite that reads as a
+    /// blob and one that reads as a ghost look identical on a screenshot.
     private static var mascotSheet: some View {
-        HStack(spacing: 26) {
-            ForEach(["idle", "alert", "happy"], id: \.self) { label in
+        HStack(spacing: 30) {
+            ForEach(["waiting", "risen", "pleased"], id: \.self) { label in
                 VStack(spacing: 12) {
-                    CatView(mood: label == "idle" ? .idle : label == "alert" ? .alert : .happy,
-                            mode: .mixed)
-                        .scaleEffect(3.4, anchor: .center)
-                        .frame(width: 210, height: 130)
+                    GhostView(mood: label == "waiting" ? .waiting
+                                  : label == "risen" ? .risen : .pleased)
+                        .scaleEffect(3.2, anchor: .top)
+                        .frame(width: 150, height: 130, alignment: .top)
                     Text(label)
                         .font(.system(size: 11, weight: .semibold, design: .monospaced))
                         .foregroundStyle(Palette.dim)
                 }
             }
-            // The status-item glyph, at true menu-bar size and blown up beside it. It is
-            // deliberately not the mascot — see `MenuBarIcon` — so what matters here is whether
-            // it stays legible at 18px, not whether it matches the cat.
             VStack(spacing: 12) {
                 VStack(spacing: 18) {
                     Image(nsImage: MenuBarIcon.image())
