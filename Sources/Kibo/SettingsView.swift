@@ -16,25 +16,21 @@ struct SettingsView: View {
             }
 
             section("APPEARANCE") {
-                Picker("", selection: $settings.appearance) {
-                    Text("System").tag(Appearance.system)
-                    Text("Light").tag(Appearance.light)
-                    Text("Dark").tag(Appearance.dark)
+                ThemedSegmentedControl(options: Appearance.allCases,
+                                       selection: settings.appearance,
+                                       label: Self.label(for:),
+                                       accessibilityTitle: "Appearance") {
+                    settings.appearance = $0
                 }
-                .pickerStyle(.segmented)
-                .labelsHidden()
-                .accessibilityLabel("Appearance")
             }
 
             section("TEXT SIZE") {
-                Picker("", selection: $settings.fontSize) {
-                    Text("S").tag(FontSize.small)
-                    Text("M").tag(FontSize.medium)
-                    Text("L").tag(FontSize.large)
+                ThemedSegmentedControl(options: FontSize.allCases,
+                                       selection: settings.fontSize,
+                                       label: Self.label(for:),
+                                       accessibilityTitle: "Text size") {
+                    settings.fontSize = $0
                 }
-                .pickerStyle(.segmented)
-                .labelsHidden()
-                .accessibilityLabel("Text size")
             }
 
             // Shows the Thai face at the chosen size, since that is what the text-size setting is
@@ -64,6 +60,22 @@ struct SettingsView: View {
         .padding(20)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(Palette.panel)
+    }
+
+    private static func label(for appearance: Appearance) -> String {
+        switch appearance {
+        case .system: return "System"
+        case .light: return "Light"
+        case .dark: return "Dark"
+        }
+    }
+
+    private static func label(for size: FontSize) -> String {
+        switch size {
+        case .small: return "S"
+        case .medium: return "M"
+        case .large: return "L"
+        }
     }
 
     @ViewBuilder

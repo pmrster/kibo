@@ -47,8 +47,8 @@ enum RunSplitter {
 
         for scalar in input.unicodeScalars {
             let scalarScript = script(of: scalar)
-            if scalarScript != currentScript, currentScript != nil {
-                runs.append(Run(script: currentScript!, text: String(current)))
+            if let currentScript, scalarScript != currentScript {
+                runs.append(Run(script: currentScript, text: String(current)))
                 current = String.UnicodeScalarView()
             }
             currentScript = scalarScript

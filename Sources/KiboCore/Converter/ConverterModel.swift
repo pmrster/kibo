@@ -14,9 +14,13 @@ public final class ConverterModel {
         didSet { refresh() }
     }
 
-    /// Which question we are asking of it.
+    /// Which question we are asking of it. Remembered across launches, when a `ModeMemory` was
+    /// supplied — the rule lives here rather than in the view that happens to draw the picker.
     public var mode: ConversionMode {
-        didSet { refresh() }
+        didSet {
+            refresh()
+            memory?.saveMode(mode)
+        }
     }
 
     /// The converted text. Recomputed when the input or mode changes rather than on every read,
@@ -29,13 +33,21 @@ public final class ConverterModel {
 
     private let converter: any KeyboardConverting
     private let clipboard: any Clipboard
+    private let memory: (any ModeMemory)?
 
-    public init(mode: ConversionMode = .mixed,
+    /// - Parameters:
+    ///   - mode: the mode to open in. Omit it to open in the remembered mode, or in `.mixed` when
+    ///     there is no memory to consult.
+    ///   - memory: where the mode is remembered. Optional because most tests do not care, and the
+    ///     model must work without persistence.
+    public init(mode: ConversionMode? = nil,
                 converter: any KeyboardConverting = KeyboardConverter(),
-                clipboard: any Clipboard) {
-        self.mode = mode
+                clipboard: any Clipboard,
+                memory: (any ModeMemory)? = nil) {
+        self.mode = mode ?? memory?.loadMode() ?? .mixed
         self.converter = converter
         self.clipboard = clipboard
+        self.memory = memory
     }
 
     // MARK: - Actions

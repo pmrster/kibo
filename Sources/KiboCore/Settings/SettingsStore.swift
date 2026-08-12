@@ -19,6 +19,36 @@ public enum FontSize: String, CaseIterable, Sendable {
     }
 }
 
+/// Where the converter remembers the mode it was left in.
+///
+/// Narrow on purpose, in the same spirit as `Clipboard`: "reopen in the mode you left it in" is a
+/// behaviour rule, so it belongs to `ConverterModel` in Core where it can be tested, not hung off
+/// a picker's `onChange` in the SwiftUI shell where it was — untestable, and something a Windows
+/// port would have to rediscover by reading view code. Two methods, so a test can count the saves.
+@MainActor
+public protocol ModeMemory {
+    func loadMode() -> ConversionMode
+    func saveMode(_ mode: ConversionMode)
+}
+
+/// A mode memory that lives in memory, for tests.
+@MainActor
+public final class InMemoryModeMemory: ModeMemory {
+    public private(set) var saves = 0
+    public var mode: ConversionMode
+
+    public init(mode: ConversionMode = .mixed) {
+        self.mode = mode
+    }
+
+    public func loadMode() -> ConversionMode { mode }
+
+    public func saveMode(_ mode: ConversionMode) {
+        saves += 1
+        self.mode = mode
+    }
+}
+
 /// The user's preferences, persisted in `UserDefaults`.
 ///
 /// Everything here is a display preference or the last mode picked — deliberately nothing about
@@ -56,4 +86,9 @@ public struct SettingsStore {
         get { defaults.string(forKey: Key.lastMode).flatMap(ConversionMode.init(rawValue:)) ?? .mixed }
         nonmutating set { defaults.set(newValue.rawValue, forKey: Key.lastMode) }
     }
+}
+
+extension SettingsStore: ModeMemory {
+    public func loadMode() -> ConversionMode { lastMode }
+    public func saveMode(_ mode: ConversionMode) { lastMode = mode }
 }

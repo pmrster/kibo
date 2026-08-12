@@ -23,6 +23,77 @@ struct PrivacyCapsule: View {
     }
 }
 
+/// A segmented control the app paints itself, used everywhere a segmented `Picker` would be.
+///
+/// **Do not replace this with `.pickerStyle(.segmented)`.** AppKit paints a segmented picker's
+/// selection with the *system* accent colour — whatever the user set in System Settings — so on a
+/// Mac with a yellow accent the selection came out bright yellow and wrecked a deliberately
+/// near-monochrome palette. macOS offers no supported override. This also renders under
+/// `--snapshot`, which the AppKit-backed picker never did, so these surfaces can be design-reviewed.
+///
+/// Selection is reported through `onSelect` rather than a `Binding`, because the two call sites
+/// keep their state in different places — an `@Observable` model and an `ObservableObject` — and a
+/// closure fits both without either having to grow a binding it does not otherwise need.
+struct ThemedSegmentedControl<Value: Hashable>: View {
+    let options: [Value]
+    let selection: Value
+    let label: (Value) -> String
+    let accessibilityTitle: String
+    /// ⌘1/⌘2/⌘3 on the converter's mode picker, where the keyboard matters. Off elsewhere, so
+    /// Settings does not silently claim shortcuts the converter is already using.
+    var numberKeyShortcuts = false
+    let onSelect: (Value) -> Void
+
+    var body: some View {
+        HStack(spacing: 2) {
+            ForEach(Array(options.enumerated()), id: \.element) { index, option in
+                segment(option, index: index)
+            }
+        }
+        .padding(2)
+        .background(Palette.fieldFill, in: RoundedRectangle(cornerRadius: 8))
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(accessibilityTitle)
+    }
+
+    @ViewBuilder
+    private func segment(_ option: Value, index: Int) -> some View {
+        let isSelected = option == selection
+        let title = label(option)
+        Button {
+            onSelect(option)
+        } label: {
+            Text(title)
+                .font(AppFont.ui(11, weight: isSelected ? .semibold : .regular))
+                .foregroundStyle(isSelected ? Palette.panel : Palette.text)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 4)
+                .background(isSelected ? Palette.accent : Color.clear,
+                            in: RoundedRectangle(cornerRadius: 6))
+                .contentShape(RoundedRectangle(cornerRadius: 6))
+        }
+        .buttonStyle(.plain)
+        .modifier(NumberKeyShortcut(index: index, enabled: numberKeyShortcuts))
+        .help(numberKeyShortcuts ? "\(title) (⌘\(index + 1))" : title)
+        .accessibilityLabel(title)
+        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
+    }
+}
+
+/// `.keyboardShortcut` has no "no shortcut" value, so the choice has to be made structurally.
+private struct NumberKeyShortcut: ViewModifier {
+    let index: Int
+    let enabled: Bool
+
+    func body(content: Content) -> some View {
+        if enabled, index < 9 {
+            content.keyboardShortcut(KeyEquivalent(Character("\(index + 1)")), modifiers: .command)
+        } else {
+            content
+        }
+    }
+}
+
 /// The dismiss button shared by the About and Settings panels.
 struct PanelCloseButton: View {
     let action: () -> Void
