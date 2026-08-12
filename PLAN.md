@@ -109,7 +109,7 @@ wrong.
 
 - ~~Create a macOS SwiftUI app and test targets~~ — SwiftPM package, macOS 14, two targets plus tests.
 - ~~Implement the converter interface, complete Kedmanee mapping, and portable fixtures.~~
-- ~~Add exhaustive unit tests~~ — 81 tests covering both directions, shifted keys, unmapped characters, multiline input, Mixed runs, the orthographic gate, and the fixture contract.
+- ~~Add exhaustive unit tests~~ — 97 tests covering both directions, shifted keys, unmapped characters, multiline input, Mixed runs, the orthographic gate, and the fixture contract.
 - ~~Add `MenuBarExtra` with `.window` style~~ — **superseded**: an `NSStatusItem` with a popover, because `MenuBarExtra` has no right-click hook and a menu-bar-only app needs somewhere to put About / Settings / Quit. Input, live output, mode picker, Copy, Paste, Swap, and Clear all present, plus a pinnable floating panel.
 - ~~Make the app menu-bar-only with an accessible icon and control labels.~~
 
@@ -167,9 +167,11 @@ Exit condition: macOS and Windows pass the same conversion cases and provide equ
   a bijection — which is what makes TH → EN a sound inversion of EN → TH.
 - **Close on focus loss, or stay open?** Both, rather than choosing. The popover is transient by
   default; a Pin button opens the same view in a floating `NSPanel` that survives switching apps.
-- **App name in metadata.** The Thai title is the display name (`CFBundleDisplayName`, window
-  titles, the status-item accessibility label); `Kibo` is the identifier
-  everywhere a Latin name is required — bundle name, executable, targets.
+- **App name in metadata.** ~~The Thai title is the display name.~~ Superseded: `Kibo` is the
+  display name (`CFBundleDisplayName`, window titles, the status-item accessibility label) as well
+  as the identifier everywhere a Latin name is required — bundle name, executable, targets. The
+  interface is entirely English, so a Thai display name sat oddly against it; "ใครลืมเปลี่ยนภาษา"
+  is the project's Thai name in prose, and "Who Forgot To Change Lang" the subtitle. See SPEC.md.
 
 Still open, for Slice 2:
 

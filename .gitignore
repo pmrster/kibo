@@ -36,7 +36,13 @@ __pycache__/
 /.agents/
 /.codex/
 
+# Design-review output from `--snapshot`, which defaults to ./assets. Regenerated on demand and
+# never reviewed as source. The two screenshots the README uses live in docs/ and ARE tracked.
+assets/
+
+# Generated during packaging from icon.png; nothing to commit.
 Packaging/icon-1024.png
+Packaging/AppIcon.icns
 
 # Claude Code local worktrees
 .claude/worktrees/

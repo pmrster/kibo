@@ -59,10 +59,10 @@ A run is converted only if it breaks the spelling rules of the script it is curr
 | | Result |
 | --- | --- |
 | **Precision** — correct text left untouched | 36 of 36 sampled (acronyms, URLs, paths, code, English, numbers, Thai) |
-| **Recall** — English mistypings fixed | 16 of 25 sampled |
+| **Recall** — English mistypings fixed | 15 of 24 sampled |
 | **Recall** — Thai mistypings fixed | 4 of 12 sampled |
 
-The judgement is structural, not semantic, so wreckage that happens to be well-formed passes through unchanged: `แนกำ` (which was `code`) breaks no Thai rule, and `นา` (which was `ok`) is a real Thai word. Both figures are pinned by tests, so a change that trades one for the other is visible rather than silent.
+The judgement is structural, not semantic, so wreckage that happens to be well-formed passes through unchanged: `แนกำ` (which was `code`) breaks no Thai rule, and `นา` (which was `ok`) is a real Thai word. All three figures are pinned by `MeasuredAccuracyTests`, counts included, so a change that trades one for the other is visible rather than silent — and mirrored into `Fixtures/conversion-cases.json` so a port inherits the same promise.
 
 A dictionary-backed judgement was considered and rejected for the MVP — written Thai has no spaces, so it would require word segmentation before any lookup.
 

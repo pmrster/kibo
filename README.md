@@ -5,6 +5,10 @@
 A macOS menu-bar utility that fixes text typed with the wrong keyboard layout — Thai Kedmanee
 against US QWERTY, in either direction. Named after its mascot, a small pixel ghost.
 
+*Kedmanee is the standard Thai keyboard layout, the one every Thai Mac ships with. Its keys sit
+where a US QWERTY keyboard puts letters and punctuation, so forgetting to switch layouts turns
+what you typed into an unrelated string of the other script.*
+
 Type `l;ylfu` when you meant `สวัสดี`? Paste it in and get it back.
 
 ```
@@ -14,24 +18,29 @@ l;ylfu ไำะ ครับ 2024 :)   →   สวัสดี wet ครั�
 Note what *didn't* change. `ครับ` was already correct, `2024` is a number, `:)` is a smiley. Mixed
 mode converts only the parts that are actually broken.
 
+<img src="docs/converter-light.png" width="360" alt="The Kibo converter window, with the ghost mascot perched on the input field">
+
 | | |
 | --- | --- |
-| **Status** | Slice 1 — the converter and the menu-bar app work; unsigned builds only |
-| **Stack** | Swift 6, SwiftUI, AppKit, SwiftPM, XCTest, macOS 14+ |
-| **Privacy** | Local-only. No network, no analytics, no stored text. |
+| **Status** | v0.2.0 — converter and menu-bar app work; ad-hoc signed builds only |
+| **Requires** | macOS 14 (Sonoma) or later, Apple silicon or Intel |
+| **Stack** | Swift 6, SwiftUI, AppKit, SwiftPM, XCTest |
+| **Privacy** | Local-only, and sandboxed with no network entitlement. |
 
 ## Install
 
-No signed build is published yet. Build it yourself:
+No notarized build is published yet, so macOS will not trust a downloaded copy on sight. Either
+grab the DMG from [Releases](https://github.com/pmrster/kibo/releases/latest) or build your own:
 
 ```bash
-git clone <this repo> && cd kibo
+git clone https://github.com/pmrster/kibo.git && cd kibo
 Packaging/package.sh
 open dist/
 ```
 
 Drag the app to `/Applications`. Because it is ad-hoc signed rather than notarized, macOS will
-refuse it on first launch — right-click the app → **Open** once, and it will not ask again.
+refuse it on first launch — right-click the app → **Open** once, and it will not ask again. If you
+would rather not do that, build from source with the commands above: the result is the same app.
 
 ## Using it
 
@@ -88,20 +97,33 @@ happens to be well-formed passes through — `แนกำ` (which was "code") b
 | | |
 | --- | --- |
 | Correct text left untouched | 36 of 36 sampled — acronyms, URLs, paths, code, English, numbers, Thai |
-| English mistypings fixed | 16 of 25 sampled |
+| English mistypings fixed | 15 of 24 sampled |
 | Thai mistypings fixed | 4 of 12 sampled |
 
 That ordering is deliberate: leaving a mistyping is recoverable — you see it and switch to an
-explicit mode — whereas mangling text you'd typed correctly is not. All three figures are pinned
-in the test suite and written up in `CLAUDE.md`.
+explicit mode — whereas mangling text you'd typed correctly is not. All three figures are measured
+by `MeasuredAccuracyTests`, which fails if any of them changes, and every case is also written
+into `Fixtures/conversion-cases.json` so a port has to hold the same line.
 
 ## Privacy
 
-- **No network.** Not for updates, not for analytics. Check it yourself:
-  `lsof -p $(pgrep -x Kibo) -i`
+Kibo is the kind of tool you paste a password into, having typed it with the wrong layout. It is
+built on that assumption.
+
+- **No network — enforced, not promised.** The app runs in the macOS App Sandbox with no network
+  entitlement, so it *cannot* open a connection. Check the running app yourself:
+  `lsof -a -p $(pgrep -x Kibo) -i` — no output means no sockets. (The `-a` matters: without it
+  `lsof` ORs its filters and shows you every other program's network activity.)
 - **The clipboard is touched only when you ask.** Read on Paste, written on Copy, never watched or
-  polled.
-- **Nothing you type is stored.** Preferences hold your theme, text size, and last mode. That's it.
+  polled. Copies are marked *concealed* and *transient*, the flags clipboard managers use to keep
+  passwords out of their history.
+- **Nothing you type is stored.** Preferences hold your theme, text size, and last mode. That's
+  it. Window restoration is switched off so the text cannot reach disk that way either.
+- **One caveat, honestly.** Right-clicking inside a text field gives you the standard macOS menu,
+  which includes Look Up and Translate — both send the selected text to Apple. Kibo neither uses
+  nor can see that; it is the OS's menu, and it acts only when you pick an item from it.
+
+See [`PRIVACY.md`](PRIVACY.md) for the full account and how to verify each claim.
 
 ## Development
 
@@ -120,10 +142,13 @@ The key table is not hand-written — it is dumped from macOS's own layout data:
 swift Tools/dump-kedmanee.swift
 ```
 
-`Fixtures/conversion-cases.json` is a language-neutral behaviour contract: the full 94-key table
-plus cases across all three modes. A future Windows port has to pass the same file.
+`Fixtures/conversion-cases.json` is a language-neutral behaviour contract: the full 94-key table,
+a `schema` block describing the format, and 114 cases across all three modes — including every
+string in the precision corpus and every known miss. A future Windows port has to pass the same
+file, and passing it means holding the same accuracy figures, not just the easy cases.
 
-See `CLAUDE.md` for architecture, `SPEC.md` for product behaviour, `PLAN.md` for sequencing.
+See `CLAUDE.md` for architecture, `SPEC.md` for product behaviour, `PLAN.md` for sequencing, and
+[`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request.
 
 ## Related
 

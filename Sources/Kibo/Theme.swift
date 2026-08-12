@@ -17,12 +17,11 @@ extension Color {
 
 }
 
-/// The warm sunset palette SPEC.md asks for.
+/// Warm neutrals under a near-monochrome accent, as SPEC.md asks for.
 ///
 /// The neutrals are shared verbatim with Tama, the sibling menu-bar app this one was forked from,
 /// so the two read as the same family sitting next to each other in the menu bar. The accent is
-/// where they diverge: Tama's yellow becomes mango here, which is enough to tell the two apart at
-/// a glance without making them look unrelated.
+/// where they diverge: Tama keeps its yellow, and Kibo takes the mascot's midnight-and-pale pair.
 enum Palette {
     static let panel     = Color(light: 0xF7F4EF, dark: 0x1C1A17)
     static let panelEdge = Color(light: 0xE0DAD0, dark: 0x2A2620)
