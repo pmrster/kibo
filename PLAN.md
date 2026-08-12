@@ -59,7 +59,7 @@ already proven the pattern. The gain is that the whole suite runs from the termi
 `swift test`, and there is no `project.pbxproj` to rot or to merge-conflict.
 
 ```text
-who-forget-to-change-lang/
+kibo/
   Package.swift
   Sources/
     KiboCore/          # all logic, zero AppKit — fully unit-tested
