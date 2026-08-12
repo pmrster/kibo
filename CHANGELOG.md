@@ -25,8 +25,8 @@ All notable changes to this project are recorded here. Format loosely follows
   findable — nothing else up there has a border — and it depicts the key you forgot to press.
 - **The app presents in English.** Title is "Who Forgot To Change Lang" in the header, About,
   Settings, the right-click menu, window titles and `CFBundleDisplayName`; buttons and section
-  headings are English too. Thai remains where it is content rather than labelling — the
-  conversion examples and the privacy capsule.
+  headings are English too. The privacy badge now reads "Local-only · No network", phrased like
+  Tama's. Thai appears only in the text being converted.
 - **Thai text uses Noto Sans Thai**, which macOS ships, instead of the system Thai face, whose
   vowel and tone marks crowd at 11–13pt — the marks this app exists to help people read. Nothing
   is bundled; the helper falls back to the system font where the family is missing.
