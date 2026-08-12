@@ -29,11 +29,9 @@ final class AppSettings: ObservableObject {
 
     var fontScale: Double { fontSize.factor }
 
-    /// The mode the converter should open in, remembered across launches.
-    var lastMode: ConversionMode {
-        get { store.lastMode }
-        set { store.lastMode = newValue }
-    }
+    // The last mode used to be proxied through here. It is not a display preference, and this
+    // type was only passing the value along to `SettingsStore` — so `ConverterModel` now owns it
+    // directly, via `ModeMemory`.
 
     /// The AppKit appearance for the current setting (nil = follow the OS). Drives both
     /// `NSApp.appearance` and surfaces that don't inherit it (notably `NSPopover`).

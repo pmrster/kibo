@@ -103,33 +103,11 @@ struct ConverterView: View {
     /// out bright yellow, wrecking a deliberately near-monochrome palette. There is no supported
     /// way to override that on macOS. Twenty lines of buttons buys the theme back.
     private var modePicker: some View {
-        HStack(spacing: 2) {
-            ForEach(Array(ConversionMode.allCases.enumerated()), id: \.element) { index, mode in
-                let isSelected = model.mode == mode
-                Button {
-                    model.mode = mode
-                } label: {
-                    Text(Self.label(for: mode))
-                        .font(AppFont.ui(11, weight: isSelected ? .semibold : .regular))
-                        .foregroundStyle(isSelected ? Palette.panel : Palette.text)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 4)
-                        .background(isSelected ? Palette.accent : Color.clear,
-                                    in: RoundedRectangle(cornerRadius: 6))
-                        .contentShape(RoundedRectangle(cornerRadius: 6))
-                }
-                .buttonStyle(.plain)
-                .keyboardShortcut(KeyEquivalent(Character("\(index + 1)")), modifiers: .command)
-                .help("\(Self.label(for: mode)) (⌘\(index + 1))")
-                .accessibilityLabel(Self.label(for: mode))
-                .accessibilityAddTraits(isSelected ? [.isSelected] : [])
-            }
-        }
-        .padding(2)
-        .background(Palette.fieldFill, in: RoundedRectangle(cornerRadius: 8))
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel("Conversion mode")
-        .onChange(of: model.mode) { _, newMode in settings.lastMode = newMode }
+        ThemedSegmentedControl(options: ConversionMode.allCases,
+                               selection: model.mode,
+                               label: Self.label(for:),
+                               accessibilityTitle: "Conversion mode",
+                               numberKeyShortcuts: true) { model.mode = $0 }
     }
 
     private static func label(for mode: ConversionMode) -> String {
@@ -141,24 +119,27 @@ struct ConverterView: View {
     }
 
     /// A quiet reminder of what the result field is showing.
-    @ViewBuilder private var directionBadge: some View {
-        switch model.mode {
-        case .mixed:
-            badge("only what looks mistyped", tint: Palette.dim)
-        case .englishToThai:
-            badge("EN → TH", tint: Palette.dim)
-        case .thaiToEnglish:
-            badge("TH → EN", tint: Palette.dim)
+    private var directionBadge: some View {
+        badge(Self.badgeLabel(for: model.mode))
+    }
+
+    private static func badgeLabel(for mode: ConversionMode) -> String {
+        switch mode {
+        case .mixed: return "only what looks mistyped"
+        case .englishToThai: return "EN → TH"
+        case .thaiToEnglish: return "TH → EN"
         }
     }
 
-    private func badge(_ label: String, tint: Color) -> some View {
+    /// Always `Palette.dim`: the badge is deliberately the quietest thing on the surface. It took
+    /// a `tint` parameter that all three callers set to the same value.
+    private func badge(_ label: String) -> some View {
         Text(label)
             .font(AppFont.ui(9, weight: .semibold))
-            .foregroundStyle(tint)
+            .foregroundStyle(Palette.dim)
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
-            .background(tint.opacity(0.12), in: Capsule())
+            .background(Palette.dim.opacity(0.12), in: Capsule())
     }
 
     // MARK: - Fields
@@ -185,6 +166,11 @@ struct ConverterView: View {
             .font(AppFont.thai(13))
             .foregroundStyle(Palette.text)
             .scrollContentBackground(.hidden)
+            // Off because this field holds text that is, by definition, misspelled in both
+            // scripts — but also because autocorrection and text replacement are substitution
+            // machinery reading every keystroke, and the less of that touches this field the
+            // better. It cannot change what the converter sees, either way.
+            .autocorrectionDisabled(true)
             .focused($inputFocused)
             .frame(height: scaled(64))
             .padding(6)

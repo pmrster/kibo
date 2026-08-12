@@ -156,4 +156,46 @@ final class ConverterModelTests: XCTestCase {
         model.clear()
         XCTAssertFalse(model.didCopy, "clearing left a stale 'copied' confirmation")
     }
+
+    // MARK: - Remembering the mode
+
+    /// "Reopen in the mode you left it in" used to be a `.onChange` on the mode picker in the
+    /// SwiftUI shell, where nothing could test it and a Windows port would have had to find it by
+    /// reading view code. These four tests are what moving it into Core bought.
+
+    func test_opens_in_the_remembered_mode() {
+        let memory = InMemoryModeMemory(mode: .thaiToEnglish)
+        let model = ConverterModel(clipboard: InMemoryClipboard(), memory: memory)
+        XCTAssertEqual(model.mode, .thaiToEnglish)
+    }
+
+    func test_opens_in_mixed_when_there_is_nothing_to_remember() {
+        let model = ConverterModel(clipboard: InMemoryClipboard())
+        XCTAssertEqual(model.mode, .mixed)
+    }
+
+    func test_changing_the_mode_remembers_it() {
+        let memory = InMemoryModeMemory(mode: .mixed)
+        let model = ConverterModel(clipboard: InMemoryClipboard(), memory: memory)
+
+        model.mode = .englishToThai
+        XCTAssertEqual(memory.mode, .englishToThai)
+
+        model.swapDirection()
+        XCTAssertEqual(memory.mode, .thaiToEnglish, "swapping is a mode change and must persist too")
+        XCTAssertEqual(memory.saves, 2, "the mode was saved more often than it changed")
+    }
+
+    /// Typing is not a mode change. Without this, every keystroke would write to `UserDefaults`.
+    func test_editing_the_input_never_touches_the_mode_memory() {
+        let memory = InMemoryModeMemory()
+        let model = ConverterModel(clipboard: InMemoryClipboard(), memory: memory)
+
+        model.input = "l;ylfu"
+        model.input = "hello"
+        model.clear()
+        model.copyOutput()
+
+        XCTAssertEqual(memory.saves, 0)
+    }
 }
