@@ -14,10 +14,10 @@ struct AboutView: View {
         VStack(spacing: 0) {
             // The mascot on its own, larger than the converter uses it, and fully risen — there is
             // nothing here for it to hide behind.
-            GhostView(mood: .risen)
+            GhostView(mood: .risen, isStandalone: true)
                 .scaleEffect(2.2)
-                .frame(height: 78)
-                .padding(.top, 18)
+                .frame(width: 120, height: 100)
+                .padding(.top, 14)
 
             VStack(spacing: 6) {
                 Text("Who Forgot To Change Lang")
