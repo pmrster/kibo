@@ -20,8 +20,8 @@ import Foundation
 ///   rounded hill.
 /// - **Wide tails, narrow slits.** Gaps wider than the lobes turn the hem into piano keys.
 /// - **Sixteen wide.** Small enough to sit inline at *native* pixel size, which matters more than
-///   detail — see `GhostView` on why the sprite is never scaled.
-enum GhostSprite {
+///   detail — see `KiboView` on why the sprite is never scaled.
+enum KiboSprite {
     static let columns = 16
     static let rowCount = 16
 

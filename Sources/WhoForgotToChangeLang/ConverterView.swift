@@ -19,7 +19,7 @@ struct ConverterView: View {
     /// `nil` in the pinned panel, which is resizable; fixed in the popover, which is not.
     var fixedWidth: CGFloat? = 360
 
-    private var mascotMood: GhostView.Mood {
+    private var mascotMood: KiboView.Mood {
         model.didCopy ? .pleased : .idle
     }
 
@@ -52,8 +52,8 @@ struct ConverterView: View {
     /// opaque, so it paints over the overlap — which tucks the tails behind the edge instead of
     /// leaving the ghost floating above it.
     private var ghost: some View {
-        GhostView(mood: mascotMood)
-            .padding(.bottom, -GhostView.tailTuck())
+        KiboView(mood: mascotMood, isSpeaking: model.didCopy)
+            .padding(.bottom, -KiboView.tailTuck())
             // Inset from the field's rounded corner, which it otherwise overhangs.
             .padding(.trailing, 14)
     }

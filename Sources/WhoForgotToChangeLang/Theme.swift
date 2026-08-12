@@ -42,7 +42,7 @@ enum Palette {
     /// The mascot: one colour, and the features are holes cut in it. Midnight on the light panel,
     /// pale on the dark one — always the opposite of what it sits on, since a fixed colour would
     /// have it disappearing in one mode, and a ghost that vanishes is funny exactly once.
-    static let ghost = Color(light: 0x1E202C, dark: 0xF2EEE6)
+    static let kibo = Color(light: 0x1E202C, dark: 0xF2EEE6)
 
     /// The input and result surfaces. Opaque, not `panelEdge` at 45% as it once was, because the
     /// mascot hides *behind* the input field — a translucent fill would show it through.

@@ -102,11 +102,12 @@ Two targets, with a deliberate split:
     (the tails need two rows at full gap width).
   - Colour history: an outlined body with a yellow mouth read as cluttered — three tones fighting
     inside sixteen pixels.
-- **Menu-bar glyph** (`MenuBarIcon.swift`) — a keycap outline with `ก`, and deliberately **not**
-  the mascot. A glyph up there has to *identify* the app; matching a sibling app defeats the
-  purpose. A cat silhouette was tried and was indistinguishable from Tama's at 18px. Rejected
-  alternatives, all rendered at true size first: a pixel keycap (read as a monitor), pixel swap
-  arrows (a smudge), and `ก⇄A` (too wide for what it added).
+- **Menu-bar glyph** (`MenuBarIcon.swift`) — Kibo's silhouette, eyes kept as holes (a template
+  image preserves alpha, and the holes are what stop it reading as a blob at 16px). **The mascot
+  can be the glyph only because it is a ghost.** When the mascot was a cat forked from Tama's
+  sprite, the glyph was indistinguishable from Tama's in a real menu bar, and a `ก` keycap outline
+  stood in. A ghost beside a cat has no such problem. Rejected glyphs, all rendered at true size
+  first: a pixel keycap (read as a monitor), pixel swap arrows (a smudge), `ก⇄A` (too wide).
 - **Language** — the interface is entirely English, matching the app's English name. Thai appears
   only in the text being converted, which is why `AppFont.thai` is now used only by the input and
   result fields.
