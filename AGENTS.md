@@ -2,7 +2,7 @@
 
 ## Project
 
-This repository contains “ใครลืมเปลี่ยนภาษา,” a local-only Thai Kedmanee ↔ US QWERTY converter,
+This repository contains **Kibo** (“Who Forgot To Change Lang” · ใครลืมเปลี่ยนภาษา), a local-only Thai Kedmanee ↔ US QWERTY converter,
 built as a native macOS menu-bar utility. A WidgetKit extension is optional and a Windows
 notification-area utility comes later.
 

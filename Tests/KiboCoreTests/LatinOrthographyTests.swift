@@ -1,5 +1,5 @@
 import XCTest
-@testable import WhoForgotToChangeLangCore
+@testable import KiboCore
 
 /// The mirror of `ThaiOrthography`: does this ASCII run read as English, or as Thai typed with
 /// the US layout on?

@@ -1,7 +1,7 @@
 import SwiftUI
 import AppKit
 import Combine
-import WhoForgotToChangeLangCore
+import KiboCore
 
 /// SwiftUI-facing settings: publishes the user's appearance and text-size choices, persists them
 /// through `SettingsStore`, and applies appearance app-wide via `NSApp.appearance`.

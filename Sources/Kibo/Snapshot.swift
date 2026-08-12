@@ -1,14 +1,14 @@
-#if WFCL_SNAPSHOT
+#if KIBO_SNAPSHOT
 import AppKit
 import SwiftUI
-import WhoForgotToChangeLangCore
+import KiboCore
 
 /// Renders the app's surfaces to PNGs without a display, for design review and README shots.
 ///
-/// Opt-in behind the `WFCL_SNAPSHOT` compile flag, so it is absent from normal debug builds AND
+/// Opt-in behind the `KIBO_SNAPSHOT` compile flag, so it is absent from normal debug builds AND
 /// release builds — a plain clone and the shipped DMG cannot run it:
 ///
-///     swift run -Xswiftc -DWFCL_SNAPSHOT WhoForgotToChangeLang --snapshot [dir]
+///     swift run -Xswiftc -DKIBO_SNAPSHOT Kibo --snapshot [dir]
 ///
 /// Exists because screen capture needs a permission a terminal often does not have, which makes
 /// "does this actually look right?" otherwise unanswerable without a human at the keyboard.

@@ -1,5 +1,5 @@
 import XCTest
-@testable import WhoForgotToChangeLangCore
+@testable import KiboCore
 
 /// Proves this implementation against `Fixtures/conversion-cases.json`.
 ///
@@ -12,7 +12,7 @@ import XCTest
 /// resources, and a test that reaches for the real file cannot silently pass against a stale copy.
 final class FixtureConformanceTests: XCTestCase {
 
-    // Tests/WhoForgotToChangeLangCoreTests/ThisFile.swift → repo root is three levels up.
+    // Tests/KiboCoreTests/ThisFile.swift → repo root is three levels up.
     private static let fixtureURL = URL(fileURLWithPath: #filePath)
         .deletingLastPathComponent()
         .deletingLastPathComponent()

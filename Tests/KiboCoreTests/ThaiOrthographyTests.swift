@@ -1,5 +1,5 @@
 import XCTest
-@testable import WhoForgotToChangeLangCore
+@testable import KiboCore
 
 /// The gate that decides whether a Thai run is real Thai or the wreckage of typing English with
 /// the Thai layout on. Dictionary-free, so it judges spelling shape only — see the

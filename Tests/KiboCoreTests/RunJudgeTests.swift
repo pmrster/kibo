@@ -1,5 +1,5 @@
 import XCTest
-@testable import WhoForgotToChangeLangCore
+@testable import KiboCore
 
 /// The per-run convert-or-keep decision that makes Mixed mode different from the explicit modes.
 final class RunJudgeTests: XCTestCase {

@@ -2,7 +2,7 @@
 
 ## What this is
 
-“ใครลืมเปลี่ยนภาษา” — a macOS menu-bar utility that fixes text typed with the wrong keyboard
+**Kibo** — “ใครลืมเปลี่ยนภาษา”, a macOS menu-bar utility that fixes text typed with the wrong keyboard
 layout, between Thai Kedmanee and US QWERTY. Local-only, no network, no stored text.
 
 Read `SPEC.md` for product behaviour and `PLAN.md` for architecture and sequencing.
@@ -18,16 +18,16 @@ SwiftPM package, Swift 6 / macOS 14+. No `package.json`, no `.xcodeproj`.
 ```bash
 swift build                                   # debug build
 swift test                                    # full suite (XCTest, all in the Core test target)
-swift run WhoForgotToChangeLang               # run from source; glyph appears top-right
+swift run Kibo               # run from source; glyph appears top-right
 swift test --filter KeyboardConverterTests    # one test class
 swift test --filter RunJudgeTests/test_neutral_runs_are_never_converted   # one method
 swift Tools/dump-kedmanee.swift               # re-dump the key table from macOS layout data
 swift Tools/dump-kedmanee.swift --json        # same, as the Fixtures mapping array
-Packaging/package.sh [version]                # → dist/WhoForgotToChangeLang.app + .dmg
+Packaging/package.sh [version]                # → dist/Kibo.app + .dmg
 
 # Design review. Opt-in behind a compile flag, so it is absent from normal debug AND release
 # builds — renders the surfaces to PNGs offscreen and exits:
-swift run -Xswiftc -DWFCL_SNAPSHOT WhoForgotToChangeLang --snapshot [dir]   # → ./assets
+swift run -Xswiftc -DKIBO_SNAPSHOT Kibo --snapshot [dir]   # → ./assets
 ```
 
 `--snapshot` exists because screen capture needs a permission a terminal often lacks, which
@@ -40,23 +40,28 @@ faithful.
 The app has no Dock icon (`LSUIElement`, plus `setActivationPolicy(.accessory)` so `swift run`
 behaves the same as the packaged build). Look at the top-right menu bar. Left-click the glyph
 opens the converter; right-click opens About / Settings / Quit. Quit from there or with
-`pkill -x WhoForgotToChangeLang`.
+`pkill -x Kibo`.
 
 ## Naming
 
-Everything is **WhoForgotToChangeLang**: SwiftPM package, executable target and source dir
-(`Sources/WhoForgotToChangeLang/`), library target `WhoForgotToChangeLangCore`, tests
-`WhoForgotToChangeLangCoreTests`, and the `.app`. The repo directory is `who-forget-to-change-lang`
-and the user-facing display name is the Thai title — neither is used as an identifier.
+The app is **Kibo**, and so is everything else: SwiftPM package, executable target and source dir
+(`Sources/Kibo/`), library target `KiboCore`, tests `KiboCoreTests`, and the `.app`. Kibo is also
+the mascot — the app is named after the ghost, which is why `KiboView` draws a ghost and not a
+window.
+
+“Who Forgot To Change Lang” is now the **subtitle**: it appears under the name in About and in
+prose, because it says what the thing does where "Kibo" only says what it is called. The Thai name
+“ใครลืมเปลี่ยนภาษา” remains the project's name in Thai. The repo directory stays
+`who-forget-to-change-lang`, the way Tama's stays `tama-widget`.
 
 ## Architecture
 
 Two targets, with a deliberate split:
 
-- **`WhoForgotToChangeLangCore`** — all logic, zero AppKit/SwiftUI. Dependencies are injected
+- **`KiboCore`** — all logic, zero AppKit/SwiftUI. Dependencies are injected
   (the clipboard, the converter, the defaults store) so everything is testable without a running
   app. Fully unit-tested.
-- **`WhoForgotToChangeLang`** — the SwiftUI/AppKit shell. Thin; not unit-tested.
+- **`Kibo`** — the SwiftUI/AppKit shell. Thin; not unit-tested.
 
 `ConverterModel` lives in Core, not the shell, because it is logic. The shell supplies it a
 `SystemClipboard`; tests supply an `InMemoryClipboard` that counts accesses.
@@ -194,7 +199,7 @@ leaving a mistyping, because the user can see and fix the latter.
 ## Privacy invariant (do not break)
 
 - **No network.** Not for updates, not for analytics, not for dictionaries. Verify with
-  `lsof -p $(pgrep -x WhoForgotToChangeLang) -i`.
+  `lsof -p $(pgrep -x Kibo) -i`.
 - **The clipboard is read only from Paste and written only from Copy.** `Clipboard` is a
   two-method protocol with no "watch" operation to start using by accident, and
   `ConverterModelTests` counts accesses and fails if anything else reaches for it.

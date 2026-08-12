@@ -31,9 +31,9 @@ public struct SettingsStore {
     private let defaults: UserDefaults
 
     private enum Key {
-        static let appearance = "wfcl.appearance"
-        static let fontSize = "wfcl.fontSize"
-        static let lastMode = "wfcl.lastMode"
+        static let appearance = "kibo.appearance"
+        static let fontSize = "kibo.fontSize"
+        static let lastMode = "kibo.lastMode"
     }
 
     public init(defaults: UserDefaults = .standard) {

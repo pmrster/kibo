@@ -1,5 +1,5 @@
 import XCTest
-@testable import WhoForgotToChangeLangCore
+@testable import KiboCore
 
 /// The mapping table is the one piece of this app that cannot be reasoned about — it is
 /// transcribed data. These tests pin it against macOS's own layout data, which

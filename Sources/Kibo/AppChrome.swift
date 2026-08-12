@@ -1,7 +1,7 @@
 import AppKit
 import Combine
 import SwiftUI
-import WhoForgotToChangeLangCore
+import KiboCore
 
 /// Owns the menu-bar status item and its dropdown.
 ///
@@ -23,7 +23,7 @@ final class StatusItemController: NSObject {
             button.target = self
             button.action = #selector(handleClick)
             button.sendAction(on: [.leftMouseUp, .rightMouseUp])
-            button.setAccessibilityLabel("Who Forgot To Change Lang")
+            button.setAccessibilityLabel("Kibo")
         }
 
         let hosting = NSHostingController(rootView: ConverterView(model: model))
@@ -60,7 +60,7 @@ final class StatusItemController: NSObject {
 
     private func showMenu() {
         let menu = NSMenu()
-        let about = NSMenuItem(title: "About Who Forgot To Change Lang",
+        let about = NSMenuItem(title: "About Kibo",
                                action: #selector(showAbout), keyEquivalent: "")
         about.target = self
         menu.addItem(about)
@@ -68,7 +68,7 @@ final class StatusItemController: NSObject {
         settings.target = self
         menu.addItem(settings)
         menu.addItem(.separator())
-        menu.addItem(NSMenuItem(title: "Quit",
+        menu.addItem(NSMenuItem(title: "Quit Kibo",
                                 action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         if let button = statusItem.button {
             menu.popUp(positioning: nil, at: NSPoint(x: 0, y: button.bounds.height + 4), in: button)

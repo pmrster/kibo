@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Builds dist/WhoForgotToChangeLang.app and a DMG beside it.
+# Builds dist/Kibo.app and a DMG beside it.
 #
 #   Packaging/package.sh [version]
 #
@@ -12,8 +12,8 @@ set -euo pipefail
 #   NOTARY_PROFILE=<notarytool keychain profile> \
 #   REQUIRE_NOTARIZATION=1 Packaging/package.sh 0.1.0
 
-APP_NAME="WhoForgotToChangeLang"
-DISPLAY="WhoForgotToChangeLang"
+APP_NAME="Kibo"
+DISPLAY="Kibo"
 VERSION="${1:-0.1.0}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"

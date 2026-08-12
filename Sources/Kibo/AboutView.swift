@@ -18,21 +18,21 @@ struct AboutView: View {
             KiboView(pixelSize: 5, isSpeaking: true)
                 .padding(.top, 18)
 
-            Text("Kibo")
-                .font(AppFont.ui(10, weight: .semibold, design: .monospaced))
-                .foregroundStyle(Palette.dim)
-                .padding(.top, 8)
-
-            VStack(spacing: 6) {
-                Text("Who Forgot To Change Lang")
-                    .font(AppFont.title(18))
+            VStack(spacing: 4) {
+                Text("Kibo")
+                    .font(AppFont.title(22))
                     .foregroundStyle(Palette.text)
+                // The name this app shipped under first, kept as the subtitle because it is what
+                // says what the thing actually does.
+                Text("Who Forgot To Change Lang")
+                    .font(AppFont.ui(11, weight: .medium))
+                    .foregroundStyle(Palette.dim)
                     .multilineTextAlignment(.center)
                 Text("v\(version) · build \(build)")
                     .font(AppFont.ui(10, weight: .medium, design: .monospaced))
                     .foregroundStyle(Palette.dim)
             }
-            .padding(.top, 10)
+            .padding(.top, 12)
             .padding(.horizontal, 20)
 
             Text("Fixes text typed on the wrong keyboard layout, between Thai Kedmanee and US QWERTY.")

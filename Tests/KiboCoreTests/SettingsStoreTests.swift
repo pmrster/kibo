@@ -1,12 +1,12 @@
 import XCTest
-@testable import WhoForgotToChangeLangCore
+@testable import KiboCore
 
 final class SettingsStoreTests: XCTestCase {
 
     /// A throwaway defaults domain per test, so nothing leaks into the real user's preferences.
     private func makeStore(file: StaticString = #filePath, line: UInt = #line)
         throws -> (SettingsStore, UserDefaults, String) {
-        let suite = "wfcl.tests.\(UUID().uuidString)"
+        let suite = "kibo.tests.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite), file: file, line: line)
         return (SettingsStore(defaults: defaults), defaults, suite)
     }
@@ -42,9 +42,9 @@ final class SettingsStoreTests: XCTestCase {
         let (store, defaults, suite) = try makeStore()
         defer { tearDown(defaults, suite) }
 
-        defaults.set("chartreuse", forKey: "wfcl.appearance")
-        defaults.set("enormous", forKey: "wfcl.fontSize")
-        defaults.set("telepathy", forKey: "wfcl.lastMode")
+        defaults.set("chartreuse", forKey: "kibo.appearance")
+        defaults.set("enormous", forKey: "kibo.fontSize")
+        defaults.set("telepathy", forKey: "kibo.lastMode")
 
         XCTAssertEqual(store.appearance, .system)
         XCTAssertEqual(store.fontSize, .small)

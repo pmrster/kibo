@@ -1,5 +1,5 @@
 import SwiftUI
-import WhoForgotToChangeLangCore
+import KiboCore
 
 /// The converter surface, hosted in both the menu-bar popover and the pinned panel.
 ///
@@ -60,11 +60,10 @@ struct ConverterView: View {
 
     private var header: some View {
         HStack(alignment: .center, spacing: 7) {
-            Text("Who Forgot To Change Lang")
+            Text("Kibo")
                 .font(AppFont.title(15))
                 .foregroundStyle(Palette.text)
                 .lineLimit(1)
-                .minimumScaleFactor(0.8)
             Spacer(minLength: 2)
             Button { Panels.pinned?.toggle() } label: {
                 Image(systemName: "pin")
