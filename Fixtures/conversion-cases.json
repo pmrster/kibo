@@ -1,0 +1,528 @@
+{
+  "version": 1,
+  "description": "Behaviour contract for the Thai Kedmanee <-> US QWERTY converter. Any implementation claiming to be this app must reproduce every case exactly. The mapping table was dumped from macOS layout data (see Tools/dump-kedmanee.swift); the mixed-mode cases encode the orthographic gate, including its documented limitations.",
+  "mapping": [
+    {
+      "kedmanee": "ฟ",
+      "qwerty": "a"
+    },
+    {
+      "kedmanee": "ห",
+      "qwerty": "s"
+    },
+    {
+      "kedmanee": "ก",
+      "qwerty": "d"
+    },
+    {
+      "kedmanee": "ด",
+      "qwerty": "f"
+    },
+    {
+      "kedmanee": "้",
+      "qwerty": "h"
+    },
+    {
+      "kedmanee": "เ",
+      "qwerty": "g"
+    },
+    {
+      "kedmanee": "ผ",
+      "qwerty": "z"
+    },
+    {
+      "kedmanee": "ป",
+      "qwerty": "x"
+    },
+    {
+      "kedmanee": "แ",
+      "qwerty": "c"
+    },
+    {
+      "kedmanee": "อ",
+      "qwerty": "v"
+    },
+    {
+      "kedmanee": "ิ",
+      "qwerty": "b"
+    },
+    {
+      "kedmanee": "ๆ",
+      "qwerty": "q"
+    },
+    {
+      "kedmanee": "ไ",
+      "qwerty": "w"
+    },
+    {
+      "kedmanee": "ำ",
+      "qwerty": "e"
+    },
+    {
+      "kedmanee": "พ",
+      "qwerty": "r"
+    },
+    {
+      "kedmanee": "ั",
+      "qwerty": "y"
+    },
+    {
+      "kedmanee": "ะ",
+      "qwerty": "t"
+    },
+    {
+      "kedmanee": "ๅ",
+      "qwerty": "1"
+    },
+    {
+      "kedmanee": "/",
+      "qwerty": "2"
+    },
+    {
+      "kedmanee": "_",
+      "qwerty": "3"
+    },
+    {
+      "kedmanee": "ภ",
+      "qwerty": "4"
+    },
+    {
+      "kedmanee": "ุ",
+      "qwerty": "6"
+    },
+    {
+      "kedmanee": "ถ",
+      "qwerty": "5"
+    },
+    {
+      "kedmanee": "ช",
+      "qwerty": "="
+    },
+    {
+      "kedmanee": "ต",
+      "qwerty": "9"
+    },
+    {
+      "kedmanee": "ึ",
+      "qwerty": "7"
+    },
+    {
+      "kedmanee": "ข",
+      "qwerty": "-"
+    },
+    {
+      "kedmanee": "ค",
+      "qwerty": "8"
+    },
+    {
+      "kedmanee": "จ",
+      "qwerty": "0"
+    },
+    {
+      "kedmanee": "ล",
+      "qwerty": "]"
+    },
+    {
+      "kedmanee": "น",
+      "qwerty": "o"
+    },
+    {
+      "kedmanee": "ี",
+      "qwerty": "u"
+    },
+    {
+      "kedmanee": "บ",
+      "qwerty": "["
+    },
+    {
+      "kedmanee": "ร",
+      "qwerty": "i"
+    },
+    {
+      "kedmanee": "ย",
+      "qwerty": "p"
+    },
+    {
+      "kedmanee": "ส",
+      "qwerty": "l"
+    },
+    {
+      "kedmanee": "่",
+      "qwerty": "j"
+    },
+    {
+      "kedmanee": "ง",
+      "qwerty": "'"
+    },
+    {
+      "kedmanee": "า",
+      "qwerty": "k"
+    },
+    {
+      "kedmanee": "ว",
+      "qwerty": ";"
+    },
+    {
+      "kedmanee": "ฃ",
+      "qwerty": "\\"
+    },
+    {
+      "kedmanee": "ม",
+      "qwerty": ","
+    },
+    {
+      "kedmanee": "ฝ",
+      "qwerty": "/"
+    },
+    {
+      "kedmanee": "ื",
+      "qwerty": "n"
+    },
+    {
+      "kedmanee": "ท",
+      "qwerty": "m"
+    },
+    {
+      "kedmanee": "ใ",
+      "qwerty": "."
+    },
+    {
+      "kedmanee": "-",
+      "qwerty": "`"
+    },
+    {
+      "kedmanee": "ฤ",
+      "qwerty": "A"
+    },
+    {
+      "kedmanee": "ฆ",
+      "qwerty": "S"
+    },
+    {
+      "kedmanee": "ฏ",
+      "qwerty": "D"
+    },
+    {
+      "kedmanee": "โ",
+      "qwerty": "F"
+    },
+    {
+      "kedmanee": "็",
+      "qwerty": "H"
+    },
+    {
+      "kedmanee": "ฌ",
+      "qwerty": "G"
+    },
+    {
+      "kedmanee": "(",
+      "qwerty": "Z"
+    },
+    {
+      "kedmanee": ")",
+      "qwerty": "X"
+    },
+    {
+      "kedmanee": "ฉ",
+      "qwerty": "C"
+    },
+    {
+      "kedmanee": "ฮ",
+      "qwerty": "V"
+    },
+    {
+      "kedmanee": "ฺ",
+      "qwerty": "B"
+    },
+    {
+      "kedmanee": "๐",
+      "qwerty": "Q"
+    },
+    {
+      "kedmanee": "\"",
+      "qwerty": "W"
+    },
+    {
+      "kedmanee": "ฎ",
+      "qwerty": "E"
+    },
+    {
+      "kedmanee": "ฑ",
+      "qwerty": "R"
+    },
+    {
+      "kedmanee": "ํ",
+      "qwerty": "Y"
+    },
+    {
+      "kedmanee": "ธ",
+      "qwerty": "T"
+    },
+    {
+      "kedmanee": "+",
+      "qwerty": "!"
+    },
+    {
+      "kedmanee": "๑",
+      "qwerty": "@"
+    },
+    {
+      "kedmanee": "๒",
+      "qwerty": "#"
+    },
+    {
+      "kedmanee": "๓",
+      "qwerty": "$"
+    },
+    {
+      "kedmanee": "ู",
+      "qwerty": "^"
+    },
+    {
+      "kedmanee": "๔",
+      "qwerty": "%"
+    },
+    {
+      "kedmanee": "๙",
+      "qwerty": "+"
+    },
+    {
+      "kedmanee": "๖",
+      "qwerty": "("
+    },
+    {
+      "kedmanee": "฿",
+      "qwerty": "&"
+    },
+    {
+      "kedmanee": "๘",
+      "qwerty": "_"
+    },
+    {
+      "kedmanee": "๕",
+      "qwerty": "*"
+    },
+    {
+      "kedmanee": "๗",
+      "qwerty": ")"
+    },
+    {
+      "kedmanee": ",",
+      "qwerty": "}"
+    },
+    {
+      "kedmanee": "ฯ",
+      "qwerty": "O"
+    },
+    {
+      "kedmanee": "๊",
+      "qwerty": "U"
+    },
+    {
+      "kedmanee": "ฐ",
+      "qwerty": "{"
+    },
+    {
+      "kedmanee": "ณ",
+      "qwerty": "I"
+    },
+    {
+      "kedmanee": "ญ",
+      "qwerty": "P"
+    },
+    {
+      "kedmanee": "ศ",
+      "qwerty": "L"
+    },
+    {
+      "kedmanee": "๋",
+      "qwerty": "J"
+    },
+    {
+      "kedmanee": ".",
+      "qwerty": "\""
+    },
+    {
+      "kedmanee": "ษ",
+      "qwerty": "K"
+    },
+    {
+      "kedmanee": "ซ",
+      "qwerty": ":"
+    },
+    {
+      "kedmanee": "ฅ",
+      "qwerty": "|"
+    },
+    {
+      "kedmanee": "ฒ",
+      "qwerty": "<"
+    },
+    {
+      "kedmanee": "ฦ",
+      "qwerty": "?"
+    },
+    {
+      "kedmanee": "์",
+      "qwerty": "N"
+    },
+    {
+      "kedmanee": "?",
+      "qwerty": "M"
+    },
+    {
+      "kedmanee": "ฬ",
+      "qwerty": ">"
+    },
+    {
+      "kedmanee": "%",
+      "qwerty": "~"
+    }
+  ],
+  "cases": [
+    {
+      "name": "spec: english keystrokes become thai",
+      "mode": "englishToThai",
+      "input": "vpkddbodkca",
+      "output": "อยากกินกาแฟ"
+    },
+    {
+      "name": "spec: thai keystrokes become english",
+      "mode": "thaiToEnglish",
+      "input": "ะ้ฟืา",
+      "output": "thank"
+    },
+    {
+      "name": "spec: greeting typed on the wrong layout",
+      "mode": "englishToThai",
+      "input": "l;ylfu",
+      "output": "สวัสดี"
+    },
+    {
+      "name": "spec: english word typed on the thai layout",
+      "mode": "thaiToEnglish",
+      "input": "ไำะ",
+      "output": "wet"
+    },
+    {
+      "name": "every unshifted letter key",
+      "mode": "englishToThai",
+      "input": "abcdefghijklmnopqrstuvwxyz",
+      "output": "ฟิแกำดเ้ร่าสทืนยๆพหะีอไปัผ"
+    },
+    {
+      "name": "every shifted letter key",
+      "mode": "englishToThai",
+      "input": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      "output": "ฤฺฉฏฎโฌ็ณ๋ษศ?์ฯญ๐ฑฆธ๊ฮ\")ํ("
+    },
+    {
+      "name": "every digit and unshifted punctuation key",
+      "mode": "englishToThai",
+      "input": "`1234567890-=[]\\;',./",
+      "output": "-ๅ/_ภถุึคตจขชบลฃวงมใฝ"
+    },
+    {
+      "name": "every shifted punctuation key",
+      "mode": "englishToThai",
+      "input": "~!@#$%^&*()_+{}|:\"<>?",
+      "output": "%+๑๒๓๔ู฿๕๖๗๘๙ฐ,ฅซ.ฒฬฦ"
+    },
+    {
+      "name": "round trip: thai side of the full table",
+      "mode": "thaiToEnglish",
+      "input": "ฟิแกำดเ้ร่าสทืนยๆพหะีอไปัผ",
+      "output": "abcdefghijklmnopqrstuvwxyz"
+    },
+    {
+      "name": "empty input",
+      "mode": "englishToThai",
+      "input": "",
+      "output": ""
+    },
+    {
+      "name": "whitespace and newlines survive",
+      "mode": "englishToThai",
+      "input": " \n\n\t ",
+      "output": " \n\n\t "
+    },
+    {
+      "name": "emoji and other scripts survive",
+      "mode": "englishToThai",
+      "input": "🐈🇹🇭 日本 café",
+      "output": "🐈🇹🇭 日本 แฟดé"
+    },
+    {
+      "name": "text already in the destination script is left alone",
+      "mode": "englishToThai",
+      "input": "สวัสดี",
+      "output": "สวัสดี"
+    },
+    {
+      "name": "multiline input keeps its line structure",
+      "mode": "englishToThai",
+      "input": "l;ylfu\nl;ylfu\n\nl;ylfu",
+      "output": "สวัสดี\nสวัสดี\n\nสวัสดี"
+    },
+    {
+      "name": "mixed: the worked example",
+      "mode": "mixed",
+      "input": "l;ylfu ไำะ ครับ 2024 :)",
+      "output": "สวัสดี wet ครับ 2024 :)"
+    },
+    {
+      "name": "mixed: correct text of both scripts is left alone",
+      "mode": "mixed",
+      "input": "ครับ hello",
+      "output": "ครับ hello"
+    },
+    {
+      "name": "mixed: each run converts in its own direction",
+      "mode": "mixed",
+      "input": "l;ylfu ไำะ",
+      "output": "สวัสดี wet"
+    },
+    {
+      "name": "mixed: numbers and punctuation are never touched",
+      "mode": "mixed",
+      "input": "2024 :) 3.14 100%",
+      "output": "2024 :) 3.14 100%"
+    },
+    {
+      "name": "mixed: neutral runs pass through",
+      "mode": "mixed",
+      "input": "l;ylfu\n🐈 ครับ",
+      "output": "สวัสดี\n🐈 ครับ"
+    },
+    {
+      "name": "mixed: letter-poor thai wreckage is still caught",
+      "mode": "mixed",
+      "input": "-v[86I",
+      "output": "ขอบคุณ"
+    },
+    {
+      "name": "mixed: empty input",
+      "mode": "mixed",
+      "input": "",
+      "output": ""
+    },
+    {
+      "name": "known limitation: well-formed thai wreckage is kept",
+      "mode": "mixed",
+      "input": "แนกำ",
+      "output": "แนกำ"
+    },
+    {
+      "name": "known limitation: mistyping that collides with a real word is kept",
+      "mode": "mixed",
+      "input": "นา",
+      "output": "นา"
+    },
+    {
+      "name": "known limitation: english-shaped wreckage is kept",
+      "mode": "mixed",
+      "input": "Fi'giupo",
+      "output": "Fi'giupo"
+    }
+  ]
+}

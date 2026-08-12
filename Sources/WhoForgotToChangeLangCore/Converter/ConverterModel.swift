@@ -1,0 +1,77 @@
+import Foundation
+
+/// The converter window's state and behaviour.
+///
+/// It lives in Core rather than in the SwiftUI shell because it is logic, and logic is what this
+/// target holds — which is also what makes it testable without a running app. It owns no mapping
+/// rules of its own; it asks `KeyboardConverting` and reports the answer.
+@MainActor
+@Observable
+public final class ConverterModel {
+
+    /// What the user typed or pasted.
+    public var input: String = "" {
+        didSet { refresh() }
+    }
+
+    /// Which question we are asking of it.
+    public var mode: ConversionMode {
+        didSet { refresh() }
+    }
+
+    /// The converted text. Recomputed when the input or mode changes rather than on every read,
+    /// since SwiftUI may read it several times per frame and the input can run to 100k characters.
+    public private(set) var output: String = ""
+
+    /// Whether the Copy confirmation should be showing. Retracted automatically as soon as the
+    /// result changes, so the confirmation can never refer to text that is no longer on screen.
+    public private(set) var didCopy = false
+
+    private let converter: any KeyboardConverting
+    private let clipboard: any Clipboard
+
+    public init(mode: ConversionMode = .mixed,
+                converter: any KeyboardConverting = KeyboardConverter(),
+                clipboard: any Clipboard) {
+        self.mode = mode
+        self.converter = converter
+        self.clipboard = clipboard
+    }
+
+    // MARK: - Actions
+
+    /// Swaps the two explicit directions. Mixed has no opposite, so this leaves it as it is
+    /// rather than picking one arbitrarily.
+    public func swapDirection() {
+        mode = mode.swapped
+    }
+
+    public func clear() {
+        input = ""
+    }
+
+    /// The only place this app reads the clipboard. An empty or non-text clipboard leaves the
+    /// input alone — silently blanking what the user typed would be worse than doing nothing.
+    public func paste() {
+        guard let text = clipboard.read(), !text.isEmpty else { return }
+        input = text
+    }
+
+    /// The only place this app writes the clipboard. Writes the *result*, never the input, and
+    /// does nothing when there is no result to write.
+    public func copyOutput() {
+        guard !output.isEmpty else { return }
+        clipboard.write(output)
+        didCopy = true
+    }
+
+    /// Lets the shell retract the confirmation on a timer without reaching into private state.
+    public func dismissCopyConfirmation() {
+        didCopy = false
+    }
+
+    private func refresh() {
+        output = converter.convert(input, mode: mode).output
+        didCopy = false
+    }
+}
