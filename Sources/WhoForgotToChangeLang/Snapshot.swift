@@ -66,17 +66,18 @@ enum Snapshot {
     /// glyph at true menu-bar size. At the size these appear in the app, a sprite that reads as a
     /// blob and one that reads as a ghost look identical on a screenshot.
     private static var mascotSheet: some View {
-        HStack(spacing: 40) {
+        HStack(spacing: 66) {
             ForEach(["idle", "pleased"], id: \.self) { label in
                 VStack(spacing: 14) {
-                    GhostView(mood: label == "idle" ? .idle : .pleased, pixelSize: 6)
+                    KiboView(mood: label == "idle" ? .idle : .pleased, pixelSize: 6,
+                             isSpeaking: label == "pleased")
                     Text(label)
                         .font(.system(size: 11, weight: .semibold, design: .monospaced))
                         .foregroundStyle(Palette.dim)
                 }
             }
             VStack(spacing: 14) {
-                GhostView(pixelSize: 2)
+                KiboView(pixelSize: 2)
                 Text("native")
                     .font(.system(size: 11, weight: .semibold, design: .monospaced))
                     .foregroundStyle(Palette.dim)

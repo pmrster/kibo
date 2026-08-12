@@ -7,7 +7,8 @@ All notable changes to this project are recorded here. Format loosely follows
 
 ### Changed
 
-- **Mascot.** An original 8-bit ghost — the wrong layout haunting your sentence. It perches on the
+- **Mascot.** **Kibo**, an original 8-bit ghost — the wrong layout haunting your sentence. Says
+  "boo~" after a copy, as Tama's cat says "meow~". It perches on the
   top edge of the input field with its tails tucked behind, blinks while it waits, and shuts its
   eyes after a copy. Small vertical eyes, no mouth. A single colour with the features cut out as holes, the same
   construction Tama uses, flipping between midnight and pale so it is always the opposite of what
@@ -19,10 +20,9 @@ All notable changes to this project are recorded here. Format loosely follows
   designed on. Nothing is bundled.
 - **Input and result fills are opaque** rather than a 45% blend, so the mascot can hide behind the
   input field without showing through it.
-- **Menu-bar glyph** is now a keycap outline with `ก` on it, replacing the pixel keyboard. It is
-  deliberately not the mascot: next to Tama in a real menu bar, two side-view pixel cats are
-  indistinguishable at 18px, so neither icon identified its app. The outline is what makes it
-  findable — nothing else up there has a border — and it depicts the key you forgot to press.
+- **Menu-bar glyph** is Kibo's silhouette. It went pixel keyboard → cat → `ก` keycap → Kibo: the
+  cat was indistinguishable from Tama's at 18px, which is what the keycap solved, and which stops
+  being a problem once the mascot is a ghost.
 - **The app presents in English.** Title is "Who Forgot To Change Lang" in the header, About,
   Settings, the right-click menu, window titles and `CFBundleDisplayName`; buttons and section
   headings are English too. The privacy badge now reads "Local-only · No network", phrased like

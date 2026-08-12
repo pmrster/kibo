@@ -15,8 +15,13 @@ struct AboutView: View {
             // The mascot on its own, larger than the converter uses it, and fully risen — there is
             // nothing here for it to hide behind.
             // Larger pixels, not a scaled-up sprite — scaling is what made it look broken.
-            GhostView(pixelSize: 5)
+            KiboView(pixelSize: 5, isSpeaking: true)
                 .padding(.top, 18)
+
+            Text("Kibo")
+                .font(AppFont.ui(10, weight: .semibold, design: .monospaced))
+                .foregroundStyle(Palette.dim)
+                .padding(.top, 8)
 
             VStack(spacing: 6) {
                 Text("Who Forgot To Change Lang")

@@ -33,10 +33,9 @@ refuse it on first launch — right-click the app → **Open** once, and it will
 
 ## Using it
 
-The app has no Dock icon. Look for the small keycap glyph — a `ก` in a rounded box — in the menu
-bar. Open it and you'll meet the mascot: a small pixel ghost hiding behind the input box with just
-its eyes over the edge. It rises when there's something to show you, and shuts its eyes after a
-copy.
+The app has no Dock icon. Look for the small pixel ghost in the menu bar — that's **Kibo**. Open
+it and Kibo is there too, perched on the top edge of the input box. It blinks while it waits,
+shuts its eyes after a copy, and says *boo~*.
 
 - **Left-click** the glyph to open the converter.
 - **Right-click** for About, Settings, and Quit.
@@ -47,7 +46,7 @@ Three modes:
 
 | Mode | What it does |
 | --- | --- |
-| **ผสม** (Mixed) | Converts only the runs that look wrong. Leaves correct text, numbers, and punctuation alone. |
+| **Mixed** | Converts only the runs that look wrong. Leaves correct text, numbers, and punctuation alone. |
 | **EN → TH** | Treats the whole string as English keystrokes typed with the Thai layout on. |
 | **TH → EN** | The reverse. |
 
@@ -128,8 +127,8 @@ See `CLAUDE.md` for architecture, `SPEC.md` for product behaviour, `PLAN.md` for
 
 A spin-off of [**Tama**](https://github.com/pmrster/tama), a menu-bar pixel cat that watches local
 AI agent sessions. This app forks Tama's shell — the SwiftPM layout, theming, panel chrome and
-packaging — and follows its approach to pixel-art character work, but the ghost is its own. Tama
-keeps the cat; this one gets the ghost. Separate repos, separate releases.
+packaging — and follows its approach to pixel-art character work, but Kibo is its own. Tama keeps
+the cat and its "meow~"; Kibo gets the "boo~". Separate repos, separate releases.
 
 ## License
 
