@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  swift:
+    name: Swift tests
+    runs-on: macos-15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build (warnings are worth seeing)
+        run: swift build
+
+      # The suite is the accuracy contract: it pins 36 of 36 precision, 15 of 24 English recall
+      # and 4 of 12 Thai recall, and checks Fixtures/conversion-cases.json against the same
+      # corpus. A green run here is what makes those numbers in the README true.
+      - name: Run tests
+        run: swift test
+
+  package:
+    name: Package the app
+    runs-on: macos-15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Builds the .app and DMG exactly as a release would, unsigned. This is here because the
+      # packaging script is the only place the sandbox entitlement, the version injection and the
+      # icon are applied — none of which the test suite can see. The script fails on its own if
+      # the signature comes out without the sandbox.
+      - name: Build DMG
+        run: Packaging/package.sh 0.0.0-ci
+
+      - name: Confirm the app is sandboxed
+        run: codesign -d --entitlements - dist/Kibo.app 2>&1 | grep -q app-sandbox

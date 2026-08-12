@@ -31,8 +31,10 @@ app, and packaging. It is **not** documentation-only any more, and it is **not**
 - Keep the explicit EN → TH and TH → EN modes mechanical. They are the escape hatch.
 - Read the clipboard only from an explicit Paste action. Write it only from an explicit Copy action.
 - Do not store entered or converted text, add analytics, or make network requests.
-- Follow native macOS behavior and accessibility conventions. Use the sunset-mango accent as an
-  accent, not as a replacement for system controls.
+- Follow native macOS behavior and accessibility conventions. Use the near-monochrome accent —
+  midnight on light, pale on dark, the mascot's own pair — as an accent, not as a replacement for
+  system controls. Never use a segmented `Picker`: it paints its selection with the *system*
+  accent and wrecks the palette. Use `ThemedSegmentedControl`.
 - Add a seam only when at least two adapters exist or a platform side effect must be replaced in
   tests.
 

@@ -77,8 +77,10 @@ Two targets, with a deliberate split:
   selection with the *system* accent — whatever the user set in System Settings — so on a Mac with
   a yellow accent the selected mode came out bright yellow and wrecked the palette. macOS offers
   no supported override. The replacement also renders in `--snapshot`, which the AppKit-backed
-  picker never did.
-- **Type** — `AppFont.title` for the app's name: the system font at heavy weight, the same face
+  picker never did. It now lives in `SharedViews.swift` as `ThemedSegmentedControl` and Settings
+  uses it too — Settings kept its two segmented `Picker`s long after the ban, which is why its
+  snapshots were yellow no-entry blocks. **Use it anywhere a segmented picker is tempting.**
+- **Type** — `AppFont.title` for the app's name: the system font at semibold, the same face
   as the `INPUT` / `RESULT` labels. It arrived by elimination — rounded heavy read as a toy,
   condensed black as dated, and Space Grotesk looked right but lived in one developer's
   `~/Library/Fonts`, so every other Mac would have fallen back silently. **Do not depend on a face
@@ -88,7 +90,7 @@ Two targets, with a deliberate split:
   the input and result fields, which can contain Thai. That is **Noto Sans Thai**, which macOS ships: the system
   Thai face crowds vowel and tone marks at 11–13pt, and those marks are the whole point here.
   Nothing is bundled, and the helper falls back to the system font if the family is missing.
-- **Mascot** (`GhostSprite.swift`, `GhostView.swift`) — an original 8-bit ghost. **One colour,
+- **Mascot** (`KiboSprite.swift`, `KiboView.swift`) — an original 8-bit ghost. **One colour,
   features cut out as holes**, the same construction Tama uses; it flips between midnight and pale
   so it is always the opposite of what it sits on.
   - **Never apply `scaleEffect` to it.** A `Canvas` rasterises at its natural size, so scaling
@@ -96,7 +98,7 @@ Two targets, with a deliberate split:
     broken next to Tama's crisp cat. Pass a larger `pixelSize` instead, in whole numbers, so every
     rectangle lands on a whole pixel. Tama draws at native size for the same reason.
   - **It perches, it does not hide.** The caller overlaps it into the opaque surface below by
-    `GhostView.tailTuck()` — two rows, so only the tails tuck behind the edge. An earlier version
+    `KiboView.tailTuck()` — two rows, so only the tails tuck behind the edge. An earlier version
     sank ten rows so only the eyes showed, and the first question anyone asked was why the mascot
     was hiding. `Palette.fieldFill` is opaque so the overlap reads as occlusion.
   - **Small vertical eyes, and no mouth.** Three-by-three blocks read as goggles, two-by-two as a
@@ -174,11 +176,21 @@ needs four characters.
 **Measured accuracy** (all three figures are pinned by tests, so a change that trades one for
 another shows up as a failure):
 
+The corpora live in `Tests/KiboCoreTests/AccuracyCorpus.swift` and the figures are asserted by
+`MeasuredAccuracyTests`, **end to end through `KeyboardConverter` in Mixed mode** — a gate verdict
+is not a promise about the output. Counts are asserted too, so deleting an awkward entry fails
+rather than quietly lowering the bar. Every case is mirrored into `Fixtures/conversion-cases.json`,
+so a Windows port inherits the same numbers instead of a sample of them.
+
 | Measure | Result | Notes |
 | --- | --- | --- |
-| **Precision** — correct text left untouched | 36 of 36 | `KeyboardConverterTests.test_mixed_returns_correct_text_completely_unchanged` |
-| Recall — English mistyped as Thai | 16 of 25 | missed: about, please, sorry, code, ok, and, report, great, work |
+| **Precision** — correct text left untouched | 36 of 36 | `AccuracyCorpus.mustSurvive` |
+| Recall — English mistyped as Thai | 15 of 24 | missed: about, please, sorry, code, ok, and, report, great, work |
 | Recall — Thai mistyped as Latin | 4 of 12 | missed: โรงเรียน, ผม, แมว, ไป, กิน, ทำงาน, วันนี้, พรุ่งนี้ |
+
+(The English figure read "16 of 25" here for a while, "17 of a 26-word sample" in a test comment,
+and measured 15 of 24. Three numbers, no test counting any of them — which is what the count
+assertions now prevent.)
 
 The misses are wreckage that happens to be well-formed — `แนกำ` ("code") breaks no Thai rule, and
 `นา` ("ok") is a real Thai word that not even a dictionary would rescue. **The escape hatch is the
@@ -191,15 +203,29 @@ leaving a mistyping, because the user can see and fix the latter.
 - Add a failing behaviour test before fixing a converter defect.
 - Tests exercise the public converter interface, not mapping internals.
 - `Fixtures/conversion-cases.json` is the portable behaviour contract for a later Windows port:
-  the full key table plus 24 cases across all three modes. `FixtureConformanceTests` reads it from
-  the repo via `#filePath` — there is no resource bundle, and a test that reaches for the real file
-  cannot silently pass against a stale copy.
+  the full key table, a `schema` block describing the format for a non-Swift reader, and 114 cases
+  across all three modes — the whole precision corpus, both recall corpora, and the known misses.
+  `FixtureConformanceTests` reads it from the repo via `#filePath` — there is no resource bundle,
+  and a test that reaches for the real file cannot silently pass against a stale copy. It also
+  asserts the JSON still carries every string in `AccuracyCorpus`, so the two cannot drift.
+  **Regenerate rather than hand-edit**, and bump `version` when the shape changes.
 - Known limitations are asserted as tests, not left as comments, so the miss rate stays visible.
 
 ## Privacy invariant (do not break)
 
-- **No network.** Not for updates, not for analytics, not for dictionaries. Verify with
-  `lsof -p $(pgrep -x Kibo) -i`.
+- **No network.** Not for updates, not for analytics, not for dictionaries. Enforced by the
+  sandbox — `Packaging/Kibo.entitlements` grants `app-sandbox` and *no* network entitlement, so
+  the kernel refuses the connection rather than the code declining to make one. `package.sh`
+  refuses to build without that file and verifies the signature carries it. Verify a running app
+  with `lsof -a -p $(pgrep -x Kibo) -i`. **The `-a` matters**: `lsof` ORs its selectors, so the
+  command without it prints every *other* process's sockets and looks alarming.
+- **A Copy is marked as a secret.** `SystemClipboard.write` sets `org.nspasteboard.ConcealedType`
+  and `TransientType` alongside the string, which is what keeps the text out of clipboard-manager
+  history. This matters more than it looks: the app's use case means the text is often a password,
+  and Universal Clipboard hands `NSPasteboard.general` to nearby Apple devices — the one route by
+  which a local-only app can still put a secret on the air, and one `lsof` will never show.
+- **Window restoration is off** (`FloatingPanel`, plus `applicationSupportsSecureRestorableState`).
+  AppKit would otherwise encode a text view's contents into `~/Library/Saved Application State/`.
 - **The clipboard is read only from Paste and written only from Copy.** `Clipboard` is a
   two-method protocol with no "watch" operation to start using by accident, and
   `ConverterModelTests` counts accesses and fails if anything else reaches for it.
@@ -213,6 +239,19 @@ GitHub Release asset; git holds source, the Release holds binaries. Without `SIG
 app is ad-hoc signed and users must right-click → Open once. For a public build set
 `SIGN_IDENTITY`, `NOTARY_PROFILE`, and `REQUIRE_NOTARIZATION=1`. No signing identity is
 provisioned yet.
+
+The script owns three things the test suite cannot see, so read its output rather than assuming:
+
+- **Version and build number are injected**, by key name via PlistBuddy — `CFBundleShortVersionString`
+  from the argument, `CFBundleVersion` from `git rev-list --count HEAD`. The literals in
+  `Packaging/Info.plist` are placeholders; editing them changes nothing. About reads the packaged
+  plist, so there is one source of truth. Tag releases `v<version>` to match.
+- **The sandbox is applied on both signing paths**, ad-hoc included, and the script *fails* if
+  `Packaging/Kibo.entitlements` is missing or if the signature comes out without the entitlement.
+  It referenced an entitlements file that never existed for a while, which meant every build —
+  including the Developer ID path — shipped unsandboxed.
+- **The icon is generated** from `icon.png` with `sips`/`iconutil`. `Info.plist` declares
+  `CFBundleIconFile`, so before this the DMG shipped a blank generic icon.
 
 ## Commit hygiene
 
