@@ -82,9 +82,9 @@ final class FloatingPanel {
 enum Panels {
     static var pinned: FloatingPanel?
 
-    static let settings = FloatingPanel(title: "ตั้งค่า",
-                                        size: NSSize(width: 320, height: 300)) { SettingsView() }
+    static let settings = FloatingPanel(title: "Settings",
+                                        size: NSSize(width: 320, height: 320)) { SettingsView() }
 
-    static let about = FloatingPanel(title: "เกี่ยวกับแอป",
-                                     size: NSSize(width: 320, height: 340)) { AboutView() }
+    static let about = FloatingPanel(title: "About",
+                                     size: NSSize(width: 320, height: 360)) { AboutView() }
 }

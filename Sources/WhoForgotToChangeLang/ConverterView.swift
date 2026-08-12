@@ -6,6 +6,11 @@ import WhoForgotToChangeLangCore
 /// Deliberately one screen with no navigation: the whole point is paste → read → copy without
 /// breaking away from whatever you were doing. Every control is reachable by keyboard and
 /// carries a VoiceOver label.
+///
+/// Chrome is English; Thai appears only where it is content — the conversion examples, the
+/// privacy line, and of course the text being converted. Those use `AppFont.thai`, because the
+/// system font's Thai face crowds vowel and tone marks at these sizes, and reading those marks is
+/// exactly what this app asks of people.
 struct ConverterView: View {
     @Bindable var model: ConverterModel
     @ObservedObject private var settings = AppSettings.shared
@@ -14,12 +19,17 @@ struct ConverterView: View {
     /// `nil` in the pinned panel, which is resizable; fixed in the popover, which is not.
     var fixedWidth: CGFloat? = 360
 
+    private var mascotMood: CatView.Mood {
+        if model.didCopy { return .happy }
+        return model.output.isEmpty ? .idle : .alert
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             header
             modeRow
-            field(title: "ข้อความที่พิมพ์", accessory: { EmptyView() }) { inputEditor }
-            field(title: "ผลลัพธ์", accessory: { directionBadge }) { outputPanel }
+            field(title: "INPUT", accessory: { EmptyView() }) { inputEditor }
+            field(title: "RESULT", accessory: { directionBadge }) { outputPanel }
             actionRow
             examples
             PrivacyCapsule()
@@ -41,20 +51,23 @@ struct ConverterView: View {
     // MARK: - Header
 
     private var header: some View {
-        HStack(spacing: 8) {
-            Text("ใครลืมเปลี่ยนภาษา")
-                .font(.system(size: scaled(15), weight: .heavy, design: .rounded))
+        HStack(alignment: .center, spacing: 7) {
+            CatView(mood: mascotMood, mode: model.mode)
+            Text("Who Forgot To Change Lang")
+                .font(AppFont.ui(13, weight: .heavy, design: .rounded))
                 .foregroundStyle(Palette.text)
-            Spacer(minLength: 4)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+            Spacer(minLength: 2)
             Button { Panels.pinned?.toggle() } label: {
                 Image(systemName: "pin")
-                    .font(.system(size: scaled(11), weight: .semibold))
+                    .font(AppFont.ui(11, weight: .semibold))
                     .foregroundStyle(Palette.dim)
             }
             .buttonStyle(.plain)
             .keyboardShortcut("p", modifiers: [.command, .shift])
-            .help("เปิดเป็นหน้าต่างลอย — ค้างไว้ระหว่างสลับไปแอปอื่น (⇧⌘P)")
-            .accessibilityLabel("เปิดเป็นหน้าต่างลอย")
+            .help("Float above other apps, so it stays open while you paste (⇧⌘P)")
+            .accessibilityLabel("Pin as floating window")
         }
     }
 
@@ -63,35 +76,35 @@ struct ConverterView: View {
     private var modeRow: some View {
         HStack(spacing: 8) {
             Picker("", selection: $model.mode) {
-                Text("ผสม").tag(ConversionMode.mixed)
+                Text("Mixed").tag(ConversionMode.mixed)
                 Text("EN → TH").tag(ConversionMode.englishToThai)
                 Text("TH → EN").tag(ConversionMode.thaiToEnglish)
             }
             .pickerStyle(.segmented)
             .labelsHidden()
-            .font(.system(size: scaled(11)))
-            .accessibilityLabel("โหมดการแปลง")
+            .font(AppFont.ui(11))
+            .accessibilityLabel("Conversion mode")
             .onChange(of: model.mode) { _, newMode in settings.lastMode = newMode }
 
             Button(action: model.swapDirection) {
                 Image(systemName: "arrow.left.arrow.right")
-                    .font(.system(size: scaled(11), weight: .semibold))
+                    .font(AppFont.ui(11, weight: .semibold))
                     .foregroundStyle(model.mode == .mixed ? Palette.dim.opacity(0.4) : Palette.mango)
             }
             .buttonStyle(.plain)
             // Mixed has no opposite direction, so there is nothing to swap.
             .disabled(model.mode == .mixed)
             .keyboardShortcut("s", modifiers: [.command, .shift])
-            .help(model.mode == .mixed ? "โหมดผสมไม่มีทิศทางให้สลับ" : "สลับทิศทาง (⇧⌘S)")
-            .accessibilityLabel("สลับทิศทาง")
+            .help(model.mode == .mixed ? "Mixed has no direction to swap" : "Swap direction (⇧⌘S)")
+            .accessibilityLabel("Swap direction")
         }
     }
 
-    /// A quiet reminder of which way the text is being pushed, tinted per script.
+    /// A quiet reminder of what the result field is showing, tinted per script.
     @ViewBuilder private var directionBadge: some View {
         switch model.mode {
         case .mixed:
-            badge("แปลงเฉพาะส่วนที่พิมพ์ผิด", tint: Palette.dim)
+            badge("only what looks mistyped", tint: Palette.dim)
         case .englishToThai:
             badge("EN → TH", tint: Palette.thai)
         case .thaiToEnglish:
@@ -101,7 +114,7 @@ struct ConverterView: View {
 
     private func badge(_ label: String, tint: Color) -> some View {
         Text(label)
-            .font(.system(size: scaled(9), weight: .semibold))
+            .font(AppFont.ui(9, weight: .semibold))
             .foregroundStyle(tint)
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
@@ -116,7 +129,7 @@ struct ConverterView: View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 6) {
                 Text(title)
-                    .font(.system(size: scaled(10), weight: .heavy))
+                    .font(AppFont.ui(10, weight: .heavy))
                     .tracking(0.8)
                     .foregroundStyle(Palette.dim)
                 Spacer(minLength: 4)
@@ -128,7 +141,7 @@ struct ConverterView: View {
 
     private var inputEditor: some View {
         TextEditor(text: $model.input)
-            .font(.system(size: scaled(13)))
+            .font(AppFont.thai(13))
             .foregroundStyle(Palette.text)
             .scrollContentBackground(.hidden)
             .focused($inputFocused)
@@ -139,13 +152,13 @@ struct ConverterView: View {
                 RoundedRectangle(cornerRadius: 8)
                     .strokeBorder(inputFocused ? Palette.mango : Color.clear, lineWidth: 1.5)
             )
-            .accessibilityLabel("ข้อความที่พิมพ์")
+            .accessibilityLabel("Text you typed")
     }
 
     private var outputPanel: some View {
         ScrollView {
-            Text(model.output.isEmpty ? "ผลลัพธ์จะแสดงที่นี่" : model.output)
-                .font(.system(size: scaled(13)))
+            Text(model.output.isEmpty ? "The corrected text appears here" : model.output)
+                .font(AppFont.thai(13))
                 .foregroundStyle(model.output.isEmpty ? Palette.dim : Palette.text)
                 .textSelection(.enabled)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -153,8 +166,8 @@ struct ConverterView: View {
         .frame(height: scaled(64))
         .padding(6)
         .background(Palette.panelEdge.opacity(0.45), in: RoundedRectangle(cornerRadius: 8))
-        .accessibilityLabel("ผลลัพธ์")
-        .accessibilityValue(model.output.isEmpty ? "ยังไม่มีผลลัพธ์" : model.output)
+        .accessibilityLabel("Result")
+        .accessibilityValue(model.output.isEmpty ? "No result yet" : model.output)
     }
 
     // MARK: - Actions
@@ -164,22 +177,22 @@ struct ConverterView: View {
             // Every action carries a shortcut so the whole flow works without a mouse. The input
             // is a TextEditor, which swallows Tab, so shortcuts — not focus traversal — are what
             // make that true.
-            secondaryButton("วาง", systemImage: "doc.on.clipboard", action: model.paste)
+            secondaryButton("Paste", systemImage: "doc.on.clipboard", action: model.paste)
                 .keyboardShortcut("v", modifiers: [.command, .shift])
-                .help("อ่านคลิปบอร์ดเมื่อกดปุ่มนี้เท่านั้น (⇧⌘V)")
-            secondaryButton("ล้าง", systemImage: "xmark.circle", action: model.clear)
+                .help("Reads the clipboard only when you press this (⇧⌘V)")
+            secondaryButton("Clear", systemImage: "xmark.circle", action: model.clear)
                 .disabled(model.input.isEmpty)
                 .keyboardShortcut("k", modifiers: [.command, .shift])
-                .help("ล้างข้อความ (⇧⌘K)")
+                .help("Clear the input (⇧⌘K)")
 
             Spacer(minLength: 4)
 
             Button(action: model.copyOutput) {
                 HStack(spacing: 5) {
                     Image(systemName: model.didCopy ? "checkmark" : "doc.on.doc")
-                    Text(model.didCopy ? "คัดลอกแล้ว" : "คัดลอก")
+                    Text(model.didCopy ? "Copied" : "Copy")
                 }
-                .font(.system(size: scaled(12), weight: .semibold))
+                .font(AppFont.ui(12, weight: .semibold))
                 .foregroundStyle(model.didCopy ? Palette.green : Palette.mango)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 6)
@@ -189,8 +202,8 @@ struct ConverterView: View {
             .buttonStyle(.plain)
             .disabled(model.output.isEmpty)
             .keyboardShortcut("c", modifiers: [.command, .shift])
-            .help("คัดลอกผลลัพธ์ (⇧⌘C)")
-            .accessibilityLabel(model.didCopy ? "คัดลอกแล้ว" : "คัดลอกผลลัพธ์")
+            .help("Copy the result (⇧⌘C)")
+            .accessibilityLabel(model.didCopy ? "Copied" : "Copy result")
         }
     }
 
@@ -202,7 +215,7 @@ struct ConverterView: View {
                 Image(systemName: systemImage)
                 Text(title)
             }
-            .font(.system(size: scaled(11), weight: .medium))
+            .font(AppFont.ui(11, weight: .medium))
             .foregroundStyle(Palette.text)
             .padding(.horizontal, 10)
             .padding(.vertical, 5)
@@ -222,8 +235,8 @@ struct ConverterView: View {
 
     private var examples: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("ตัวอย่าง")
-                .font(.system(size: scaled(10), weight: .heavy))
+            Text("TRY ONE")
+                .font(AppFont.ui(10, weight: .heavy))
                 .tracking(0.8)
                 .foregroundStyle(Palette.dim)
             HStack(spacing: 6) {
@@ -234,7 +247,7 @@ struct ConverterView: View {
                         settings.lastMode = preset.mode
                     } label: {
                         Text(preset.label)
-                            .font(.system(size: scaled(10), design: .monospaced))
+                            .font(AppFont.thai(10))
                             .foregroundStyle(Palette.dim)
                             .lineLimit(1)
                             .padding(.horizontal, 7)
@@ -242,10 +255,9 @@ struct ConverterView: View {
                             .background(Palette.track.opacity(0.5), in: Capsule())
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel("ตัวอย่าง \(preset.label)")
+                    .accessibilityLabel("Example: \(preset.label)")
                 }
             }
         }
     }
-
 }

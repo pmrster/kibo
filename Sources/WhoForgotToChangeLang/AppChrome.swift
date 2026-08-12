@@ -23,7 +23,7 @@ final class StatusItemController: NSObject {
             button.target = self
             button.action = #selector(handleClick)
             button.sendAction(on: [.leftMouseUp, .rightMouseUp])
-            button.setAccessibilityLabel("ใครลืมเปลี่ยนภาษา")
+            button.setAccessibilityLabel("Who Forgot To Change Lang")
         }
 
         let hosting = NSHostingController(rootView: ConverterView(model: model))
@@ -60,14 +60,15 @@ final class StatusItemController: NSObject {
 
     private func showMenu() {
         let menu = NSMenu()
-        let about = NSMenuItem(title: "เกี่ยวกับแอป", action: #selector(showAbout), keyEquivalent: "")
+        let about = NSMenuItem(title: "About Who Forgot To Change Lang",
+                               action: #selector(showAbout), keyEquivalent: "")
         about.target = self
         menu.addItem(about)
-        let settings = NSMenuItem(title: "ตั้งค่า…", action: #selector(showSettings), keyEquivalent: ",")
+        let settings = NSMenuItem(title: "Settings…", action: #selector(showSettings), keyEquivalent: ",")
         settings.target = self
         menu.addItem(settings)
         menu.addItem(.separator())
-        menu.addItem(NSMenuItem(title: "ออกจากแอป",
+        menu.addItem(NSMenuItem(title: "Quit",
                                 action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         if let button = statusItem.button {
             menu.popUp(positioning: nil, at: NSPoint(x: 0, y: button.bounds.height + 4), in: button)

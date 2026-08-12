@@ -12,23 +12,26 @@ struct AboutView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Image(nsImage: MenuBarIcon.image(pixelSize: 5))
-                .renderingMode(.template)
-                .foregroundStyle(Palette.mango)
-                .padding(.top, 22)
+            // The mascot on its own, larger than the header uses it.
+            CatView(mood: .alert, mode: .mixed)
+                .scaleEffect(2.0)
+                .frame(height: 60)
+                .padding(.top, 20)
 
             VStack(spacing: 6) {
-                Text("ใครลืมเปลี่ยนภาษา")
-                    .font(.system(size: scaled(19), weight: .heavy, design: .rounded))
+                Text("Who Forgot To Change Lang")
+                    .font(AppFont.ui(17, weight: .heavy, design: .rounded))
                     .foregroundStyle(Palette.text)
+                    .multilineTextAlignment(.center)
                 Text("v\(version) · build \(build)")
-                    .font(.system(size: scaled(10), weight: .medium, design: .monospaced))
+                    .font(AppFont.ui(10, weight: .medium, design: .monospaced))
                     .foregroundStyle(Palette.dim)
             }
-            .padding(.top, 12)
+            .padding(.top, 10)
+            .padding(.horizontal, 20)
 
-            Text("แปลงข้อความที่พิมพ์ผิดแป้นระหว่างไทย (เกษมณี) กับอังกฤษ (QWERTY)")
-                .font(.system(size: scaled(11)))
+            Text("Fixes text typed on the wrong keyboard layout, between Thai Kedmanee and US QWERTY.")
+                .font(AppFont.thai(11))
                 .foregroundStyle(Palette.dim)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)

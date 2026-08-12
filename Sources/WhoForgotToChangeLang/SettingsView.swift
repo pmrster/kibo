@@ -8,39 +8,44 @@ struct SettingsView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text("ตั้งค่า")
-                .font(.system(size: scaled(17), weight: .heavy, design: .rounded))
-                .foregroundStyle(Palette.text)
+            HStack(spacing: 7) {
+                CatView(mood: .idle, mode: .mixed)
+                Text("Settings")
+                    .font(AppFont.ui(16, weight: .heavy, design: .rounded))
+                    .foregroundStyle(Palette.text)
+            }
 
-            section("ธีม") {
+            section("APPEARANCE") {
                 Picker("", selection: $settings.appearance) {
-                    Text("ตามระบบ").tag(Appearance.system)
-                    Text("สว่าง").tag(Appearance.light)
-                    Text("มืด").tag(Appearance.dark)
+                    Text("System").tag(Appearance.system)
+                    Text("Light").tag(Appearance.light)
+                    Text("Dark").tag(Appearance.dark)
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
-                .accessibilityLabel("ธีมของแอป")
+                .accessibilityLabel("Appearance")
             }
 
-            section("ขนาดตัวอักษร") {
+            section("TEXT SIZE") {
                 Picker("", selection: $settings.fontSize) {
-                    Text("เล็ก").tag(FontSize.small)
-                    Text("กลาง").tag(FontSize.medium)
-                    Text("ใหญ่").tag(FontSize.large)
+                    Text("S").tag(FontSize.small)
+                    Text("M").tag(FontSize.medium)
+                    Text("L").tag(FontSize.large)
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
-                .accessibilityLabel("ขนาดตัวอักษร")
+                .accessibilityLabel("Text size")
             }
 
-            section("ตัวอย่าง") {
+            // Shows the Thai face at the chosen size, since that is what the text-size setting is
+            // really for — the vowel and tone marks are the hard part to read.
+            section("PREVIEW") {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("l;ylfu ไำะ ครับ")
-                        .font(.system(size: scaled(11), design: .monospaced))
+                        .font(AppFont.thai(11))
                         .foregroundStyle(Palette.dim)
                     Text("สวัสดี wet ครับ")
-                        .font(.system(size: scaled(13)))
+                        .font(AppFont.thai(13))
                         .foregroundStyle(Palette.text)
                 }
                 .padding(10)
@@ -65,7 +70,7 @@ struct SettingsView: View {
     private func section(_ title: String, @ViewBuilder _ content: () -> some View) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
-                .font(.system(size: scaled(10), weight: .heavy))
+                .font(AppFont.ui(10, weight: .heavy))
                 .tracking(0.8)
                 .foregroundStyle(Palette.dim)
             content()

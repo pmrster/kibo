@@ -21,6 +21,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         AppSettings.shared.applyAppearance()
 
+        // Design-review tooling, opt-in behind the WFCL_SNAPSHOT compile flag (absent from normal
+        // debug and release builds). Renders the surfaces to PNGs and exits.
+        #if WFCL_SNAPSHOT
+        Snapshot.renderIfRequested()
+        #endif
+
         // `swift run` produces an executable with no bundle, which by default launches as a
         // regular app with a Dock icon. Setting the policy in code keeps development builds
         // behaving like the packaged one, where `LSUIElement` does the same job.
@@ -31,7 +37,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         // The pinned panel shows the same converter, resizable rather than fixed-width. It can
         // only be built now, since it needs the model.
-        Panels.pinned = FloatingPanel(title: "ใครลืมเปลี่ยนภาษา",
+        Panels.pinned = FloatingPanel(title: "Who Forgot To Change Lang",
                                       size: NSSize(width: 380, height: 520),
                                       minSize: NSSize(width: 340, height: 420)) {
             ConverterView(model: model, fixedWidth: nil)
