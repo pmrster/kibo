@@ -20,8 +20,7 @@ struct ConverterView: View {
     var fixedWidth: CGFloat? = 360
 
     private var mascotMood: GhostView.Mood {
-        if model.didCopy { return .pleased }
-        return model.output.isEmpty ? .waiting : .risen
+        model.didCopy ? .pleased : .idle
     }
 
     var body: some View {
@@ -50,12 +49,12 @@ struct ConverterView: View {
 
     // MARK: - Header
 
-    /// Sits in the INPUT label row and deliberately overhangs into the field below it. The field
-    /// is drawn after this row and is opaque, so it paints over the overhang — which is what makes
-    /// the ghost look like it is behind the field rather than clipped in mid-air.
+    /// Perches on the top edge of the field below. The field is drawn after this row and is
+    /// opaque, so it paints over the overlap — which tucks the tails behind the edge instead of
+    /// leaving the ghost floating above it.
     private var ghost: some View {
         GhostView(mood: mascotMood)
-            .padding(.bottom, -GhostView.hiddenExtent)
+            .padding(.bottom, -GhostView.tailTuck())
             // Inset from the field's rounded corner, which it otherwise overhangs.
             .padding(.trailing, 14)
     }

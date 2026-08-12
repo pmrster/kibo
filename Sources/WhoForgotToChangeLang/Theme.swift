@@ -86,8 +86,10 @@ enum AppFont {
         .system(size: scaled(size), weight: weight, design: design)
     }
 
-    /// The app's name — the same system font as the `INPUT` and `RESULT` labels, just larger and
-    /// not letter-spaced.
+    /// The app's name — the same system font as the `INPUT` and `RESULT` labels, at semibold.
+    ///
+    /// Heavy was tried and read as shouty and dated; semibold is the weight that looks like a
+    /// current utility rather than a 2013 one.
     ///
     /// It got here by elimination, and the eliminations are the point. Rounded heavy read as a
     /// toy. Condensed black read as dated. Space Grotesk looked right but lives in one developer's
@@ -102,6 +104,6 @@ enum AppFont {
     /// ships Avenir Next and Chakra Petch — both system faces, and Chakra Petch covers Thai too.
     @MainActor
     static func title(_ size: CGFloat) -> Font {
-        .system(size: scaled(size), weight: .heavy)
+        .system(size: scaled(size), weight: .semibold)
     }
 }

@@ -66,36 +66,31 @@ enum Snapshot {
     /// glyph at true menu-bar size. At the size these appear in the app, a sprite that reads as a
     /// blob and one that reads as a ghost look identical on a screenshot.
     private static var mascotSheet: some View {
-        HStack(spacing: 30) {
-            ForEach(["waiting", "risen", "pleased"], id: \.self) { label in
-                VStack(spacing: 12) {
-                    GhostView(mood: label == "waiting" ? .waiting
-                                  : label == "risen" ? .risen : .pleased,
-                              isStandalone: label != "waiting")
-                        .scaleEffect(3.2, anchor: .top)
-                        .frame(width: 150, height: 130, alignment: .top)
+        HStack(spacing: 40) {
+            ForEach(["idle", "pleased"], id: \.self) { label in
+                VStack(spacing: 14) {
+                    GhostView(mood: label == "idle" ? .idle : .pleased, pixelSize: 6)
                     Text(label)
                         .font(.system(size: 11, weight: .semibold, design: .monospaced))
                         .foregroundStyle(Palette.dim)
                 }
             }
-            VStack(spacing: 12) {
-                VStack(spacing: 18) {
-                    Image(nsImage: MenuBarIcon.image())
-                        .renderingMode(.template)
-                        .foregroundStyle(Palette.text)
-                    Image(nsImage: MenuBarIcon.image())
-                        .renderingMode(.template)
-                        .foregroundStyle(Palette.text)
-                        .scaleEffect(4)
-                }
-                .frame(height: 130)
+            VStack(spacing: 14) {
+                GhostView(pixelSize: 2)
+                Text("native")
+                    .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                    .foregroundStyle(Palette.dim)
+            }
+            VStack(spacing: 14) {
+                Image(nsImage: MenuBarIcon.image())
+                    .renderingMode(.template)
+                    .foregroundStyle(Palette.text)
                 Text("menu bar")
                     .font(.system(size: 11, weight: .semibold, design: .monospaced))
                     .foregroundStyle(Palette.dim)
             }
         }
-        .padding(24)
+        .padding(28)
         .background(Palette.panel)
     }
 

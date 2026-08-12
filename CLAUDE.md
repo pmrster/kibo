@@ -76,32 +76,25 @@ Two targets, with a deliberate split:
   anything that can contain Thai. The latter is **Noto Sans Thai**, which macOS ships: the system
   Thai face crowds vowel and tone marks at 11–13pt, and those marks are the whole point here.
   Nothing is bundled, and the helper falls back to the system font if the family is missing.
-- **Mascot** (`GhostSprite.swift`, `GhostView.swift`) — an original 8-bit ghost, assembled from
-  interchangeable bands (dome / eyes / mouth / hem) so the expression changes without redrawing
-  the body. **One colour, features cut out as holes**, the same construction Tama uses; it flips
-  between midnight and pale so it is always the opposite of what it sits on.
-  **`GhostView` does not clip itself.** The caller must place it immediately above an opaque
-  surface and overlap it into that surface by `GhostView.hiddenExtent`; the surface, drawn after,
-  paints over the overhang. Currently that surface is the input field, which is why
-  `Palette.fieldFill` is opaque rather than the translucent blend it used to be.
-  - An earlier mascot borrowed Tama's cat sprite and looked it once enlarged: that geometry is
-    built for a 24×15 menu-bar pet, not for display.
-  - Three attempts drew the ghost covering its face with its own paws. Every one read as
-    spectacles — at this resolution an outlined square over a face is a *lens*, not a hand.
-    Occlusion solved in one attempt what reshaping could not solve in three.
-  - Clipping the sprite instead was tried and looked exactly like what it was: a bottom sliced
-    off, hanging above the field with a gap. Occlusion by a real surface is what sells it.
-  - `hiddenExtent` is load-bearing: cover the eye rows and it reads as a bump rather than as
-    something looking at you.
-  - Proportions follow `icon.png` in the repo root — the reference art. Four things in it carry
-    the character and earlier attempts missed all four: taller than wide, a dome that tapers in
-    single steps, *round* eyes (rectangles read as a visor), and a tiny four-pixel mouth above
-    deep tails. Keep the mouth band the same width as the dome; letting it run full width puts a
-    step in the silhouette and gives the ghost shoulders.
-  - Colour history: an outlined body with a yellow mouth read as cluttered, and the first mono
-    attempt was 20 wide by 16 tall and read as a rounded hill.
-  - One expression, as in the reference. A second mouth shape for the risen state was tried and at
-    2×2 read as a nose; mood is carried by position and by whether the eyes are shut.
+- **Mascot** (`GhostSprite.swift`, `GhostView.swift`) — an original 8-bit ghost. **One colour,
+  features cut out as holes**, the same construction Tama uses; it flips between midnight and pale
+  so it is always the opposite of what it sits on.
+  - **Never apply `scaleEffect` to it.** A `Canvas` rasterises at its natural size, so scaling
+    stretches the result and the sprite comes out jagged — this is exactly why it once looked
+    broken next to Tama's crisp cat. Pass a larger `pixelSize` instead, in whole numbers, so every
+    rectangle lands on a whole pixel. Tama draws at native size for the same reason.
+  - **It perches, it does not hide.** The caller overlaps it into the opaque surface below by
+    `GhostView.tailTuck()` — two rows, so only the tails tuck behind the edge. An earlier version
+    sank ten rows so only the eyes showed, and the first question anyone asked was why the mascot
+    was hiding. `Palette.fieldFill` is opaque so the overlap reads as occlusion.
+  - **Small vertical eyes, and no mouth.** Three-by-three blocks read as goggles, two-by-two as a
+    stare; slits read as a face. At this size a mouth is either a slab or a nose, and Tama's cat
+    proves two holes are enough.
+  - Proportions follow `icon.png` in the repo root. Earlier misses: a near-square body (reads as a
+    rounded hill), a crown that reached full width in three rows, and a hem of shallow notches
+    (the tails need two rows at full gap width).
+  - Colour history: an outlined body with a yellow mouth read as cluttered — three tones fighting
+    inside sixteen pixels.
 - **Menu-bar glyph** (`MenuBarIcon.swift`) — a keycap outline with `ก`, and deliberately **not**
   the mascot. A glyph up there has to *identify* the app; matching a sibling app defeats the
   purpose. A cat silhouette was tried and was indistinguishable from Tama's at 18px. Rejected
