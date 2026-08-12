@@ -25,7 +25,7 @@ mode converts only the parts that are actually broken.
 No signed build is published yet. Build it yourself:
 
 ```bash
-git clone <this repo> && cd who-forget-to-change-lang
+git clone <this repo> && cd kibo
 Packaging/package.sh
 open dist/
 ```

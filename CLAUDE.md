@@ -51,8 +51,8 @@ window.
 
 “Who Forgot To Change Lang” is now the **subtitle**: it appears under the name in About and in
 prose, because it says what the thing does where "Kibo" only says what it is called. The Thai name
-“ใครลืมเปลี่ยนภาษา” remains the project's name in Thai. The repo directory stays
-`who-forget-to-change-lang`, the way Tama's stays `tama-widget`.
+“ใครลืมเปลี่ยนภาษา” remains the project's name in Thai. The repo directory is `kibo` too — unlike
+Tama, whose directory is still `tama-widget`, this one has no legacy path to work around.
 
 ## Architecture
 

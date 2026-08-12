@@ -10,8 +10,8 @@ All notable changes to this project are recorded here. Format loosely follows
 - **The app is now called Kibo**, after its mascot. "Who Forgot To Change Lang" becomes the
   subtitle, shown under the name in About. The rename goes all the way through — SwiftPM package,
   targets, source directories, the `.app`, the bundle identifier and the snapshot flag — because a
-  half-rename is exactly the confusion the one-name rule exists to prevent. The repo directory
-  stays `who-forget-to-change-lang`.
+  half-rename is exactly the confusion the one-name rule exists to prevent — including the repo
+  directory, now `kibo`.
 - Preferences reset once as a result: the defaults keys moved from `wfcl.*` to `kibo.*` and the
   bundle identifier changed, so theme, text size and last mode return to their defaults.
 
