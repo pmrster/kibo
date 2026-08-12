@@ -30,14 +30,14 @@ enum Palette {
     static let dim       = Color(light: 0x6E655C, dark: 0x9A8F84)
     static let track     = Color(light: 0xD8D2C8, dark: 0x3A352E)
 
-    /// The accent. Used for the primary action and for focus, never for whole surfaces.
-    static let mango     = Color(light: 0xD1701F, dark: 0xE8823A)
-    /// Confirmation — the "copied" state.
+    /// The accent: the primary action, focus, and the selected mode. Deliberately the same
+    /// near-monochrome pair as the mascot, so the interface reads as the ghost's own palette
+    /// rather than a warm utility with a ghost dropped into it. It was mango, and the orange
+    /// fought everything around it once the mascot went midnight-and-pale.
+    static let accent    = Color(light: 0x24262F, dark: 0xEDE9E1)
+    /// Confirmation — the "copied" state, and the privacy badge. The one colour left, because
+    /// both are claims about safety and a monochrome tick reads as decoration.
     static let green     = Color(light: 0x0E8A6B, dark: 0x10A37F)
-
-    /// Mode tints, used only as small direction indicators.
-    static let thai      = Color(light: 0xC2603F, dark: 0xD97757)
-    static let latin     = Color(light: 0x3A7BA5, dark: 0x4A8FBF)
 
     /// The mascot: one colour, and the features are holes cut in it. Midnight on the light panel,
     /// pale on the dark one — always the opposite of what it sits on, since a fixed colour would

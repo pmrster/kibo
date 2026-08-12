@@ -63,9 +63,16 @@ Two targets, with a deliberate split:
 
 ### Design
 
-- **Palette** (`Theme.swift`) — Tama's neutrals verbatim so the two apps read as siblings in the
-  menu bar; the accent is mango where Tama's is yellow. Colors come from an NSColor dynamic
-  provider via `Color(light:dark:)`, so they re-resolve when the appearance is forced.
+- **Palette** (`Theme.swift`) — Tama's warm neutrals verbatim so the two apps read as siblings,
+  under a **near-monochrome accent** that matches the mascot (midnight on light, pale on dark).
+  It was mango; the orange fought everything once the mascot went midnight-and-pale. Green is the
+  one colour left, on the copy confirmation and the privacy badge. Colors come from an NSColor
+  dynamic provider via `Color(light:dark:)`, so they re-resolve when the appearance is forced.
+- **The mode control is hand-rolled, not a segmented `Picker`.** A segmented picker paints its
+  selection with the *system* accent — whatever the user set in System Settings — so on a Mac with
+  a yellow accent the selected mode came out bright yellow and wrecked the palette. macOS offers
+  no supported override. The replacement also renders in `--snapshot`, which the AppKit-backed
+  picker never did.
 - **Type** — `AppFont.title` for the app's name: the system font at heavy weight, the same face
   as the `INPUT` / `RESULT` labels. It arrived by elimination — rounded heavy read as a toy,
   condensed black as dated, and Space Grotesk looked right but lived in one developer's
@@ -101,7 +108,7 @@ Two targets, with a deliberate split:
   alternatives, all rendered at true size first: a pixel keycap (read as a monitor), pixel swap
   arrows (a smudge), and `ก⇄A` (too wide for what it added).
 - **Language** — chrome is English, matching the app's English name. Thai stays where it is
-  content rather than labelling: the conversion examples and the privacy capsule.
+  content rather than labelling: the text being converted and the privacy capsule.
 
 `AppSettings` is an `ObservableObject` while `ConverterModel` is `@Observable`. That is not an
 oversight: `StatusItemController` is AppKit and needs to *subscribe* to appearance changes
