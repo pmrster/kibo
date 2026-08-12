@@ -18,12 +18,12 @@ import Foundation
 ///   nothing — Tama's cat carries its whole expression in two small holes, and so does this.
 /// - **A crown that tapers in single steps**, then near-vertical sides. A square ghost reads as a
 ///   rounded hill.
-/// - **Deep tails**: two rows at full gap width, or the hem reads as serration.
+/// - **Wide tails, narrow slits.** Gaps wider than the lobes turn the hem into piano keys.
 /// - **Sixteen wide.** Small enough to sit inline at *native* pixel size, which matters more than
 ///   detail — see `GhostView` on why the sprite is never scaled.
 enum GhostSprite {
     static let columns = 16
-    static let rowCount = 17
+    static let rowCount = 16
 
     private static let dome = [
         ".....YYYYYY.....",
@@ -35,16 +35,20 @@ enum GhostSprite {
         "YYYYYYYYYYYYYYYY",
     ]
 
-    /// Body, then the tails. The gaps widen as they descend so the hem reads as four rounded
-    /// lobes rather than as teeth.
+    /// Body, then the tails.
+    ///
+    /// **Three wide lobes, one-pixel slits.** Two earlier hems read as piano keys: first
+    /// two-pixel tails with three-pixel gaps (a comb), then four narrower tails, which was still
+    /// too many prongs across sixteen pixels. Fewer and wider is what reads as cloth. The last row
+    /// drops the outer corners so the hem is rounded rather than flat-bottomed — the other half of
+    /// what made it look like keys.
     private static let hem = [
         "YYYYYYYYYYYYYYYY",
         "YYYYYYYYYYYYYYYY",
         "YYYYYYYYYYYYYYYY",
         "YYYYYYYYYYYYYYYY",
-        "YYY.YYYY.YYYY.YY",
-        "YY...YY...YY...Y",
-        "YY...YY...YY...Y",
+        "YYYYY.YYYY.YYYYY",
+        ".YYYY.YYYY.YYYY.",
     ]
 
     enum Eyes {
