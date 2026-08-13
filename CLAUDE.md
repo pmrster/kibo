@@ -129,6 +129,8 @@ gives for free. `ConverterModel` has only SwiftUI consumers.
 ```
 input ──▶ RunSplitter ──▶ RunJudge ──▶ KedmaneeMapping ──▶ output
              (runs)      (convert?)      (per scalar)
+                                     ↖ TypographicSubstitutes
+                                        (which key was that?)
 ```
 
 - **`KedmaneeMapping`** — 94 key pairs, all printable ASCII, a bijection. **Dumped from macOS's
@@ -136,8 +138,23 @@ input ──▶ RunSplitter ──▶ RunJudge ──▶ KedmaneeMapping ──�
   physical key produces under `com.apple.keylayout.US` and `com.apple.keylayout.Thai`. This is the
   verification `PLAN.md` asked for, and it corrected two keys a hand table had backwards (`3`
   produces `_`, and the backtick produces `-`).
+- **`TypographicSubstitutes`** — **the OS rewrites the keystroke before the converter sees it.**
+  `NSTextView`, which backs `TextEditor`, enables quote and dash substitution by default, so a
+  typed `'` arrives as `’`. Three of those substituted keys carry Kedmanee characters — `'` is
+  `ง`, `"` is `.`, `-` is `ข` — so `ง` was unreachable from the keyboard, surviving even the
+  mechanical EN → TH flip because `’` is in no table. Note `.autocorrectionDisabled(true)` does
+  **not** cover this; it clears spelling correction alone, and a comment here claimed otherwise
+  for a while. `AppDelegate.disableTypographicSubstitution` now registers the two defaults off,
+  but that is a courtesy to the user's text, not the fix: **Paste is a first-class path**, and
+  text copied from Messages or Slack arrives already curled. The fold is deliberately *outside*
+  `KedmaneeMapping` — it is many-to-one, has no inverse, and applies in the QWERTY → Thai
+  direction only. It also fires **only on scalars actually being converted**, so text Mixed mode
+  passes through keeps its curls; straightening them would mangle text the app promised not to
+  touch. `…` is excluded because it stands for three keystrokes, not one.
 - **`RunSplitter`** — maximal runs of Thai (`U+0E00–U+0E7F`), Latin (printable ASCII, space
   excluded so whitespace is a boundary), or neutral. Runs always rejoin to the input exactly.
+  The typographic substitutes count as Latin despite being outside ASCII: left neutral, `’` cut
+  `don’t` into three runs and `RunJudge` never saw a word to judge.
 - **`RunJudge`** — the convert-or-keep decision, used only by Mixed mode.
 - **`KeyboardConverter`** — the public `KeyboardConverting` interface. Explicit modes are
   mechanical whole-string flips; Mixed asks `RunJudge` per run.
@@ -203,8 +220,9 @@ leaving a mistyping, because the user can see and fix the latter.
 - Add a failing behaviour test before fixing a converter defect.
 - Tests exercise the public converter interface, not mapping internals.
 - `Fixtures/conversion-cases.json` is the portable behaviour contract for a later Windows port:
-  the full key table, a `schema` block describing the format for a non-Swift reader, and 114 cases
-  across all three modes — the whole precision corpus, both recall corpora, and the known misses.
+  the full key table, the `typographicSubstitutes` fold, a `schema` block describing the format
+  for a non-Swift reader, and 126 cases across all three modes — the whole precision corpus, both
+  recall corpora, and the known misses.
   `FixtureConformanceTests` reads it from the repo via `#filePath` — there is no resource bundle,
   and a test that reaches for the real file cannot silently pass against a stale copy. It also
   asserts the JSON still carries every string in `AccuracyCorpus`, so the two cannot drift.

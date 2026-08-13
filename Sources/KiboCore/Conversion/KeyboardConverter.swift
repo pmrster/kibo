@@ -20,13 +20,27 @@ public struct KeyboardConverter: KeyboardConverting {
         let output: String
         switch mode {
         case .englishToThai:
-            output = mapEveryScalar(input, using: KedmaneeMapping.thai(forQwerty:))
+            output = mapEveryScalar(input, using: thai(forQwerty:))
         case .thaiToEnglish:
             output = mapEveryScalar(input, using: KedmaneeMapping.qwerty(forThai:))
         case .mixed:
             output = convertMixed(input)
         }
         return ConversionResult(input: input, output: output, mode: mode)
+    }
+
+    /// The QWERTY → Thai lookup, with one fallback the raw table does not have: if the scalar is
+    /// a character macOS substituted for a keystroke (`’` for `'`, `—` for `-`), convert the key
+    /// that was actually pressed. Without it a typed apostrophe reached here as U+2019, matched
+    /// nothing, and `ง` could not be produced at all.
+    ///
+    /// Only the outbound direction folds, and only at the moment a scalar is being converted —
+    /// text this converter decides to leave alone keeps its curls, because straightening the
+    /// user's punctuation would be a change to text the app promised not to touch.
+    private func thai(forQwerty scalar: UnicodeScalar) -> UnicodeScalar? {
+        if let mapped = KedmaneeMapping.thai(forQwerty: scalar) { return mapped }
+        guard let key = TypographicSubstitutes.asciiKey(for: scalar) else { return nil }
+        return KedmaneeMapping.thai(forQwerty: key)
     }
 
     /// Mechanical whole-string conversion. Anything the table has no entry for is copied over
@@ -57,7 +71,7 @@ public struct KeyboardConverter: KeyboardConverting {
             case .thai:
                 output += mapEveryScalar(run.text, using: KedmaneeMapping.qwerty(forThai:))
             case .latin:
-                output += mapEveryScalar(run.text, using: KedmaneeMapping.thai(forQwerty:))
+                output += mapEveryScalar(run.text, using: thai(forQwerty:))
             case .neutral:
                 // `RunJudge` never condemns a neutral run; handled for exhaustiveness.
                 output += run.text

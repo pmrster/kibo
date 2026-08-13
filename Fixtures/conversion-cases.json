@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "description": "Behaviour contract for the Thai Kedmanee <-> US QWERTY converter. Any implementation claiming to be this app must reproduce every case exactly. The mapping table was dumped from macOS layout data (see Tools/dump-kedmanee.swift); the mixed-mode cases encode the orthographic gate, including its documented limitations.",
   "schema": {
     "version": "Bumped whenever the shape of this file changes. Readers must refuse a version they do not understand.",
@@ -13,8 +13,10 @@
     "notes": [
       "Walk unicodeScalars, never grapheme clusters: Thai combining marks fuse with the consonant before them, so a per-character loop is handed clusters that appear in no table.",
       "Cases named 'precision:' are the promise that correct text is never mangled. They matter more than the 'recall:' cases — mangling correct text is a worse failure than leaving a mistyping, because the user can see and fix the latter.",
-      "Cases named 'known miss:' record text the mixed gate deliberately leaves alone. A port that 'fixes' them has almost certainly broken a precision case; check both before celebrating."
-    ]
+      "Cases named 'known miss:' record text the mixed gate deliberately leaves alone. A port that 'fixes' them has almost certainly broken a precision case; check both before celebrating.",
+      "Cases named 'substitution:' cover characters the OS swapped in for a keystroke. A port that skips them still converts typed text on a machine with smart quotes off, then fails the moment the user pastes."
+    ],
+    "typographicSubstitutes": "Characters an operating system inserts in place of a keystroke: { substitute, key } pairs, each exactly ONE Unicode scalar. macOS turns a typed ' into U+2019, \" into U+201C/D and - into U+2013, and text pasted from other apps arrives the same way. Fold a substitute onto its `key` ONLY in the QWERTY -> Kedmanee direction, and ONLY for text you are actually converting: these keys carry ' = NGO NGU, \" = '.', - = KHO KHWAI, so without the fold those Kedmanee characters are unreachable. The fold is many-to-one and has no inverse; the Kedmanee -> QWERTY direction always emits the straight ASCII key. Text the gate leaves alone must keep its original characters -- straightening a curl is a change to text that was promised to be untouched."
   },
   "mapping": [
     {
@@ -392,6 +394,32 @@
     {
       "kedmanee": "%",
       "qwerty": "~"
+    }
+  ],
+  "typographicSubstitutes": [
+    {
+      "substitute": "‘",
+      "key": "'"
+    },
+    {
+      "substitute": "’",
+      "key": "'"
+    },
+    {
+      "substitute": "“",
+      "key": "\""
+    },
+    {
+      "substitute": "”",
+      "key": "\""
+    },
+    {
+      "substitute": "–",
+      "key": "-"
+    },
+    {
+      "substitute": "—",
+      "key": "-"
     }
   ],
   "cases": [
@@ -1078,6 +1106,78 @@
       "mode": "englishToThai",
       "input": "ri6j'ouh",
       "output": "พรุ่งนี้"
+    },
+    {
+      "name": "substitution: a curled apostrophe is still the NGO NGU key",
+      "mode": "englishToThai",
+      "input": "’",
+      "output": "ง"
+    },
+    {
+      "name": "substitution: an opening single curl is the same key",
+      "mode": "englishToThai",
+      "input": "‘",
+      "output": "ง"
+    },
+    {
+      "name": "substitution: curled double quotes are the full-stop key",
+      "mode": "englishToThai",
+      "input": "“",
+      "output": "."
+    },
+    {
+      "name": "substitution: closing double curl is the same key",
+      "mode": "englishToThai",
+      "input": "”",
+      "output": "."
+    },
+    {
+      "name": "substitution: an en dash is the KHO KHWAI key",
+      "mode": "englishToThai",
+      "input": "–",
+      "output": "ข"
+    },
+    {
+      "name": "substitution: an em dash is the same key",
+      "mode": "englishToThai",
+      "input": "—",
+      "output": "ข"
+    },
+    {
+      "name": "substitution: a curled word converts as the keys that were pressed",
+      "mode": "englishToThai",
+      "input": "don’t",
+      "output": "กนืงะ"
+    },
+    {
+      "name": "substitution: the curl does not break the run",
+      "mode": "englishToThai",
+      "input": "l;ylfu’",
+      "output": "สวัสดีง"
+    },
+    {
+      "name": "substitution: mixed leaves correct curled english exactly as it found it",
+      "mode": "mixed",
+      "input": "don’t",
+      "output": "don’t"
+    },
+    {
+      "name": "substitution: mixed does not straighten quotes it passes through",
+      "mode": "mixed",
+      "input": "“hello”",
+      "output": "“hello”"
+    },
+    {
+      "name": "substitution: mixed does not straighten a dash it passes through",
+      "mode": "mixed",
+      "input": "well — yes",
+      "output": "well — yes"
+    },
+    {
+      "name": "substitution: the reverse direction emits the straight key",
+      "mode": "thaiToEnglish",
+      "input": "ง",
+      "output": "'"
     }
   ]
 }
