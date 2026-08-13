@@ -22,7 +22,7 @@ mode converts only the parts that are actually broken.
 
 | | |
 | --- | --- |
-| **Status** | v0.2.0 — converter and menu-bar app work; ad-hoc signed builds only |
+| **Status** | v0.2.2 — converter and menu-bar app work; ad-hoc signed builds only |
 | **Requires** | macOS 14 (Sonoma) or later, Apple silicon or Intel |
 | **Stack** | Swift 6, SwiftUI, AppKit, SwiftPM, XCTest |
 | **Privacy** | Local-only, and sandboxed with no network entitlement. |
@@ -97,7 +97,7 @@ happens to be well-formed passes through — `แนกำ` (which was "code") b
 | | |
 | --- | --- |
 | Correct text left untouched | 36 of 36 sampled — acronyms, URLs, paths, code, English, numbers, Thai |
-| English mistypings fixed | 15 of 24 sampled |
+| English mistypings fixed | 19 of 30 sampled |
 | Thai mistypings fixed | 4 of 12 sampled |
 
 That ordering is deliberate: leaving a mistyping is recoverable — you see it and switch to an
@@ -144,7 +144,7 @@ swift Tools/dump-kedmanee.swift
 
 `Fixtures/conversion-cases.json` is a language-neutral behaviour contract: the full 94-key table,
 the typographic substitutions an OS makes on the user's behalf, a `schema` block describing the
-format, and 126 cases across all three modes — including every string in the precision corpus and
+format, and 132 cases across all three modes — including every string in the precision corpus and
 every known miss. A future Windows port has to pass the same file, and passing it means holding
 the same accuracy figures, not just the easy cases.
 

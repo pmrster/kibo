@@ -3,6 +3,51 @@
 All notable changes to this project are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.2.2] — 2026-08-14
+
+### Fixed
+
+- **Mixed mode now catches the `-ture` family** — `feature`, `picture`, `future`, `nature` typed
+  with the Thai layout on. `ThaiOrthography` gained one rule: a *combining* vowel may not follow a
+  *spacing* vowel (`ะ า ำ ๅ`), which completes the syllable and leaves nothing to attach to. On
+  the Thai layout `t` is `ะ` and `u` is `ี`, so those words land `ะี` mid-word — unpronounceable,
+  but every earlier rule was satisfied because the consonant two characters back still counted as
+  a base. Reported against `ดำฟะีพำ`, which Mixed handed back untouched.
+- Tone marks are exempt from the new rule, deliberately. `นำ้` is `น้ำ` with the tone mark and the
+  sara am encoded the wrong way round — sloppy, but real Thai, and it was the only false positive
+  the rule produced when measured against 103 real Thai words.
+
+### Changed
+
+- **English recall is now 19 of 30, up from 15 of 24.** The corpus grew by the whole family that
+  was measured together — feature, picture, future, nature, *and* the two the rule does not
+  rescue, value and issue. Adding only the wins would have inflated the figure. Precision is
+  unchanged at 36 of 36, and Thai recall at 4 of 12.
+- `Fixtures/conversion-cases.json` carries the six new cases (132 total).
+
+## [0.2.1] — 2026-08-14
+
+### Fixed
+
+- **A typed apostrophe could not produce `ง`.** `NSTextView`, which backs SwiftUI's `TextEditor`,
+  enables quote and dash substitution by default, so `'` reached the converter as `’` (U+2019) — a
+  character on no key, absent from the dumped table, and neutral to `RunSplitter`. It survived
+  even the mechanical EN → TH flip. The same applied to `"` → `“”` (the `.` key) and `-` → `–`
+  (the `ข` key). `autocorrectionDisabled(true)` does not cover this; measured against the real
+  view hierarchy, it clears spelling correction alone.
+- `TypographicSubstitutes` folds those six characters back onto the key that was pressed, in the
+  QWERTY → Thai direction only and only on scalars actually being converted — so Mixed mode still
+  returns `don’t` with its curl intact. Pasted text is the reason this lives in Core rather than
+  only in the shell: other apps curl quotes whatever Kibo does.
+- The shell also registers the two substitution defaults off, so the input field stops rewriting
+  text at the point of entry.
+- `RunSplitter` counts the substitutes as Latin; left neutral, `’` cut `don’t` into three runs and
+  the gate never saw a word to judge.
+
+### Changed
+
+- The fixture gains a `typographicSubstitutes` table and is at `version` 3.
+
 ## [0.2.0] — 2026-08-12
 
 The first release under the name **Kibo**, and the first hardened one. Everything below had

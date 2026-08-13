@@ -33,12 +33,12 @@ final class MeasuredAccuracyTests: XCTestCase {
         }
     }
 
-    // MARK: - Recall, English mistyped on the Thai layout — 15 of 24
+    // MARK: - Recall, English mistyped on the Thai layout — 19 of 30
 
     func test_recall_english_corpus_is_the_size_the_docs_claim() {
         let total = AccuracyCorpus.englishCaught.count + AccuracyCorpus.englishMissed.count
-        XCTAssertEqual(AccuracyCorpus.englishCaught.count, 15)
-        XCTAssertEqual(total, 24, "The docs quote '15 of 24'. Update them with the corpus.")
+        XCTAssertEqual(AccuracyCorpus.englishCaught.count, 19)
+        XCTAssertEqual(total, 30, "The docs quote '19 of 30'. Update them with the corpus.")
     }
 
     func test_recall_english_mistypings_are_fixed() {

@@ -1178,6 +1178,42 @@
       "mode": "thaiToEnglish",
       "input": "ง",
       "output": "'"
+    },
+    {
+      "name": "recall en: fixes 'feature'",
+      "mode": "mixed",
+      "input": "ดำฟะีพำ",
+      "output": "feature"
+    },
+    {
+      "name": "recall en: fixes 'picture'",
+      "mode": "mixed",
+      "input": "ยรแะีพำ",
+      "output": "picture"
+    },
+    {
+      "name": "recall en: fixes 'future'",
+      "mode": "mixed",
+      "input": "ดีะีพำ",
+      "output": "future"
+    },
+    {
+      "name": "recall en: fixes 'nature'",
+      "mode": "mixed",
+      "input": "ืฟะีพำ",
+      "output": "nature"
+    },
+    {
+      "name": "known miss: 'value' mistyped is well-formed thai",
+      "mode": "mixed",
+      "input": "อฟสีำ",
+      "output": "อฟสีำ"
+    },
+    {
+      "name": "known miss: 'issue' mistyped is well-formed thai",
+      "mode": "mixed",
+      "input": "รหหีำ",
+      "output": "รหหีำ"
     }
   ]
 }

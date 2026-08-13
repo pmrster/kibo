@@ -172,8 +172,14 @@ Mixed converts a run **only if that run is malformed in its own script**, which 
 orthography:
 
 - **Thai** — a vowel or tone mark needs a consonant before it; a leading vowel (`เ แ โ ใ ไ`) needs
-  a consonant after it; the same mark never repeats. No dictionary means no word segmentation,
-  which matters because written Thai has no spaces.
+  a consonant after it; the same mark never repeats; and **a combining vowel never follows a
+  spacing vowel** (`ะ า ำ ๅ`), which complete the syllable and leave nothing to attach to. That
+  last rule is what catches the `-ture` family — `t` is `ะ` and `u` is `ี`, so `feature` lands
+  `ะี` mid-word — and it needed adding because `hasBase` alone still counted the consonant two
+  characters back. **Tone marks are exempt from it on purpose**: `นำ้` is `น้ำ` with the tone and
+  the sara am the wrong way round, which is sloppy but real Thai, and it was the one false
+  positive found when the rule was measured against 103 real words. No dictionary means no word
+  segmentation, which matters because written Thai has no spaces.
 - **Latin** — runs with fewer than three letters are not judged; a `;` between two letters gives a
   mistyping away; otherwise a 6+ consonant pile-up, or no vowel at all in a word of six letters or
   more, condemns it. Measured per letter-group so `index.html` is not read as `indexhtml`, and
@@ -202,12 +208,15 @@ so a Windows port inherits the same numbers instead of a sample of them.
 | Measure | Result | Notes |
 | --- | --- | --- |
 | **Precision** — correct text left untouched | 36 of 36 | `AccuracyCorpus.mustSurvive` |
-| Recall — English mistyped as Thai | 15 of 24 | missed: about, please, sorry, code, ok, and, report, great, work |
+| Recall — English mistyped as Thai | 19 of 30 | missed: about, please, sorry, code, ok, and, report, great, work, value, issue |
 | Recall — Thai mistyped as Latin | 4 of 12 | missed: โรงเรียน, ผม, แมว, ไป, กิน, ทำงาน, วันนี้, พรุ่งนี้ |
 
 (The English figure read "16 of 25" here for a while, "17 of a 26-word sample" in a test comment,
 and measured 15 of 24. Three numbers, no test counting any of them — which is what the count
-assertions now prevent.)
+assertions now prevent. It later went to 19 of 30 when the spacing-vowel rule landed: the corpus
+grew by the whole `-ture`/`-ue` family that was measured together — feature, picture, future,
+nature, value, issue — and not just the four the rule rescued. **Add the losses with the wins**,
+or the figure is advertising rather than measurement.)
 
 The misses are wreckage that happens to be well-formed — `แนกำ` ("code") breaks no Thai rule, and
 `นา` ("ok") is a real Thai word that not even a dictionary would rescue. **The escape hatch is the
@@ -221,7 +230,7 @@ leaving a mistyping, because the user can see and fix the latter.
 - Tests exercise the public converter interface, not mapping internals.
 - `Fixtures/conversion-cases.json` is the portable behaviour contract for a later Windows port:
   the full key table, the `typographicSubstitutes` fold, a `schema` block describing the format
-  for a non-Swift reader, and 126 cases across all three modes — the whole precision corpus, both
+  for a non-Swift reader, and 132 cases across all three modes — the whole precision corpus, both
   recall corpora, and the known misses.
   `FixtureConformanceTests` reads it from the repo via `#filePath` — there is no resource bundle,
   and a test that reaches for the real file cannot silently pass against a stale copy. It also

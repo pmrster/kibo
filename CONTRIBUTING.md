@@ -24,7 +24,7 @@ and it is deliberately tuned to leave correct text alone even when that means mi
 mistyping. Leaving a mistyping is recoverable — the user sees it and switches to an explicit mode.
 Mangling text they typed correctly is not.
 
-`MeasuredAccuracyTests` pins all three figures (36 of 36 precision, 15 of 24 English recall, 4 of
+`MeasuredAccuracyTests` pins all three figures (36 of 36 precision, 19 of 30 English recall, 4 of
 12 Thai recall). If your change moves any of them, the suite fails. That is the mechanism working.
 Update `AccuracyCorpus`, re-run, and say in your PR what moved in **both** directions — a recall
 improvement that costs a precision case will not be merged.
