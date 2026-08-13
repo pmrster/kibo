@@ -445,8 +445,8 @@
     {
       "name": "spec: english word typed on the thai layout",
       "mode": "thaiToEnglish",
-      "input": "ไำะ",
-      "output": "wet"
+      "input": "้ำสสน",
+      "output": "hello"
     },
     {
       "name": "every unshifted letter key",
@@ -511,8 +511,8 @@
     {
       "name": "mixed: the worked example",
       "mode": "mixed",
-      "input": "l;ylfu ไำะ ครับ 2024 :)",
-      "output": "สวัสดี wet ครับ 2024 :)"
+      "input": "l;ylfu ้ำสสน ครับ 2024 :)",
+      "output": "สวัสดี hello ครับ 2024 :)"
     },
     {
       "name": "mixed: correct text of both scripts is left alone",
@@ -523,8 +523,8 @@
     {
       "name": "mixed: each run converts in its own direction",
       "mode": "mixed",
-      "input": "l;ylfu ไำะ",
-      "output": "สวัสดี wet"
+      "input": "l;ylfu ้ำสสน",
+      "output": "สวัสดี hello"
     },
     {
       "name": "mixed: numbers and punctuation are never touched",

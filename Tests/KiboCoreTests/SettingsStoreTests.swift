@@ -21,7 +21,7 @@ final class SettingsStoreTests: XCTestCase {
 
         XCTAssertEqual(store.appearance, .system)
         XCTAssertEqual(store.fontSize, .small)
-        XCTAssertEqual(store.lastMode, .mixed)
+        XCTAssertEqual(store.lastMode, .swapAll)
     }
 
     func test_values_round_trip() throws {
@@ -48,7 +48,7 @@ final class SettingsStoreTests: XCTestCase {
 
         XCTAssertEqual(store.appearance, .system)
         XCTAssertEqual(store.fontSize, .small)
-        XCTAssertEqual(store.lastMode, .mixed)
+        XCTAssertEqual(store.lastMode, .swapAll)
     }
 
     func test_font_size_factors_only_grow() {

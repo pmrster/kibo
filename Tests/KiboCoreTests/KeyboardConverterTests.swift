@@ -16,13 +16,13 @@ final class KeyboardConverterTests: XCTestCase {
         XCTAssertEqual(convert("vpkddbodkca", .englishToThai), "อยากกินกาแฟ")
         XCTAssertEqual(convert("ะ้ฟืา", .thaiToEnglish), "thank")
         XCTAssertEqual(convert("l;ylfu", .englishToThai), "สวัสดี")
-        XCTAssertEqual(convert("ไำะ", .thaiToEnglish), "wet")
+        XCTAssertEqual(convert("้ำสสน", .thaiToEnglish), "hello")
     }
 
     /// The behaviour the whole Mixed design exists for: wreckage is fixed, correct text is not,
     /// and everything that is neither is left exactly where it was.
     func test_mixed_worked_example() {
-        XCTAssertEqual(convert("l;ylfu ไำะ ครับ 2024 :)", .mixed), "สวัสดี wet ครับ 2024 :)")
+        XCTAssertEqual(convert("l;ylfu ้ำสสน ครับ 2024 :)", .mixed), "สวัสดี hello ครับ 2024 :)")
     }
 
     // MARK: - Result shape
@@ -96,7 +96,7 @@ final class KeyboardConverterTests: XCTestCase {
     }
 
     func test_mixed_converts_each_run_in_its_own_direction() {
-        XCTAssertEqual(convert("l;ylfu ไำะ", .mixed), "สวัสดี wet")
+        XCTAssertEqual(convert("l;ylfu ้ำสสน", .mixed), "สวัสดี hello")
     }
 
     /// A Thai run that arrives with almost no letters after mistyping — `ขอบคุณ` — still gets
@@ -161,7 +161,7 @@ final class KeyboardConverterTests: XCTestCase {
     func test_converts_one_hundred_thousand_characters_quickly() {
         // Counted in scalars, not Characters: Thai combining marks fuse, so `.count` understates
         // how much text the converter actually walks.
-        let input = String(repeating: "l;ylfu ไำะ ครับ 2024 :) ", count: 5_000)
+        let input = String(repeating: "l;ylfu ้ำสสน ครับ 2024 :) ", count: 5_000)
         XCTAssertGreaterThan(input.unicodeScalars.count, 100_000)
 
         let start = Date()

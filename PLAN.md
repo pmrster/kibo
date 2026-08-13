@@ -93,7 +93,7 @@ logic lives. The WidgetKit extension remains a Phase 3 item and is not created.
 ### Mixed is judged, not mechanical
 
 This supersedes the original plan, which called for Mixed to flip every run unconditionally. That
-rule would turn `l;ylfu ไำะ ครับ 2024 :)` into `สวัสดี wet 8i-y /จ/ภ ซ๗` — correcting two runs and
+rule would turn `l;ylfu ้ำสสน ครับ 2024 :)` into `สวัสดี hello 8iy[ /จ/ภ ซ๗` — correcting two runs and
 destroying three. The judgement is deterministic and dictionary-free, resting on Thai and English
 spelling structure; `SPEC.md` documents the rules and `CLAUDE.md` the measured accuracy.
 

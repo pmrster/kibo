@@ -3,6 +3,35 @@
 All notable changes to this project are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.2.4] — 2026-08-14
+
+### Changed
+
+- **The mode picker is ordered most-used first**: Both, EN → TH, TH → EN, Mixed, with `⌘1`–`⌘4`
+  following.
+- **A fresh install now opens in Both rather than Mixed.** New constant `ConversionMode.default`,
+  because three sites needed the answer and two could have drifted from the third; it is not
+  derived from the picker order, since that is presentation and this is behaviour. The trade is
+  deliberate: Both converts correct text, so a first-time user pasting something already right
+  will see it mangled, against a Mixed default that can appear to do nothing at all on text it
+  cannot judge. The result field is a preview rather than an action, which is what makes that
+  acceptable.
+- *Upgrade note:* returning users are unaffected — a stored `lastMode` still wins, so only a fresh
+  install or an unparseable stored value lands in Both.
+- The `--snapshot` tooling now renders the default mode, which also makes it the run that catches
+  badge overflow: "everything, both directions" is the longest of the four.
+- **The worked example is now `l;ylfu ้ำสสน ครับ 2024 :)` → `สวัสดี hello ครับ 2024 :)`**, replacing
+  `ไำะ` → `wet`, which read as an odd thing for anyone to have typed. It runs through the docs, the
+  Settings preview, the snapshots and the fixture, so all of them move together. `world` was the
+  first choice and cannot be used: it mistypes to `ไนพสก`, which breaks no Thai spelling rule — the
+  leading vowel `ไ` has a consonant after it — so Mixed correctly leaves it alone, and an example
+  that claimed otherwise would be advertising a conversion the app does not make.
+- **The modes now carry Thai tooltips**, the only Thai in an otherwise English interface. Four
+  labels that terse cannot say what separates them, and the distinction that costs most to learn
+  by accident — Both converts correct text, Mixed spares it — is worth more to a Thai speaker in
+  Thai than the consistency is worth. Labels, buttons and badges stay English. The same text is
+  set as the accessibility hint.
+
 ## [0.2.3] — 2026-08-14
 
 ### Added

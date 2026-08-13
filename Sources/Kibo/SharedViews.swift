@@ -39,9 +39,12 @@ struct ThemedSegmentedControl<Value: Hashable>: View {
     let selection: Value
     let label: (Value) -> String
     let accessibilityTitle: String
-    /// ⌘1/⌘2/⌘3 on the converter's mode picker, where the keyboard matters. Off elsewhere, so
+    /// ⌘1–⌘4 on the converter's mode picker, where the keyboard matters. Off elsewhere, so
     /// Settings does not silently claim shortcuts the converter is already using.
     var numberKeyShortcuts = false
+    /// What the segment does, for the tooltip, when the label is too short to say it. Falls back
+    /// to the label — Settings' options explain themselves, the conversion modes do not.
+    var help: ((Value) -> String)?
     let onSelect: (Value) -> Void
 
     var body: some View {
@@ -54,6 +57,13 @@ struct ThemedSegmentedControl<Value: Hashable>: View {
         .background(Palette.fieldFill, in: RoundedRectangle(cornerRadius: 8))
         .accessibilityElement(children: .contain)
         .accessibilityLabel(accessibilityTitle)
+    }
+
+    /// The shortcut is appended rather than built into the description, so the description stays
+    /// one translatable sentence and the key stays readable at the end of it.
+    private func tooltip(for option: Value, title: String, index: Int) -> String {
+        let description = help?(option) ?? title
+        return numberKeyShortcuts ? "\(description) (⌘\(index + 1))" : description
     }
 
     @ViewBuilder
@@ -74,8 +84,9 @@ struct ThemedSegmentedControl<Value: Hashable>: View {
         }
         .buttonStyle(.plain)
         .modifier(NumberKeyShortcut(index: index, enabled: numberKeyShortcuts))
-        .help(numberKeyShortcuts ? "\(title) (⌘\(index + 1))" : title)
+        .help(tooltip(for: option, title: title, index: index))
         .accessibilityLabel(title)
+        .accessibilityHint(help?(option) ?? "")
         .accessibilityAddTraits(isSelected ? [.isSelected] : [])
     }
 }

@@ -115,9 +115,23 @@ Two targets, with a deliberate split:
   sprite, the glyph was indistinguishable from Tama's in a real menu bar, and a `ก` keycap outline
   stood in. A ghost beside a cat has no such problem. Rejected glyphs, all rendered at true size
   first: a pixel keycap (read as a monitor), pixel swap arrows (a smudge), `ก⇄A` (too wide).
-- **Language** — the interface is entirely English, matching the app's English name. Thai appears
-  only in the text being converted, which is why `AppFont.thai` is now used only by the input and
-  result fields.
+- **Language** — the interface is English, matching the app's English name: labels, buttons and
+  badges, all of them. **The one exception is the mode picker's tooltips, which are Thai**
+  (`ConverterView.helpText(for:)`). Four labels that terse cannot say what separates them, and the
+  distinction that costs the most to learn by accident — Both converts correct text, Mixed spares
+  it — is worth more to a Thai speaker in Thai than the consistency is worth. Keep the exception
+  to explanatory text; if a *label* ever wants Thai, that is a different decision. Everywhere else
+  Thai appears only in the text being converted, which is why `AppFont.thai` is used by the input
+  and result fields and nothing else.
+- **Mode order is most-used first** — Both, EN → TH, TH → EN, Mixed — set by the declaration order
+  of `ConversionMode`, which the picker and the ⌘1–⌘4 shortcuts are both built from.
+- **A fresh install opens in Both**, via `ConversionMode.default` — one constant, because three
+  sites need the answer and two of them could otherwise drift. It is deliberately *not*
+  `allCases.first`: picker order is presentation and may be reshuffled, the default is behaviour.
+  This is a product decision that trades safety for usefulness — Both converts correct text, so a
+  first-time user pasting something already right will see it mangled, against a Mixed default
+  that would sometimes appear to do nothing at all. The result field is a preview, not an action,
+  which is what makes the trade acceptable. Returning users are unaffected: they get `lastMode`.
 
 `AppSettings` is an `ObservableObject` while `ConverterModel` is `@Observable`. That is not an
 oversight: `StatusItemController` is AppKit and needs to *subscribe* to appearance changes
@@ -173,7 +187,7 @@ multi-scalar entry outright.
 ### Mixed mode and what it cannot do
 
 Mixed converts a run **only if that run is malformed in its own script**, which is why
-`สวัสดี wet ครับ 2024 :)` keeps `ครับ` and `2024`. The gate is dictionary-free, judged on
+`สวัสดี hello ครับ 2024 :)` keeps `ครับ` and `2024`. The gate is dictionary-free, judged on
 orthography:
 
 - **Thai** — a vowel or tone mark needs a consonant before it; a leading vowel (`เ แ โ ใ ไ`) needs
