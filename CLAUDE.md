@@ -156,8 +156,13 @@ input ──▶ RunSplitter ──▶ RunJudge ──▶ KedmaneeMapping ──�
   The typographic substitutes count as Latin despite being outside ASCII: left neutral, `’` cut
   `don’t` into three runs and `RunJudge` never saw a word to judge.
 - **`RunJudge`** — the convert-or-keep decision, used only by Mixed mode.
-- **`KeyboardConverter`** — the public `KeyboardConverting` interface. Explicit modes are
-  mechanical whole-string flips; Mixed asks `RunJudge` per run.
+- **`KeyboardConverter`** — the public `KeyboardConverting` interface. The two explicit directions
+  are mechanical whole-string flips; Mixed and `swapAll` share one run walk and differ only in the
+  predicate they pass it — `RunJudge.shouldConvert` against a constant `true`. **`swapAll` ("Both"
+  in the UI) flips every run the way its own script implies**, which is the only mode that fixes
+  text mistyped in *both* directions at once — switch layout mid-sentence and neither explicit
+  direction helps, because each leaves the other script alone. It exists because Mixed provably
+  cannot do this: see the three rejected approaches below.
 
 **Everything walks `unicodeScalars`, never `Character`.** Thai combining marks fuse with the
 consonant before them, so `"สวัสดี"` is six scalars but only four Characters. A Character-based
@@ -220,9 +225,37 @@ or the figure is advertising rather than measurement.)
 
 The misses are wreckage that happens to be well-formed — `แนกำ` ("code") breaks no Thai rule, and
 `นา` ("ok") is a real Thai word that not even a dictionary would rescue. **The escape hatch is the
-explicit EN → TH / TH → EN modes, which are mechanical and never consult the gate.** Do not
-"improve" recall without re-measuring precision: mangling correct text is a worse failure than
-leaving a mistyping, because the user can see and fix the latter.
+three mechanical modes, which never consult the gate.** Do not "improve" recall without
+re-measuring precision: mangling correct text is a worse failure than leaving a mistyping, because
+the user can see and fix the latter.
+
+### Three ways to raise recall that were measured and rejected
+
+Reported as "Mixed does nothing" against `vtwiot gTv0twxpy'w'vt เพฟิ sinv0twxi5g,]N` — a Thai
+sentence typed on the US layout with one English word typed on the Thai one. Every run is a miss.
+Each fix below looks obvious, and each was killed by measurement. **Do not re-attempt these
+without new evidence.**
+
+1. **Apply the letter-poor path's question — "does this flip to well-formed Thai?" — to runs that
+   have letters.** Measured against `/usr/share/dict/words` (235,762 words): **36% flip to
+   well-formed, entirely-Thai text containing a vowel mark** — `abandon`, `aardvark`, `abalone`,
+   `abdicate`. `rhythm` is not an outlier, it is a third of English. Requiring a leading-vowel
+   syllable as well only cuts it to 14%. This is why the path is fenced to runs with too few
+   letters to judge, and the fence must stay.
+2. **Flag letter pairs English never writes.** Only 59 of 676 bigrams are absent from that
+   dictionary, and the reported runs hit two of them (`vt`, `wx`), with just one false positive in
+   the precision corpus (`SQL`, already covered by the all-caps skip). It still fails: the word
+   list is pre-war and has no technical vocabulary, so the rule mangles `json`, `sqlite`,
+   `qwerty`, `docx`, `xlsx`, `tsx`, `jsx` and `mysqldump`.
+3. **Require every Latin run in the input to flip, so agreement carries the decision.** Zero of
+   ten ordinary English sentences tripped it, and the reported input is 3 of 3 — but `come look at
+   my one` and `let me look at it` are 5 of 5, and `let me make some` is 4 of 4. Dead at any
+   threshold.
+
+The conclusion is not "try harder": **Thai-on-QWERTY and English are the same distribution by
+spelling shape.** The only signal with real information is a Thai wordlist, which would segment
+`อะไรนะ` into `อะไร` + `นะ` while `let me make some` flips to non-words. That stays unbuilt —
+it contradicts the dictionary-free design, and `swapAll` covers the reported case for nothing.
 
 ## Testing
 
@@ -230,7 +263,7 @@ leaving a mistyping, because the user can see and fix the latter.
 - Tests exercise the public converter interface, not mapping internals.
 - `Fixtures/conversion-cases.json` is the portable behaviour contract for a later Windows port:
   the full key table, the `typographicSubstitutes` fold, a `schema` block describing the format
-  for a non-Swift reader, and 132 cases across all three modes — the whole precision corpus, both
+  for a non-Swift reader, and 136 cases across all four modes — the whole precision corpus, both
   recall corpora, and the known misses.
   `FixtureConformanceTests` reads it from the repo via `#filePath` — there is no resource bundle,
   and a test that reaches for the real file cannot silently pass against a stale copy. It also

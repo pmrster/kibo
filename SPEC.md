@@ -17,13 +17,14 @@ A WidgetKit widget may be added as a companion for glanceable state and shortcut
 
 ## Solution
 
-A simple converter that accepts text typed on the wrong keyboard and returns the corrected version. Three modes cover all common cases:
+A simple converter that accepts text typed on the wrong keyboard and returns the corrected version. Four modes cover all common cases:
 
 1. **Mixed** — separates the text into Thai, Latin, and neutral runs and converts a run **only when that run is malformed in its own script**. Already-correct words, numbers, and punctuation are left exactly as typed. The judgement is deterministic and dictionary-free, based on Thai and English spelling structure; see *Mixed-mode judgement* below for what it can and cannot detect.
 2. **EN → TH** — converts English-keyboard keystrokes into Thai characters. Mechanical: converts everything mappable, without judgement.
 3. **TH → EN** — converts Thai-keyboard keystrokes into English characters. Also mechanical.
+4. **Both** — flips *every* run in the direction its current script implies: Thai runs to English, Latin runs to Thai, in one pass. Mechanical, like the two explicit directions, but per run rather than whole-string.
 
-The two explicit modes exist as the escape hatch for when Mixed's judgement is wrong.
+The three mechanical modes exist as the escape hatch for when Mixed's judgement is wrong. **Both** covers the case neither explicit direction can: text mistyped in *both* directions at once, which happens when the layout is switched partway through a sentence.
 
 ## Target user
 
@@ -45,6 +46,7 @@ Thai speakers who type in both Thai and English on macOS. Windows users are the 
 | Mixed | `l;ylfu ไำะ ครับ 2024 :)` | `สวัสดี wet ครับ 2024 :)` | Only the malformed runs convert. `ครับ` is correct Thai, `2024` is a number, `:)` has no letters — all three are left alone. |
 | EN → TH | `vpkddbodkca` | `อยากกินกาแฟ` | Whole string treated as English keystrokes. |
 | TH → EN | `ะ้ฟืา` | `thank` | Whole string treated as Thai keystrokes. |
+| Both | `vtwiot เพฟิ` | `อะไรนะ grab` | Each run flipped by its own script. Converts correct text too — the user is supplying the judgement. |
 
 ### Mixed-mode judgement
 
@@ -70,11 +72,11 @@ A dictionary-backed judgement was considered and rejected for the MVP — writte
 
 - **Menu-bar access**: An `NSStatusItem` opens a compact converter window on left-click, and an About / Settings / Quit menu on right-click. (`MenuBarExtra` was the original plan; it offers no right-click hook, and a menu-bar-only app has no menu bar of its own to put those commands in.)
 - **Pinnable window**: The converter can float above other apps, so it stays open while the user switches away to paste.
-- **Three conversion modes**: Mixed, EN → TH, TH → EN.
+- **Four conversion modes**: Mixed, EN → TH, TH → EN, Both.
 - **Live conversion**: Output updates locally on every input change.
 - **One-click copy**: A prominent copy button with “Copied” feedback, retracted as soon as the result changes.
 - **Explicit paste**: A paste button reads the clipboard only after the user asks it to.
-- **Swap direction**: Quick toggle between EN → TH and TH → EN.
+- **Swap direction**: Quick toggle between EN → TH and TH → EN. Disabled for Mixed and Both, which are direction-symmetric.
 - **Clear input**: Reset the input field.
 - **System appearance**: Follow macOS light/dark appearance by default.
 - **Privacy-first**: All conversion happens on-device; no server calls or analytics.
