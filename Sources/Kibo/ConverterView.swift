@@ -85,13 +85,14 @@ struct ConverterView: View {
             Button(action: model.swapDirection) {
                 Image(systemName: "arrow.left.arrow.right")
                     .font(AppFont.ui(11, weight: .semibold))
-                    .foregroundStyle(model.mode == .mixed ? Palette.dim.opacity(0.4) : Palette.accent)
+                    .foregroundStyle(model.mode.hasDirection ? Palette.accent : Palette.dim.opacity(0.4))
             }
             .buttonStyle(.plain)
-            // Mixed has no opposite direction, so there is nothing to swap.
-            .disabled(model.mode == .mixed)
+            // Mixed and Both are direction-symmetric, so there is nothing to swap.
+            .disabled(!model.mode.hasDirection)
             .keyboardShortcut("s", modifiers: [.command, .shift])
-            .help(model.mode == .mixed ? "Mixed has no direction to swap" : "Swap direction (⇧⌘S)")
+            .help(model.mode.hasDirection ? "Swap direction (⇧⌘S)"
+                                          : "\(Self.label(for: model.mode)) has no direction to swap")
             .accessibilityLabel("Swap direction")
         }
     }
@@ -110,11 +111,14 @@ struct ConverterView: View {
                                numberKeyShortcuts: true) { model.mode = $0 }
     }
 
+    /// Kept to the width of `EN → TH` or shorter. The segments divide the row evenly, so the
+    /// longest label sets how tight all four are; "Both directions" truncated at this width.
     private static func label(for mode: ConversionMode) -> String {
         switch mode {
         case .mixed: return "Mixed"
         case .englishToThai: return "EN → TH"
         case .thaiToEnglish: return "TH → EN"
+        case .swapAll: return "Both"
         }
     }
 
@@ -128,6 +132,7 @@ struct ConverterView: View {
         case .mixed: return "only what looks mistyped"
         case .englishToThai: return "EN → TH"
         case .thaiToEnglish: return "TH → EN"
+        case .swapAll: return "everything, both directions"
         }
     }
 

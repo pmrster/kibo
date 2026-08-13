@@ -8,7 +8,8 @@
     "modes": {
       "englishToThai": "Mechanical whole-string flip, QWERTY keystrokes -> Kedmanee. Never consults the gate.",
       "thaiToEnglish": "Mechanical whole-string flip, the other way. Never consults the gate.",
-      "mixed": "Per-run judgement: convert a run only if it is malformed in its own script. This is where precision and recall live, and where a port will differ if its gate differs."
+      "mixed": "Per-run judgement: convert a run only if it is malformed in its own script. This is where precision and recall live, and where a port will differ if its gate differs.",
+      "swapAll": "Mechanical, but per run rather than whole-string: every run is flipped in the direction its current script implies -- Thai runs to QWERTY, Latin runs to Kedmanee, neutral runs untouched. Same run splitting as mixed, but the gate is never consulted, so correct text is converted too. Exists for text mistyped in BOTH directions at once, which no single explicit direction fixes."
     },
     "notes": [
       "Walk unicodeScalars, never grapheme clusters: Thai combining marks fuse with the consonant before them, so a per-character loop is handed clusters that appear in no table.",
@@ -1214,6 +1215,30 @@
       "mode": "mixed",
       "input": "รหหีำ",
       "output": "รหหีำ"
+    },
+    {
+      "name": "swap all: a sentence mistyped in both directions",
+      "mode": "swapAll",
+      "input": "vtwiot เพฟิ sinv0twxi5g,]N",
+      "output": "อะไรนะ grab หรือจะไปรถเมล์"
+    },
+    {
+      "name": "swap all: each run goes the way its script implies",
+      "mode": "swapAll",
+      "input": "l;ylfu สวัสดี",
+      "output": "สวัสดี l;ylfu"
+    },
+    {
+      "name": "swap all: correct text is converted too, unlike mixed",
+      "mode": "swapAll",
+      "input": "ครับ",
+      "output": "8iy["
+    },
+    {
+      "name": "swap all: what is on no layout passes through",
+      "mode": "swapAll",
+      "input": "🐈 é",
+      "output": "🐈 é"
     }
   ]
 }

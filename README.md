@@ -22,7 +22,7 @@ mode converts only the parts that are actually broken.
 
 | | |
 | --- | --- |
-| **Status** | v0.2.2 — converter and menu-bar app work; ad-hoc signed builds only |
+| **Status** | v0.2.3 — converter and menu-bar app work; ad-hoc signed builds only |
 | **Requires** | macOS 14 (Sonoma) or later, Apple silicon or Intel |
 | **Stack** | Swift 6, SwiftUI, AppKit, SwiftPM, XCTest |
 | **Privacy** | Local-only, and sandboxed with no network entitlement. |
@@ -60,9 +60,11 @@ Three modes:
 | **Mixed** | Converts only the runs that look wrong. Leaves correct text, numbers, and punctuation alone. |
 | **EN → TH** | Treats the whole string as English keystrokes typed with the Thai layout on. |
 | **TH → EN** | The reverse. |
+| **Both** | Flips every run the way its own script implies, in one pass — for text mistyped in both directions at once. |
 
-The two explicit modes are mechanical — they flip everything, no judgement. They are the escape
-hatch for when Mixed guesses wrong.
+The last three are mechanical — they flip everything, no judgement. They are the escape hatch for
+when Mixed guesses wrong. **Both** is the one to reach for when you switched layout partway through
+a sentence, so half of it is wrong each way: no single direction can fix that.
 
 Everything happens as you type, and the whole flow works without a mouse:
 
@@ -144,7 +146,7 @@ swift Tools/dump-kedmanee.swift
 
 `Fixtures/conversion-cases.json` is a language-neutral behaviour contract: the full 94-key table,
 the typographic substitutions an OS makes on the user's behalf, a `schema` block describing the
-format, and 132 cases across all three modes — including every string in the precision corpus and
+format, and 136 cases across all four modes — including every string in the precision corpus and
 every known miss. A future Windows port has to pass the same file, and passing it means holding
 the same accuracy figures, not just the easy cases.
 

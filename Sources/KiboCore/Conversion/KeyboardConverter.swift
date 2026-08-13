@@ -24,7 +24,9 @@ public struct KeyboardConverter: KeyboardConverting {
         case .thaiToEnglish:
             output = mapEveryScalar(input, using: KedmaneeMapping.qwerty(forThai:))
         case .mixed:
-            output = convertMixed(input)
+            output = convertRuns(input, where: RunJudge.shouldConvert)
+        case .swapAll:
+            output = convertRuns(input) { _ in true }
         }
         return ConversionResult(input: input, output: output, mode: mode)
     }
@@ -56,14 +58,19 @@ public struct KeyboardConverter: KeyboardConverting {
         return String(output)
     }
 
-    /// Split into runs, ask `RunJudge` about each, and convert only the ones it condemns. Each
-    /// run is converted in the direction implied by the script it is currently in: Thai wreckage
-    /// goes back to English, Latin wreckage goes to Thai.
-    private func convertMixed(_ input: String) -> String {
+    /// Split into runs and convert the ones `shouldConvert` selects, each in the direction implied
+    /// by the script it is currently in: Thai goes back to English, Latin goes to Thai.
+    ///
+    /// The predicate is the only difference between the two per-run modes. Mixed passes
+    /// `RunJudge.shouldConvert`, so only condemned runs move; `swapAll` passes a constant `true`,
+    /// so every run does. Sharing the walk keeps them from drifting — a run boundary or a
+    /// direction fixed in one would otherwise have to be remembered in the other.
+    private func convertRuns(_ input: String,
+                             where shouldConvert: (Run) -> Bool) -> String {
         var output = ""
         output.reserveCapacity(input.count)
         for run in RunSplitter.split(input) {
-            guard RunJudge.shouldConvert(run) else {
+            guard shouldConvert(run) else {
                 output += run.text
                 continue
             }
@@ -73,7 +80,9 @@ public struct KeyboardConverter: KeyboardConverting {
             case .latin:
                 output += mapEveryScalar(run.text, using: thai(forQwerty:))
             case .neutral:
-                // `RunJudge` never condemns a neutral run; handled for exhaustiveness.
+                // Whitespace, emoji, other scripts: on no keyboard layout here, so there is no
+                // direction to flip them in. `RunJudge` never selects one anyway, but `swapAll`
+                // selects everything, so this arm is now load-bearing rather than exhaustive.
                 output += run.text
             }
         }

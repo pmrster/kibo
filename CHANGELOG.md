@@ -3,6 +3,30 @@
 All notable changes to this project are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.2.3] — 2026-08-14
+
+### Added
+
+- **A fourth mode, "Both"**, which flips every run in the direction its own script implies — Thai
+  runs to English, Latin runs to Thai, in one pass. Mechanical, like the two explicit directions,
+  but per run rather than whole-string, so it is the only mode that fixes text mistyped in *both*
+  directions at once. Switch layout halfway through a sentence and neither EN → TH nor TH → EN
+  helps, because each leaves the other script alone. `⌘4`, and the Swap button is disabled for it
+  as it is for Mixed, both being direction-symmetric.
+- It converts correct text too. That is the deal: the user supplies the judgement, so there is
+  nothing left for a gate to guess wrong.
+
+### Changed
+
+- Mixed and Both now share one run walk in `KeyboardConverter`, differing only in the predicate,
+  so a run boundary fixed in one cannot drift from the other.
+- **Recorded three ways to raise Mixed's recall that were measured and rejected**, so they are not
+  re-attempted: relaxing the "does it flip to good Thai?" test (36% of a 235k-word dictionary flips
+  to well-formed Thai), flagging letter pairs English never writes (mangles `json`, `sqlite`,
+  `qwerty`, `docx`, `tsx`), and requiring every run in the input to agree (`come look at my one` is
+  5 of 5). Thai-on-QWERTY and English are the same distribution by spelling shape; only a wordlist
+  carries real information, and that stays unbuilt.
+
 ## [0.2.2] — 2026-08-14
 
 ### Fixed

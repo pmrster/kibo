@@ -115,6 +115,45 @@ final class KeyboardConverterTests: XCTestCase {
         }
     }
 
+    // MARK: - Both directions at once
+
+    /// The case the mode exists for: one sentence mistyped in *both* directions, because the
+    /// layout was switched partway through. Neither explicit mode can fix it — each leaves the
+    /// other script alone — and Mixed will not, because the two are not distinguishable by
+    /// spelling shape.
+    func test_swap_all_fixes_a_sentence_mistyped_in_both_directions() {
+        // `vtwiot` is อะไรนะ on the US layout; `เพฟิ` is "grab" on the Thai one.
+        let input = "vtwiot \u{0E40}\u{0E1E}\u{0E1F}\u{0E34} sinv0twxi5g,]N"
+        XCTAssertEqual(convert(input, .swapAll), "อะไรนะ grab หรือจะไปรถเมล์")
+    }
+
+    /// Each run goes the way its own script implies, so the two directions happen in one pass.
+    func test_swap_all_sends_each_run_the_way_its_script_implies() {
+        XCTAssertEqual(convert("l;ylfu", .swapAll), "สวัสดี")
+        XCTAssertEqual(convert("สวัสดี", .swapAll), "l;ylfu")
+        XCTAssertEqual(convert("l;ylfu สวัสดี", .swapAll), "สวัสดี l;ylfu")
+    }
+
+    /// It is mechanical, so it converts correct text too. That is the deal: the user supplies the
+    /// judgement the gate cannot, and Mixed remains the mode that spares things.
+    func test_swap_all_does_not_spare_correct_text() {
+        XCTAssertEqual(convert("ครับ", .swapAll), "8iy[")
+        XCTAssertEqual(convert("ครับ", .mixed), "ครับ")
+    }
+
+    /// Neutral runs are on no layout, so there is no direction to send them in.
+    func test_swap_all_passes_through_what_is_on_no_layout() {
+        XCTAssertEqual(convert("  \n\t", .swapAll), "  \n\t")
+        XCTAssertEqual(convert("🐈 é", .swapAll), "🐈 é")
+    }
+
+    func test_swap_all_has_no_opposite_to_swap_to() {
+        XCTAssertEqual(ConversionMode.swapAll.swapped, .swapAll)
+        XCTAssertFalse(ConversionMode.swapAll.hasDirection)
+        XCTAssertFalse(ConversionMode.mixed.hasDirection)
+        XCTAssertTrue(ConversionMode.englishToThai.hasDirection)
+    }
+
     // MARK: - Scale
 
     /// PLAN.md asks for conversion to stay visually immediate at 100,000 characters, since the
