@@ -19,6 +19,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusController: StatusItemController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        Self.disableTypographicSubstitution()
         AppSettings.shared.applyAppearance()
 
         // Design-review tooling, opt-in behind the KIBO_SNAPSHOT compile flag (absent from normal
@@ -44,6 +45,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             ConverterView(model: model, fixedWidth: nil)
         }
         statusController = StatusItemController(model: model)
+    }
+
+    /// Keeps the input field from rewriting the keystroke before the converter sees it.
+    ///
+    /// `NSTextView` — which backs SwiftUI's `TextEditor` — reads these two at init and defaults
+    /// both to on, so typing `'` inserted `’` and typing `-` inserted `–`. In an app whose whole
+    /// job is which character a key produced, that is not cosmetic: `'` is `ง`, `"` is `.` and
+    /// `-` is `ข`, so `ง` was unreachable from the keyboard entirely.
+    ///
+    /// Registered rather than set, so it stays in this app's registration domain and never writes
+    /// to the user's preferences. There is deliberately no entry for text replacement: NSTextView
+    /// takes that one from `NSSpellChecker`'s system-wide setting, which no per-app default
+    /// overrides — verified, not assumed.
+    ///
+    /// This is a courtesy to the user's text, not the fix. Correctness lives in
+    /// `TypographicSubstitutes`, because pasted text arrives curled by whichever app it came from.
+    private static func disableTypographicSubstitution() {
+        UserDefaults.standard.register(defaults: [
+            "NSAutomaticQuoteSubstitutionEnabled": false,
+            "NSAutomaticDashSubstitutionEnabled": false,
+        ])
     }
 
     /// Secure coding for any state AppKit might still restore. The panels opt out of restoration

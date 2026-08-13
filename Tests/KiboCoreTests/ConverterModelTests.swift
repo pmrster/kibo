@@ -34,11 +34,11 @@ final class ConverterModelTests: XCTestCase {
         XCTAssertEqual(model.output, "8iy[")
     }
 
-    func test_mixed_is_the_default_and_judges_each_run() {
+    func test_mixed_judges_each_run() {
         let (model, _) = makeModel()
         XCTAssertEqual(model.mode, .mixed)
-        model.input = "l;ylfu ไำะ ครับ 2024 :)"
-        XCTAssertEqual(model.output, "สวัสดี wet ครับ 2024 :)")
+        model.input = "l;ylfu ้ำสสน ครับ 2024 :)"
+        XCTAssertEqual(model.output, "สวัสดี hello ครับ 2024 :)")
     }
 
     // MARK: - Actions
@@ -169,9 +169,13 @@ final class ConverterModelTests: XCTestCase {
         XCTAssertEqual(model.mode, .thaiToEnglish)
     }
 
-    func test_opens_in_mixed_when_there_is_nothing_to_remember() {
+    /// Spelled `.swapAll` rather than `.default`, which would assert nothing. A first launch
+    /// landing in the mode that converts *everything* is a product decision, so changing it should
+    /// have to come through here.
+    func test_opens_in_both_when_there_is_nothing_to_remember() {
         let model = ConverterModel(clipboard: InMemoryClipboard())
-        XCTAssertEqual(model.mode, .mixed)
+        XCTAssertEqual(model.mode, .swapAll)
+        XCTAssertEqual(model.mode, .default)
     }
 
     func test_changing_the_mode_remembers_it() {

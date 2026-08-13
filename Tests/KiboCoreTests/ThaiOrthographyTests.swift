@@ -61,6 +61,37 @@ final class ThaiOrthographyTests: XCTestCase {
         ])
     }
 
+    /// `ะ า ำ ๅ` are *spacing* vowels — they occupy their own cell and complete the syllable, so a
+    /// combining vowel cannot attach after one: there is no consonant left for it to sit on.
+    ///
+    /// This is what catches the `-ture` family. On the Thai layout `t` is `ะ` and `u` is `ี`, so
+    /// `feature` lands `ะี` in the middle, which is unpronounceable — but every earlier rule was
+    /// satisfied, because `ฟ` two characters back still counted as a base.
+    func test_a_combining_vowel_cannot_follow_a_spacing_vowel() {
+        assertMalformed([
+            "ด\u{0E33}ฟ\u{0E30}\u{0E35}พ\u{0E33}",  // ดำฟะีพำ — "feature"
+            "ด\u{0E35}\u{0E30}\u{0E35}พ\u{0E33}",   // ดีะีพำ  — "future"
+            "ก\u{0E32}\u{0E34}",                     // กาิ    — sara ii after sara aa
+            "ก\u{0E33}\u{0E31}",                     // กำั    — mai han-akat after sara am
+        ])
+    }
+
+    /// Tone marks are exempt from that rule on purpose. `นำ้` is `น้ำ` with the tone mark and the
+    /// sara am encoded the wrong way round — sloppy, and common enough in pasted text to matter.
+    /// It is still Thai, and converting it into Latin would be the worse failure.
+    func test_a_tone_mark_after_a_spacing_vowel_is_tolerated() {
+        assertWellFormed([
+            "น\u{0E33}\u{0E49}",   // นำ้ — misordered น้ำ
+            "น\u{0E49}\u{0E33}",   // น้ำ — the correct order
+        ])
+    }
+
+    /// The shapes the new rule must not break: two spacing vowels in a row is ordinary Thai
+    /// (`เ-าะ`), and a spacing vowel before a leading vowel or a consonant is unremarkable.
+    func test_spacing_vowels_in_sequence_stay_well_formed() {
+        assertWellFormed(["เกาะ", "เพราะ", "อะไร", "สะอาด", "ปะทะ", "ฟาร์ม", "เสาร์", "ก็"])
+    }
+
     func test_doubled_identical_marks_are_malformed() {
         assertMalformed([
             "ท\u{0E33}\u{0E33}\u{0E30}ร\u{0E37}เ",  // ทำำะรืเ — "meeting"

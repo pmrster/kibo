@@ -12,7 +12,7 @@ what you typed into an unrelated string of the other script.*
 Type `l;ylfu` when you meant `สวัสดี`? Paste it in and get it back.
 
 ```
-l;ylfu ไำะ ครับ 2024 :)   →   สวัสดี wet ครับ 2024 :)
+l;ylfu ้ำสสน ครับ 2024 :)   →   สวัสดี hello ครับ 2024 :)
 ```
 
 Note what *didn't* change. `ครับ` was already correct, `2024` is a number, `:)` is a smiley. Mixed
@@ -22,7 +22,7 @@ mode converts only the parts that are actually broken.
 
 | | |
 | --- | --- |
-| **Status** | v0.2.0 — converter and menu-bar app work; ad-hoc signed builds only |
+| **Status** | v0.2.4 — converter and menu-bar app work; ad-hoc signed builds only |
 | **Requires** | macOS 14 (Sonoma) or later, Apple silicon or Intel |
 | **Stack** | Swift 6, SwiftUI, AppKit, SwiftPM, XCTest |
 | **Privacy** | Local-only, and sandboxed with no network entitlement. |
@@ -55,14 +55,20 @@ shuts its eyes after a copy, and says *boo~*.
 
 Three modes:
 
-| Mode | What it does |
-| --- | --- |
-| **Mixed** | Converts only the runs that look wrong. Leaves correct text, numbers, and punctuation alone. |
-| **EN → TH** | Treats the whole string as English keystrokes typed with the Thai layout on. |
-| **TH → EN** | The reverse. |
+| Mode | Key | What it does |
+| --- | --- | --- |
+| **Both** | `⌘1` | Flips every run the way its own script implies, in one pass — for text mistyped in both directions at once. |
+| **EN → TH** | `⌘2` | Treats the whole string as English keystrokes typed with the Thai layout on. |
+| **TH → EN** | `⌘3` | The reverse. |
+| **Mixed** | `⌘4` | Converts only the runs that look wrong. Leaves correct text, numbers, and punctuation alone. |
 
-The two explicit modes are mechanical — they flip everything, no judgement. They are the escape
-hatch for when Mixed guesses wrong.
+Kibo opens in **Both**, and reopens in whatever mode you last used. Hover a mode for a Thai
+explanation of what it does — the labels are too short to say it, and the difference that matters
+(Both converts correct text, Mixed spares it) is worth spelling out.
+
+The last three are mechanical — they flip everything, no judgement. They are the escape hatch for
+when Mixed guesses wrong. **Both** is the one to reach for when you switched layout partway through
+a sentence, so half of it is wrong each way: no single direction can fix that.
 
 Everything happens as you type, and the whole flow works without a mouse:
 
@@ -97,7 +103,7 @@ happens to be well-formed passes through — `แนกำ` (which was "code") b
 | | |
 | --- | --- |
 | Correct text left untouched | 36 of 36 sampled — acronyms, URLs, paths, code, English, numbers, Thai |
-| English mistypings fixed | 15 of 24 sampled |
+| English mistypings fixed | 19 of 30 sampled |
 | Thai mistypings fixed | 4 of 12 sampled |
 
 That ordering is deliberate: leaving a mistyping is recoverable — you see it and switch to an
@@ -143,9 +149,10 @@ swift Tools/dump-kedmanee.swift
 ```
 
 `Fixtures/conversion-cases.json` is a language-neutral behaviour contract: the full 94-key table,
-a `schema` block describing the format, and 114 cases across all three modes — including every
-string in the precision corpus and every known miss. A future Windows port has to pass the same
-file, and passing it means holding the same accuracy figures, not just the easy cases.
+the typographic substitutions an OS makes on the user's behalf, a `schema` block describing the
+format, and 136 cases across all four modes — including every string in the precision corpus and
+every known miss. A future Windows port has to pass the same file, and passing it means holding
+the same accuracy figures, not just the easy cases.
 
 See `CLAUDE.md` for architecture, `SPEC.md` for product behaviour, `PLAN.md` for sequencing, and
 [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request.

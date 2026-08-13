@@ -24,6 +24,10 @@ final class FixtureConformanceTests: XCTestCase {
             let qwerty: String
             let kedmanee: String
         }
+        struct Substitute: Decodable {
+            let substitute: String
+            let key: String
+        }
         struct Case: Decodable {
             let name: String
             let mode: String
@@ -32,6 +36,7 @@ final class FixtureConformanceTests: XCTestCase {
         }
         let version: Int
         let mapping: [MappedKey]
+        let typographicSubstitutes: [Substitute]
         let cases: [Case]
     }
 
@@ -41,7 +46,7 @@ final class FixtureConformanceTests: XCTestCase {
     }
 
     func test_fixture_is_the_version_this_suite_understands() throws {
-        XCTAssertEqual(try loadFixture().version, 2)
+        XCTAssertEqual(try loadFixture().version, 3)
     }
 
     /// The fixture carries the whole key table, so a port can verify its mapping before it ever
@@ -62,6 +67,29 @@ final class FixtureConformanceTests: XCTestCase {
                            "fixture maps '\(entry.qwerty)' → '\(entry.kedmanee)'")
             XCTAssertEqual(KedmaneeMapping.qwerty(forThai: kedmanee), qwerty,
                            "fixture reverse of '\(entry.kedmanee)'")
+        }
+    }
+
+    /// The fold is carried too, for the same reason the key table is: a port that has the cases
+    /// but not the table can only satisfy them by hard-coding six characters it does not
+    /// understand. Both curls fold to one key, so this side is many-to-one and is *not* checked
+    /// for an inverse.
+    func test_fixture_typographic_substitutes_match_the_implementation() throws {
+        let fixture = try loadFixture()
+        XCTAssertEqual(fixture.typographicSubstitutes.count, TypographicSubstitutes.pairs.count)
+
+        for entry in fixture.typographicSubstitutes {
+            XCTAssertEqual(entry.substitute.unicodeScalars.count, 1,
+                           "'\(entry.substitute)' is not one scalar")
+            XCTAssertEqual(entry.key.unicodeScalars.count, 1, "'\(entry.key)' is not one scalar")
+            let substitute = try XCTUnwrap(entry.substitute.unicodeScalars.first)
+            let key = try XCTUnwrap(entry.key.unicodeScalars.first)
+
+            XCTAssertEqual(TypographicSubstitutes.asciiKey(for: substitute), key,
+                           "fixture folds '\(entry.substitute)' → '\(entry.key)'")
+            // The straight key must be a real key, or the fold lands nowhere.
+            XCTAssertNotNil(KedmaneeMapping.thai(forQwerty: key),
+                            "'\(entry.key)' is not a QWERTY key")
         }
     }
 

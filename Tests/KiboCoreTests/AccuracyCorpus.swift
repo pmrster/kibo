@@ -41,17 +41,26 @@ enum AccuracyCorpus {
 
     /// Caught because the wreckage breaks a Thai spelling rule outright — usually a leading letter
     /// that maps to a vowel mark, leaving it with no consonant to attach to.
+    ///
+    /// The `-ture` group is caught by a different rule: `t` is `ะ` and `u` is `ี`, so the ending
+    /// lands a combining vowel straight after a spacing one, which no Thai syllable does.
     static let englishCaught = [
         "email", "meeting", "hello", "thanks", "update", "when", "the", "you",
         "project", "review", "design", "test", "build", "morning", "today",
+        "feature", "picture", "future", "nature",
     ]
 
     /// Missed, and unfixable without a dictionary. These words are made only of letters that map
     /// to Thai consonants, so the wreckage is orthographically perfect Thai — `แนกำ` ("code")
     /// breaks no rule, and `นา` ("ok") is a real Thai word meaning a rice field, so not even a
     /// dictionary would rescue it. The escape hatch is the explicit TH → EN mode.
+    ///
+    /// `value` and `issue` are here to keep the `-ture` group honest. All six words in that family
+    /// were measured together when the spacing-vowel rule was added, and these two were the ones
+    /// it did not rescue — adding only the four that it did would have inflated the figure.
     static let englishMissed = [
         "about", "please", "sorry", "code", "ok", "and", "report", "great", "work",
+        "value", "issue",
     ]
 
     // MARK: - Recall: Thai typed while the US layout was active
