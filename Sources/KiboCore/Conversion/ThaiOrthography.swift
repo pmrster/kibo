@@ -35,6 +35,20 @@ enum ThaiOrthography {
         }
     }
 
+    /// `ะ า ำ ๅ` — the following marks that take a cell of their own instead of combining with the
+    /// consonant. They complete the syllable, which is what makes the rule below possible.
+    private static func isSpacingVowel(_ scalar: UnicodeScalar) -> Bool {
+        switch scalar.value {
+        case 0x0E30, 0x0E32, 0x0E33, 0x0E45: return true
+        default: return false
+        }
+    }
+
+    /// `่ ้ ๊ ๋` — the four tone marks, which the rule below exempts.
+    private static func isToneMark(_ scalar: UnicodeScalar) -> Bool {
+        (0x0E48...0x0E4B).contains(scalar.value)
+    }
+
     /// Whether the text carries any Thai vowel or tone mark. Used by `RunJudge` to tell Thai
     /// words from incidental strings of Thai consonants and digits — real Thai spells vowels,
     /// so a "Thai" string with none of them is usually punctuation that happened to map across.
@@ -72,6 +86,17 @@ enum ThaiOrthography {
                 guard hasBase else { return false }
                 // Rule: the same mark twice in a row is never correct.
                 guard scalar != previousMark else { return false }
+                // Rule: a spacing vowel completes the syllable, so a *combining* vowel cannot
+                // follow one — it would have no consonant of its own to sit on. `hasBase` alone
+                // misses this, because the consonant two back is still notionally available.
+                // Two spacing vowels in a row stay legal: `เ-าะ` spells `เกาะ`.
+                //
+                // Tone marks are exempt. `นำ้` is `น้ำ` with the tone and the sara am the wrong
+                // way round — sloppy, but real Thai, and mangling it would be the worse error.
+                if let previousMark, isSpacingVowel(previousMark),
+                   !isSpacingVowel(scalar), !isToneMark(scalar) {
+                    return false
+                }
                 previousMark = scalar
             } else {
                 // Standalone: digits, currency, repetition and abbreviation marks.
