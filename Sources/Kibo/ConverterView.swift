@@ -167,9 +167,14 @@ struct ConverterView: View {
             .foregroundStyle(Palette.text)
             .scrollContentBackground(.hidden)
             // Off because this field holds text that is, by definition, misspelled in both
-            // scripts — but also because autocorrection and text replacement are substitution
-            // machinery reading every keystroke, and the less of that touches this field the
-            // better. It cannot change what the converter sees, either way.
+            // scripts — but also because autocorrection is substitution machinery reading every
+            // keystroke, and the less of that touches this field the better.
+            //
+            // It does *not* cover the substitutions that matter here. On macOS this modifier
+            // clears `isAutomaticSpellingCorrectionEnabled` alone; quote and dash substitution
+            // stay on, and they rewrite `'` to `’` — a character on no key, which the converter
+            // could not turn back into `ง`. `AppDelegate.disableTypographicSubstitution` is what
+            // turns those off.
             .autocorrectionDisabled(true)
             .focused($inputFocused)
             .frame(height: scaled(64))

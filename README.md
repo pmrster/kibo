@@ -143,9 +143,10 @@ swift Tools/dump-kedmanee.swift
 ```
 
 `Fixtures/conversion-cases.json` is a language-neutral behaviour contract: the full 94-key table,
-a `schema` block describing the format, and 114 cases across all three modes — including every
-string in the precision corpus and every known miss. A future Windows port has to pass the same
-file, and passing it means holding the same accuracy figures, not just the easy cases.
+the typographic substitutions an OS makes on the user's behalf, a `schema` block describing the
+format, and 126 cases across all three modes — including every string in the precision corpus and
+every known miss. A future Windows port has to pass the same file, and passing it means holding
+the same accuracy figures, not just the easy cases.
 
 See `CLAUDE.md` for architecture, `SPEC.md` for product behaviour, `PLAN.md` for sequencing, and
 [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request.
