@@ -36,15 +36,15 @@ public final class ConverterModel {
     private let memory: (any ModeMemory)?
 
     /// - Parameters:
-    ///   - mode: the mode to open in. Omit it to open in the remembered mode, or in `.mixed` when
-    ///     there is no memory to consult.
+    ///   - mode: the mode to open in. Omit it to open in the remembered mode, or in
+    ///     `ConversionMode.default` when there is no memory to consult.
     ///   - memory: where the mode is remembered. Optional because most tests do not care, and the
     ///     model must work without persistence.
     public init(mode: ConversionMode? = nil,
                 converter: any KeyboardConverting = KeyboardConverter(),
                 clipboard: any Clipboard,
                 memory: (any ModeMemory)? = nil) {
-        self.mode = mode ?? memory?.loadMode() ?? .mixed
+        self.mode = mode ?? memory?.loadMode() ?? .default
         self.converter = converter
         self.clipboard = clipboard
         self.memory = memory

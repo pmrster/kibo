@@ -3,6 +3,104 @@
 All notable changes to this project are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.2.4] — 2026-08-14
+
+### Changed
+
+- **The mode picker is ordered most-used first**: Both, EN → TH, TH → EN, Mixed, with `⌘1`–`⌘4`
+  following.
+- **A fresh install now opens in Both rather than Mixed.** New constant `ConversionMode.default`,
+  because three sites needed the answer and two could have drifted from the third; it is not
+  derived from the picker order, since that is presentation and this is behaviour. The trade is
+  deliberate: Both converts correct text, so a first-time user pasting something already right
+  will see it mangled, against a Mixed default that can appear to do nothing at all on text it
+  cannot judge. The result field is a preview rather than an action, which is what makes that
+  acceptable.
+- *Upgrade note:* returning users are unaffected — a stored `lastMode` still wins, so only a fresh
+  install or an unparseable stored value lands in Both.
+- The `--snapshot` tooling now renders the default mode, which also makes it the run that catches
+  badge overflow: "everything, both directions" is the longest of the four.
+- **The worked example is now `l;ylfu ้ำสสน ครับ 2024 :)` → `สวัสดี hello ครับ 2024 :)`**, replacing
+  `ไำะ` → `wet`, which read as an odd thing for anyone to have typed. It runs through the docs, the
+  Settings preview, the snapshots and the fixture, so all of them move together. `world` was the
+  first choice and cannot be used: it mistypes to `ไนพสก`, which breaks no Thai spelling rule — the
+  leading vowel `ไ` has a consonant after it — so Mixed correctly leaves it alone, and an example
+  that claimed otherwise would be advertising a conversion the app does not make.
+- **The modes now carry Thai tooltips**, the only Thai in an otherwise English interface. Four
+  labels that terse cannot say what separates them, and the distinction that costs most to learn
+  by accident — Both converts correct text, Mixed spares it — is worth more to a Thai speaker in
+  Thai than the consistency is worth. Labels, buttons and badges stay English. The same text is
+  set as the accessibility hint.
+
+## [0.2.3] — 2026-08-14
+
+### Added
+
+- **A fourth mode, "Both"**, which flips every run in the direction its own script implies — Thai
+  runs to English, Latin runs to Thai, in one pass. Mechanical, like the two explicit directions,
+  but per run rather than whole-string, so it is the only mode that fixes text mistyped in *both*
+  directions at once. Switch layout halfway through a sentence and neither EN → TH nor TH → EN
+  helps, because each leaves the other script alone. `⌘4`, and the Swap button is disabled for it
+  as it is for Mixed, both being direction-symmetric.
+- It converts correct text too. That is the deal: the user supplies the judgement, so there is
+  nothing left for a gate to guess wrong.
+
+### Changed
+
+- Mixed and Both now share one run walk in `KeyboardConverter`, differing only in the predicate,
+  so a run boundary fixed in one cannot drift from the other.
+- **Recorded three ways to raise Mixed's recall that were measured and rejected**, so they are not
+  re-attempted: relaxing the "does it flip to good Thai?" test (36% of a 235k-word dictionary flips
+  to well-formed Thai), flagging letter pairs English never writes (mangles `json`, `sqlite`,
+  `qwerty`, `docx`, `tsx`), and requiring every run in the input to agree (`come look at my one` is
+  5 of 5). Thai-on-QWERTY and English are the same distribution by spelling shape; only a wordlist
+  carries real information, and that stays unbuilt.
+
+## [0.2.2] — 2026-08-14
+
+### Fixed
+
+- **Mixed mode now catches the `-ture` family** — `feature`, `picture`, `future`, `nature` typed
+  with the Thai layout on. `ThaiOrthography` gained one rule: a *combining* vowel may not follow a
+  *spacing* vowel (`ะ า ำ ๅ`), which completes the syllable and leaves nothing to attach to. On
+  the Thai layout `t` is `ะ` and `u` is `ี`, so those words land `ะี` mid-word — unpronounceable,
+  but every earlier rule was satisfied because the consonant two characters back still counted as
+  a base. Reported against `ดำฟะีพำ`, which Mixed handed back untouched.
+- Tone marks are exempt from the new rule, deliberately. `นำ้` is `น้ำ` with the tone mark and the
+  sara am encoded the wrong way round — sloppy, but real Thai, and it was the only false positive
+  the rule produced when measured against 103 real Thai words.
+
+### Changed
+
+- **English recall is now 19 of 30, up from 15 of 24.** The corpus grew by the whole family that
+  was measured together — feature, picture, future, nature, *and* the two the rule does not
+  rescue, value and issue. Adding only the wins would have inflated the figure. Precision is
+  unchanged at 36 of 36, and Thai recall at 4 of 12.
+- `Fixtures/conversion-cases.json` carries the six new cases (132 total).
+
+## [0.2.1] — 2026-08-14
+
+### Fixed
+
+- **A typed apostrophe could not produce `ง`.** `NSTextView`, which backs SwiftUI's `TextEditor`,
+  enables quote and dash substitution by default, so `'` reached the converter as `’` (U+2019) — a
+  character on no key, absent from the dumped table, and neutral to `RunSplitter`. It survived
+  even the mechanical EN → TH flip. The same applied to `"` → `“”` (the `.` key) and `-` → `–`
+  (the `ข` key). `autocorrectionDisabled(true)` does not cover this; measured against the real
+  view hierarchy, it clears spelling correction alone.
+- `TypographicSubstitutes` folds those six characters back onto the key that was pressed, in the
+  QWERTY → Thai direction only and only on scalars actually being converted — so Mixed mode still
+  returns `don’t` with its curl intact. Pasted text is the reason this lives in Core rather than
+  only in the shell: other apps curl quotes whatever Kibo does.
+- The shell also registers the two substitution defaults off, so the input field stops rewriting
+  text at the point of entry.
+- `RunSplitter` counts the substitutes as Latin; left neutral, `’` cut `don’t` into three runs and
+  the gate never saw a word to judge.
+
+### Changed
+
+- The fixture gains a `typographicSubstitutes` table and is at `version` 3.
+
 ## [0.2.0] — 2026-08-12
 
 The first release under the name **Kibo**, and the first hardened one. Everything below had

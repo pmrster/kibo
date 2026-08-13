@@ -16,13 +16,13 @@ final class KeyboardConverterTests: XCTestCase {
         XCTAssertEqual(convert("vpkddbodkca", .englishToThai), "อยากกินกาแฟ")
         XCTAssertEqual(convert("ะ้ฟืา", .thaiToEnglish), "thank")
         XCTAssertEqual(convert("l;ylfu", .englishToThai), "สวัสดี")
-        XCTAssertEqual(convert("ไำะ", .thaiToEnglish), "wet")
+        XCTAssertEqual(convert("้ำสสน", .thaiToEnglish), "hello")
     }
 
     /// The behaviour the whole Mixed design exists for: wreckage is fixed, correct text is not,
     /// and everything that is neither is left exactly where it was.
     func test_mixed_worked_example() {
-        XCTAssertEqual(convert("l;ylfu ไำะ ครับ 2024 :)", .mixed), "สวัสดี wet ครับ 2024 :)")
+        XCTAssertEqual(convert("l;ylfu ้ำสสน ครับ 2024 :)", .mixed), "สวัสดี hello ครับ 2024 :)")
     }
 
     // MARK: - Result shape
@@ -96,7 +96,7 @@ final class KeyboardConverterTests: XCTestCase {
     }
 
     func test_mixed_converts_each_run_in_its_own_direction() {
-        XCTAssertEqual(convert("l;ylfu ไำะ", .mixed), "สวัสดี wet")
+        XCTAssertEqual(convert("l;ylfu ้ำสสน", .mixed), "สวัสดี hello")
     }
 
     /// A Thai run that arrives with almost no letters after mistyping — `ขอบคุณ` — still gets
@@ -115,6 +115,45 @@ final class KeyboardConverterTests: XCTestCase {
         }
     }
 
+    // MARK: - Both directions at once
+
+    /// The case the mode exists for: one sentence mistyped in *both* directions, because the
+    /// layout was switched partway through. Neither explicit mode can fix it — each leaves the
+    /// other script alone — and Mixed will not, because the two are not distinguishable by
+    /// spelling shape.
+    func test_swap_all_fixes_a_sentence_mistyped_in_both_directions() {
+        // `vtwiot` is อะไรนะ on the US layout; `เพฟิ` is "grab" on the Thai one.
+        let input = "vtwiot \u{0E40}\u{0E1E}\u{0E1F}\u{0E34} sinv0twxi5g,]N"
+        XCTAssertEqual(convert(input, .swapAll), "อะไรนะ grab หรือจะไปรถเมล์")
+    }
+
+    /// Each run goes the way its own script implies, so the two directions happen in one pass.
+    func test_swap_all_sends_each_run_the_way_its_script_implies() {
+        XCTAssertEqual(convert("l;ylfu", .swapAll), "สวัสดี")
+        XCTAssertEqual(convert("สวัสดี", .swapAll), "l;ylfu")
+        XCTAssertEqual(convert("l;ylfu สวัสดี", .swapAll), "สวัสดี l;ylfu")
+    }
+
+    /// It is mechanical, so it converts correct text too. That is the deal: the user supplies the
+    /// judgement the gate cannot, and Mixed remains the mode that spares things.
+    func test_swap_all_does_not_spare_correct_text() {
+        XCTAssertEqual(convert("ครับ", .swapAll), "8iy[")
+        XCTAssertEqual(convert("ครับ", .mixed), "ครับ")
+    }
+
+    /// Neutral runs are on no layout, so there is no direction to send them in.
+    func test_swap_all_passes_through_what_is_on_no_layout() {
+        XCTAssertEqual(convert("  \n\t", .swapAll), "  \n\t")
+        XCTAssertEqual(convert("🐈 é", .swapAll), "🐈 é")
+    }
+
+    func test_swap_all_has_no_opposite_to_swap_to() {
+        XCTAssertEqual(ConversionMode.swapAll.swapped, .swapAll)
+        XCTAssertFalse(ConversionMode.swapAll.hasDirection)
+        XCTAssertFalse(ConversionMode.mixed.hasDirection)
+        XCTAssertTrue(ConversionMode.englishToThai.hasDirection)
+    }
+
     // MARK: - Scale
 
     /// PLAN.md asks for conversion to stay visually immediate at 100,000 characters, since the
@@ -122,7 +161,7 @@ final class KeyboardConverterTests: XCTestCase {
     func test_converts_one_hundred_thousand_characters_quickly() {
         // Counted in scalars, not Characters: Thai combining marks fuse, so `.count` understates
         // how much text the converter actually walks.
-        let input = String(repeating: "l;ylfu ไำะ ครับ 2024 :) ", count: 5_000)
+        let input = String(repeating: "l;ylfu ้ำสสน ครับ 2024 :) ", count: 5_000)
         XCTAssertGreaterThan(input.unicodeScalars.count, 100_000)
 
         let start = Date()

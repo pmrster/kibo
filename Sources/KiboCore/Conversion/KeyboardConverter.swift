@@ -20,13 +20,29 @@ public struct KeyboardConverter: KeyboardConverting {
         let output: String
         switch mode {
         case .englishToThai:
-            output = mapEveryScalar(input, using: KedmaneeMapping.thai(forQwerty:))
+            output = mapEveryScalar(input, using: thai(forQwerty:))
         case .thaiToEnglish:
             output = mapEveryScalar(input, using: KedmaneeMapping.qwerty(forThai:))
         case .mixed:
-            output = convertMixed(input)
+            output = convertRuns(input, where: RunJudge.shouldConvert)
+        case .swapAll:
+            output = convertRuns(input) { _ in true }
         }
         return ConversionResult(input: input, output: output, mode: mode)
+    }
+
+    /// The QWERTY → Thai lookup, with one fallback the raw table does not have: if the scalar is
+    /// a character macOS substituted for a keystroke (`’` for `'`, `—` for `-`), convert the key
+    /// that was actually pressed. Without it a typed apostrophe reached here as U+2019, matched
+    /// nothing, and `ง` could not be produced at all.
+    ///
+    /// Only the outbound direction folds, and only at the moment a scalar is being converted —
+    /// text this converter decides to leave alone keeps its curls, because straightening the
+    /// user's punctuation would be a change to text the app promised not to touch.
+    private func thai(forQwerty scalar: UnicodeScalar) -> UnicodeScalar? {
+        if let mapped = KedmaneeMapping.thai(forQwerty: scalar) { return mapped }
+        guard let key = TypographicSubstitutes.asciiKey(for: scalar) else { return nil }
+        return KedmaneeMapping.thai(forQwerty: key)
     }
 
     /// Mechanical whole-string conversion. Anything the table has no entry for is copied over
@@ -42,14 +58,19 @@ public struct KeyboardConverter: KeyboardConverting {
         return String(output)
     }
 
-    /// Split into runs, ask `RunJudge` about each, and convert only the ones it condemns. Each
-    /// run is converted in the direction implied by the script it is currently in: Thai wreckage
-    /// goes back to English, Latin wreckage goes to Thai.
-    private func convertMixed(_ input: String) -> String {
+    /// Split into runs and convert the ones `shouldConvert` selects, each in the direction implied
+    /// by the script it is currently in: Thai goes back to English, Latin goes to Thai.
+    ///
+    /// The predicate is the only difference between the two per-run modes. Mixed passes
+    /// `RunJudge.shouldConvert`, so only condemned runs move; `swapAll` passes a constant `true`,
+    /// so every run does. Sharing the walk keeps them from drifting — a run boundary or a
+    /// direction fixed in one would otherwise have to be remembered in the other.
+    private func convertRuns(_ input: String,
+                             where shouldConvert: (Run) -> Bool) -> String {
         var output = ""
         output.reserveCapacity(input.count)
         for run in RunSplitter.split(input) {
-            guard RunJudge.shouldConvert(run) else {
+            guard shouldConvert(run) else {
                 output += run.text
                 continue
             }
@@ -57,9 +78,11 @@ public struct KeyboardConverter: KeyboardConverting {
             case .thai:
                 output += mapEveryScalar(run.text, using: KedmaneeMapping.qwerty(forThai:))
             case .latin:
-                output += mapEveryScalar(run.text, using: KedmaneeMapping.thai(forQwerty:))
+                output += mapEveryScalar(run.text, using: thai(forQwerty:))
             case .neutral:
-                // `RunJudge` never condemns a neutral run; handled for exhaustiveness.
+                // Whitespace, emoji, other scripts: on no keyboard layout here, so there is no
+                // direction to flip them in. `RunJudge` never selects one anyway, but `swapAll`
+                // selects everything, so this arm is now load-bearing rather than exhaustive.
                 output += run.text
             }
         }

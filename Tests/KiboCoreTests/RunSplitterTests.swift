@@ -30,9 +30,9 @@ final class RunSplitterTests: XCTestCase {
     }
 
     func test_the_worked_example_from_the_spec() {
-        assertSplit("l;ylfu ไำะ ครับ 2024 :)", into: [
+        assertSplit("l;ylfu ้ำสสน ครับ 2024 :)", into: [
             (.latin, "l;ylfu"), (.neutral, " "),
-            (.thai, "ไำะ"), (.neutral, " "),
+            (.thai, "้ำสสน"), (.neutral, " "),
             (.thai, "ครับ"), (.neutral, " "),
             (.latin, "2024"), (.neutral, " "),
             (.latin, ":)"),
@@ -71,7 +71,7 @@ final class RunSplitterTests: XCTestCase {
     /// Splitting must not lose or reorder anything — the runs always rejoin to the input.
     func test_runs_always_rejoin_to_the_input() {
         let inputs = [
-            "", "hello", "สวัสดี", "l;ylfu ไำะ ครับ 2024 :)", "hi🐈there",
+            "", "hello", "สวัสดี", "l;ylfu ้ำสสน ครับ 2024 :)", "hi🐈there",
             "a\n\tb", "café", "日本", "  ", "ๆๆๆ!!!",
         ]
         for input in inputs {

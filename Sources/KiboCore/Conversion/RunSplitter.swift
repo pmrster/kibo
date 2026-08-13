@@ -31,11 +31,15 @@ enum RunSplitter {
     ///
     /// Space is excluded from the Latin range on purpose. It makes whitespace a run boundary, so
     /// two words either side of a space are judged separately instead of as one blob.
+    ///
+    /// Curly quotes and long dashes count as Latin even though they sit outside the ASCII range,
+    /// because macOS put them there in place of `'`, `"` and `-`. Left neutral, they cut a word
+    /// in two — `don’t` split into three runs — and `RunJudge` never saw a word to judge.
     private static func script(of scalar: UnicodeScalar) -> Run.Script {
         switch scalar.value {
         case 0x0E00...0x0E7F: return .thai
         case 0x21...0x7E: return .latin
-        default: return .neutral
+        default: return TypographicSubstitutes.contains(scalar) ? .latin : .neutral
         }
     }
 

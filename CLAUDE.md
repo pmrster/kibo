@@ -115,9 +115,23 @@ Two targets, with a deliberate split:
   sprite, the glyph was indistinguishable from Tama's in a real menu bar, and a `ก` keycap outline
   stood in. A ghost beside a cat has no such problem. Rejected glyphs, all rendered at true size
   first: a pixel keycap (read as a monitor), pixel swap arrows (a smudge), `ก⇄A` (too wide).
-- **Language** — the interface is entirely English, matching the app's English name. Thai appears
-  only in the text being converted, which is why `AppFont.thai` is now used only by the input and
-  result fields.
+- **Language** — the interface is English, matching the app's English name: labels, buttons and
+  badges, all of them. **The one exception is the mode picker's tooltips, which are Thai**
+  (`ConverterView.helpText(for:)`). Four labels that terse cannot say what separates them, and the
+  distinction that costs the most to learn by accident — Both converts correct text, Mixed spares
+  it — is worth more to a Thai speaker in Thai than the consistency is worth. Keep the exception
+  to explanatory text; if a *label* ever wants Thai, that is a different decision. Everywhere else
+  Thai appears only in the text being converted, which is why `AppFont.thai` is used by the input
+  and result fields and nothing else.
+- **Mode order is most-used first** — Both, EN → TH, TH → EN, Mixed — set by the declaration order
+  of `ConversionMode`, which the picker and the ⌘1–⌘4 shortcuts are both built from.
+- **A fresh install opens in Both**, via `ConversionMode.default` — one constant, because three
+  sites need the answer and two of them could otherwise drift. It is deliberately *not*
+  `allCases.first`: picker order is presentation and may be reshuffled, the default is behaviour.
+  This is a product decision that trades safety for usefulness — Both converts correct text, so a
+  first-time user pasting something already right will see it mangled, against a Mixed default
+  that would sometimes appear to do nothing at all. The result field is a preview, not an action,
+  which is what makes the trade acceptable. Returning users are unaffected: they get `lastMode`.
 
 `AppSettings` is an `ObservableObject` while `ConverterModel` is `@Observable`. That is not an
 oversight: `StatusItemController` is AppKit and needs to *subscribe* to appearance changes
@@ -129,6 +143,8 @@ gives for free. `ConverterModel` has only SwiftUI consumers.
 ```
 input ──▶ RunSplitter ──▶ RunJudge ──▶ KedmaneeMapping ──▶ output
              (runs)      (convert?)      (per scalar)
+                                     ↖ TypographicSubstitutes
+                                        (which key was that?)
 ```
 
 - **`KedmaneeMapping`** — 94 key pairs, all printable ASCII, a bijection. **Dumped from macOS's
@@ -136,11 +152,31 @@ input ──▶ RunSplitter ──▶ RunJudge ──▶ KedmaneeMapping ──�
   physical key produces under `com.apple.keylayout.US` and `com.apple.keylayout.Thai`. This is the
   verification `PLAN.md` asked for, and it corrected two keys a hand table had backwards (`3`
   produces `_`, and the backtick produces `-`).
+- **`TypographicSubstitutes`** — **the OS rewrites the keystroke before the converter sees it.**
+  `NSTextView`, which backs `TextEditor`, enables quote and dash substitution by default, so a
+  typed `'` arrives as `’`. Three of those substituted keys carry Kedmanee characters — `'` is
+  `ง`, `"` is `.`, `-` is `ข` — so `ง` was unreachable from the keyboard, surviving even the
+  mechanical EN → TH flip because `’` is in no table. Note `.autocorrectionDisabled(true)` does
+  **not** cover this; it clears spelling correction alone, and a comment here claimed otherwise
+  for a while. `AppDelegate.disableTypographicSubstitution` now registers the two defaults off,
+  but that is a courtesy to the user's text, not the fix: **Paste is a first-class path**, and
+  text copied from Messages or Slack arrives already curled. The fold is deliberately *outside*
+  `KedmaneeMapping` — it is many-to-one, has no inverse, and applies in the QWERTY → Thai
+  direction only. It also fires **only on scalars actually being converted**, so text Mixed mode
+  passes through keeps its curls; straightening them would mangle text the app promised not to
+  touch. `…` is excluded because it stands for three keystrokes, not one.
 - **`RunSplitter`** — maximal runs of Thai (`U+0E00–U+0E7F`), Latin (printable ASCII, space
   excluded so whitespace is a boundary), or neutral. Runs always rejoin to the input exactly.
+  The typographic substitutes count as Latin despite being outside ASCII: left neutral, `’` cut
+  `don’t` into three runs and `RunJudge` never saw a word to judge.
 - **`RunJudge`** — the convert-or-keep decision, used only by Mixed mode.
-- **`KeyboardConverter`** — the public `KeyboardConverting` interface. Explicit modes are
-  mechanical whole-string flips; Mixed asks `RunJudge` per run.
+- **`KeyboardConverter`** — the public `KeyboardConverting` interface. The two explicit directions
+  are mechanical whole-string flips; Mixed and `swapAll` share one run walk and differ only in the
+  predicate they pass it — `RunJudge.shouldConvert` against a constant `true`. **`swapAll` ("Both"
+  in the UI) flips every run the way its own script implies**, which is the only mode that fixes
+  text mistyped in *both* directions at once — switch layout mid-sentence and neither explicit
+  direction helps, because each leaves the other script alone. It exists because Mixed provably
+  cannot do this: see the three rejected approaches below.
 
 **Everything walks `unicodeScalars`, never `Character`.** Thai combining marks fuse with the
 consonant before them, so `"สวัสดี"` is six scalars but only four Characters. A Character-based
@@ -151,12 +187,18 @@ multi-scalar entry outright.
 ### Mixed mode and what it cannot do
 
 Mixed converts a run **only if that run is malformed in its own script**, which is why
-`สวัสดี wet ครับ 2024 :)` keeps `ครับ` and `2024`. The gate is dictionary-free, judged on
+`สวัสดี hello ครับ 2024 :)` keeps `ครับ` and `2024`. The gate is dictionary-free, judged on
 orthography:
 
 - **Thai** — a vowel or tone mark needs a consonant before it; a leading vowel (`เ แ โ ใ ไ`) needs
-  a consonant after it; the same mark never repeats. No dictionary means no word segmentation,
-  which matters because written Thai has no spaces.
+  a consonant after it; the same mark never repeats; and **a combining vowel never follows a
+  spacing vowel** (`ะ า ำ ๅ`), which complete the syllable and leave nothing to attach to. That
+  last rule is what catches the `-ture` family — `t` is `ะ` and `u` is `ี`, so `feature` lands
+  `ะี` mid-word — and it needed adding because `hasBase` alone still counted the consonant two
+  characters back. **Tone marks are exempt from it on purpose**: `นำ้` is `น้ำ` with the tone and
+  the sara am the wrong way round, which is sloppy but real Thai, and it was the one false
+  positive found when the rule was measured against 103 real words. No dictionary means no word
+  segmentation, which matters because written Thai has no spaces.
 - **Latin** — runs with fewer than three letters are not judged; a `;` between two letters gives a
   mistyping away; otherwise a 6+ consonant pile-up, or no vowel at all in a word of six letters or
   more, condemns it. Measured per letter-group so `index.html` is not read as `indexhtml`, and
@@ -185,26 +227,58 @@ so a Windows port inherits the same numbers instead of a sample of them.
 | Measure | Result | Notes |
 | --- | --- | --- |
 | **Precision** — correct text left untouched | 36 of 36 | `AccuracyCorpus.mustSurvive` |
-| Recall — English mistyped as Thai | 15 of 24 | missed: about, please, sorry, code, ok, and, report, great, work |
+| Recall — English mistyped as Thai | 19 of 30 | missed: about, please, sorry, code, ok, and, report, great, work, value, issue |
 | Recall — Thai mistyped as Latin | 4 of 12 | missed: โรงเรียน, ผม, แมว, ไป, กิน, ทำงาน, วันนี้, พรุ่งนี้ |
 
 (The English figure read "16 of 25" here for a while, "17 of a 26-word sample" in a test comment,
 and measured 15 of 24. Three numbers, no test counting any of them — which is what the count
-assertions now prevent.)
+assertions now prevent. It later went to 19 of 30 when the spacing-vowel rule landed: the corpus
+grew by the whole `-ture`/`-ue` family that was measured together — feature, picture, future,
+nature, value, issue — and not just the four the rule rescued. **Add the losses with the wins**,
+or the figure is advertising rather than measurement.)
 
 The misses are wreckage that happens to be well-formed — `แนกำ` ("code") breaks no Thai rule, and
 `นา` ("ok") is a real Thai word that not even a dictionary would rescue. **The escape hatch is the
-explicit EN → TH / TH → EN modes, which are mechanical and never consult the gate.** Do not
-"improve" recall without re-measuring precision: mangling correct text is a worse failure than
-leaving a mistyping, because the user can see and fix the latter.
+three mechanical modes, which never consult the gate.** Do not "improve" recall without
+re-measuring precision: mangling correct text is a worse failure than leaving a mistyping, because
+the user can see and fix the latter.
+
+### Three ways to raise recall that were measured and rejected
+
+Reported as "Mixed does nothing" against `vtwiot gTv0twxpy'w'vt เพฟิ sinv0twxi5g,]N` — a Thai
+sentence typed on the US layout with one English word typed on the Thai one. Every run is a miss.
+Each fix below looks obvious, and each was killed by measurement. **Do not re-attempt these
+without new evidence.**
+
+1. **Apply the letter-poor path's question — "does this flip to well-formed Thai?" — to runs that
+   have letters.** Measured against `/usr/share/dict/words` (235,762 words): **36% flip to
+   well-formed, entirely-Thai text containing a vowel mark** — `abandon`, `aardvark`, `abalone`,
+   `abdicate`. `rhythm` is not an outlier, it is a third of English. Requiring a leading-vowel
+   syllable as well only cuts it to 14%. This is why the path is fenced to runs with too few
+   letters to judge, and the fence must stay.
+2. **Flag letter pairs English never writes.** Only 59 of 676 bigrams are absent from that
+   dictionary, and the reported runs hit two of them (`vt`, `wx`), with just one false positive in
+   the precision corpus (`SQL`, already covered by the all-caps skip). It still fails: the word
+   list is pre-war and has no technical vocabulary, so the rule mangles `json`, `sqlite`,
+   `qwerty`, `docx`, `xlsx`, `tsx`, `jsx` and `mysqldump`.
+3. **Require every Latin run in the input to flip, so agreement carries the decision.** Zero of
+   ten ordinary English sentences tripped it, and the reported input is 3 of 3 — but `come look at
+   my one` and `let me look at it` are 5 of 5, and `let me make some` is 4 of 4. Dead at any
+   threshold.
+
+The conclusion is not "try harder": **Thai-on-QWERTY and English are the same distribution by
+spelling shape.** The only signal with real information is a Thai wordlist, which would segment
+`อะไรนะ` into `อะไร` + `นะ` while `let me make some` flips to non-words. That stays unbuilt —
+it contradicts the dictionary-free design, and `swapAll` covers the reported case for nothing.
 
 ## Testing
 
 - Add a failing behaviour test before fixing a converter defect.
 - Tests exercise the public converter interface, not mapping internals.
 - `Fixtures/conversion-cases.json` is the portable behaviour contract for a later Windows port:
-  the full key table, a `schema` block describing the format for a non-Swift reader, and 114 cases
-  across all three modes — the whole precision corpus, both recall corpora, and the known misses.
+  the full key table, the `typographicSubstitutes` fold, a `schema` block describing the format
+  for a non-Swift reader, and 136 cases across all four modes — the whole precision corpus, both
+  recall corpora, and the known misses.
   `FixtureConformanceTests` reads it from the repo via `#filePath` — there is no resource bundle,
   and a test that reaches for the real file cannot silently pass against a stale copy. It also
   asserts the JSON still carries every string in `AccuracyCorpus`, so the two cannot drift.

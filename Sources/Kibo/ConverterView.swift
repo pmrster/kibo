@@ -85,13 +85,14 @@ struct ConverterView: View {
             Button(action: model.swapDirection) {
                 Image(systemName: "arrow.left.arrow.right")
                     .font(AppFont.ui(11, weight: .semibold))
-                    .foregroundStyle(model.mode == .mixed ? Palette.dim.opacity(0.4) : Palette.accent)
+                    .foregroundStyle(model.mode.hasDirection ? Palette.accent : Palette.dim.opacity(0.4))
             }
             .buttonStyle(.plain)
-            // Mixed has no opposite direction, so there is nothing to swap.
-            .disabled(model.mode == .mixed)
+            // Mixed and Both are direction-symmetric, so there is nothing to swap.
+            .disabled(!model.mode.hasDirection)
             .keyboardShortcut("s", modifiers: [.command, .shift])
-            .help(model.mode == .mixed ? "Mixed has no direction to swap" : "Swap direction (⇧⌘S)")
+            .help(model.mode.hasDirection ? "Swap direction (⇧⌘S)"
+                                          : "\(Self.label(for: model.mode)) has no direction to swap")
             .accessibilityLabel("Swap direction")
         }
     }
@@ -107,14 +108,43 @@ struct ConverterView: View {
                                selection: model.mode,
                                label: Self.label(for:),
                                accessibilityTitle: "Conversion mode",
-                               numberKeyShortcuts: true) { model.mode = $0 }
+                               numberKeyShortcuts: true,
+                               help: Self.helpText(for:)) { model.mode = $0 }
     }
 
+    /// **The one place Thai appears in the interface**, which is otherwise entirely English.
+    ///
+    /// The exception is deliberate. Four labels this terse cannot say what separates them, and the
+    /// distinction that matters most — Both converts correct text, Mixed spares it — is the one a
+    /// user discovers by losing text to it. The audience is Thai speakers, so the explanation is
+    /// worth more in Thai than the consistency is. Labels, buttons and badges stay English.
+    private static func helpText(for mode: ConversionMode) -> String {
+        switch mode {
+        case .swapAll:
+            return "แปลงทุกส่วนพร้อมกันทั้งสองทาง — ไทย→อังกฤษ และ อังกฤษ→ไทย "
+                 + "ใช้เมื่อรู้ว่าพิมพ์ผิดทั้งหมด รวมถึงตอนที่ผิดคนละทางในประโยคเดียวกัน "
+                 + "ข้อความที่ถูกอยู่แล้วจะถูกแปลงไปด้วย"
+        case .englishToThai:
+            return "ถือว่าทั้งข้อความคือการพิมพ์อังกฤษขณะเปิดแป้นไทย "
+                 + "แล้วแปลงเป็นไทยทั้งหมด ไม่มีการเลือกให้"
+        case .thaiToEnglish:
+            return "ถือว่าทั้งข้อความคือการพิมพ์ไทยขณะเปิดแป้นอังกฤษ "
+                 + "แล้วแปลงเป็นอังกฤษทั้งหมด ไม่มีการเลือกให้"
+        case .mixed:
+            return "แปลงเฉพาะส่วนที่สะกดผิดในภาษาของตัวเอง "
+                 + "คำที่ถูกอยู่แล้ว ตัวเลข และเครื่องหมาย จะไม่ถูกแตะต้อง "
+                 + "ปลอดภัยที่สุด แต่จะปล่อยผ่านคำที่บังเอิญสะกดถูกในอีกภาษา"
+        }
+    }
+
+    /// Kept to the width of `EN → TH` or shorter. The segments divide the row evenly, so the
+    /// longest label sets how tight all four are; "Both directions" truncated at this width.
     private static func label(for mode: ConversionMode) -> String {
         switch mode {
         case .mixed: return "Mixed"
         case .englishToThai: return "EN → TH"
         case .thaiToEnglish: return "TH → EN"
+        case .swapAll: return "Both"
         }
     }
 
@@ -128,6 +158,7 @@ struct ConverterView: View {
         case .mixed: return "only what looks mistyped"
         case .englishToThai: return "EN → TH"
         case .thaiToEnglish: return "TH → EN"
+        case .swapAll: return "everything, both directions"
         }
     }
 
@@ -167,9 +198,14 @@ struct ConverterView: View {
             .foregroundStyle(Palette.text)
             .scrollContentBackground(.hidden)
             // Off because this field holds text that is, by definition, misspelled in both
-            // scripts — but also because autocorrection and text replacement are substitution
-            // machinery reading every keystroke, and the less of that touches this field the
-            // better. It cannot change what the converter sees, either way.
+            // scripts — but also because autocorrection is substitution machinery reading every
+            // keystroke, and the less of that touches this field the better.
+            //
+            // It does *not* cover the substitutions that matter here. On macOS this modifier
+            // clears `isAutomaticSpellingCorrectionEnabled` alone; quote and dash substitution
+            // stay on, and they rewrite `'` to `’` — a character on no key, which the converter
+            // could not turn back into `ง`. `AppDelegate.disableTypographicSubstitution` is what
+            // turns those off.
             .autocorrectionDisabled(true)
             .focused($inputFocused)
             .frame(height: scaled(64))
