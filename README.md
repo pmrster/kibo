@@ -12,7 +12,7 @@ what you typed into an unrelated string of the other script.*
 Type `l;ylfu` when you meant `สวัสดี`? Paste it in and get it back.
 
 ```
-l;ylfu ไำะ ครับ 2024 :)   →   สวัสดี wet ครับ 2024 :)
+l;ylfu ้ำสสน ครับ 2024 :)   →   สวัสดี hello ครับ 2024 :)
 ```
 
 Note what *didn't* change. `ครับ` was already correct, `2024` is a number, `:)` is a smiley. Mixed
@@ -22,7 +22,7 @@ mode converts only the parts that are actually broken.
 
 | | |
 | --- | --- |
-| **Status** | v0.2.3 — converter and menu-bar app work; ad-hoc signed builds only |
+| **Status** | v0.2.4 — converter and menu-bar app work; ad-hoc signed builds only |
 | **Requires** | macOS 14 (Sonoma) or later, Apple silicon or Intel |
 | **Stack** | Swift 6, SwiftUI, AppKit, SwiftPM, XCTest |
 | **Privacy** | Local-only, and sandboxed with no network entitlement. |
@@ -55,12 +55,16 @@ shuts its eyes after a copy, and says *boo~*.
 
 Three modes:
 
-| Mode | What it does |
-| --- | --- |
-| **Mixed** | Converts only the runs that look wrong. Leaves correct text, numbers, and punctuation alone. |
-| **EN → TH** | Treats the whole string as English keystrokes typed with the Thai layout on. |
-| **TH → EN** | The reverse. |
-| **Both** | Flips every run the way its own script implies, in one pass — for text mistyped in both directions at once. |
+| Mode | Key | What it does |
+| --- | --- | --- |
+| **Both** | `⌘1` | Flips every run the way its own script implies, in one pass — for text mistyped in both directions at once. |
+| **EN → TH** | `⌘2` | Treats the whole string as English keystrokes typed with the Thai layout on. |
+| **TH → EN** | `⌘3` | The reverse. |
+| **Mixed** | `⌘4` | Converts only the runs that look wrong. Leaves correct text, numbers, and punctuation alone. |
+
+Kibo opens in **Both**, and reopens in whatever mode you last used. Hover a mode for a Thai
+explanation of what it does — the labels are too short to say it, and the difference that matters
+(Both converts correct text, Mixed spares it) is worth spelling out.
 
 The last three are mechanical — they flip everything, no judgement. They are the escape hatch for
 when Mixed guesses wrong. **Both** is the one to reach for when you switched layout partway through

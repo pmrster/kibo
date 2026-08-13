@@ -37,7 +37,7 @@ public final class InMemoryModeMemory: ModeMemory {
     public private(set) var saves = 0
     public var mode: ConversionMode
 
-    public init(mode: ConversionMode = .mixed) {
+    public init(mode: ConversionMode = .default) {
         self.mode = mode
     }
 
@@ -80,10 +80,10 @@ public struct SettingsStore {
         nonmutating set { defaults.set(newValue.rawValue, forKey: Key.fontSize) }
     }
 
-    /// Reopening the converter in the mode you left it in. Mixed is the default because it is the
-    /// one that needs no decision from the user.
+    /// Reopening the converter in the mode you left it in. See `ConversionMode.default` for what
+    /// a first launch gets, and why.
     public var lastMode: ConversionMode {
-        get { defaults.string(forKey: Key.lastMode).flatMap(ConversionMode.init(rawValue:)) ?? .mixed }
+        get { defaults.string(forKey: Key.lastMode).flatMap(ConversionMode.init(rawValue:)) ?? .default }
         nonmutating set { defaults.set(newValue.rawValue, forKey: Key.lastMode) }
     }
 }

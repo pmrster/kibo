@@ -38,15 +38,17 @@ enum Snapshot {
             NSAppearance.current = appearance
             defer { NSAppearance.current = previous }
 
-            let model = ConverterModel(mode: .mixed, clipboard: SystemClipboard())
-            model.input = "l;ylfu ไำะ ครับ 2024 :)"
+            // The default mode, so review sees what a new user opens into — and because its badge
+            // is the longest of the four, making this the snapshot that catches overflow.
+            let model = ConverterModel(mode: .default, clipboard: SystemClipboard())
+            model.input = "l;ylfu ้ำสสน ครับ 2024 :)"
 
             write(ConverterView(model: model).environment(\.colorScheme,
                                                           name == "dark" ? .dark : .light),
                   to: directory, "converter-\(name)")
             // Empty as well as filled: the mascot only peeks when there is no result, so a
             // filled-only snapshot never shows the state most users see first.
-            let empty = ConverterModel(mode: .mixed, clipboard: SystemClipboard())
+            let empty = ConverterModel(mode: .default, clipboard: SystemClipboard())
             write(ConverterView(model: empty).environment(\.colorScheme,
                                                           name == "dark" ? .dark : .light),
                   to: directory, "converter-empty-\(name)")

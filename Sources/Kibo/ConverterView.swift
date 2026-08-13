@@ -108,7 +108,33 @@ struct ConverterView: View {
                                selection: model.mode,
                                label: Self.label(for:),
                                accessibilityTitle: "Conversion mode",
-                               numberKeyShortcuts: true) { model.mode = $0 }
+                               numberKeyShortcuts: true,
+                               help: Self.helpText(for:)) { model.mode = $0 }
+    }
+
+    /// **The one place Thai appears in the interface**, which is otherwise entirely English.
+    ///
+    /// The exception is deliberate. Four labels this terse cannot say what separates them, and the
+    /// distinction that matters most — Both converts correct text, Mixed spares it — is the one a
+    /// user discovers by losing text to it. The audience is Thai speakers, so the explanation is
+    /// worth more in Thai than the consistency is. Labels, buttons and badges stay English.
+    private static func helpText(for mode: ConversionMode) -> String {
+        switch mode {
+        case .swapAll:
+            return "แปลงทุกส่วนพร้อมกันทั้งสองทาง — ไทย→อังกฤษ และ อังกฤษ→ไทย "
+                 + "ใช้เมื่อรู้ว่าพิมพ์ผิดทั้งหมด รวมถึงตอนที่ผิดคนละทางในประโยคเดียวกัน "
+                 + "ข้อความที่ถูกอยู่แล้วจะถูกแปลงไปด้วย"
+        case .englishToThai:
+            return "ถือว่าทั้งข้อความคือการพิมพ์อังกฤษขณะเปิดแป้นไทย "
+                 + "แล้วแปลงเป็นไทยทั้งหมด ไม่มีการเลือกให้"
+        case .thaiToEnglish:
+            return "ถือว่าทั้งข้อความคือการพิมพ์ไทยขณะเปิดแป้นอังกฤษ "
+                 + "แล้วแปลงเป็นอังกฤษทั้งหมด ไม่มีการเลือกให้"
+        case .mixed:
+            return "แปลงเฉพาะส่วนที่สะกดผิดในภาษาของตัวเอง "
+                 + "คำที่ถูกอยู่แล้ว ตัวเลข และเครื่องหมาย จะไม่ถูกแตะต้อง "
+                 + "ปลอดภัยที่สุด แต่จะปล่อยผ่านคำที่บังเอิญสะกดถูกในอีกภาษา"
+        }
     }
 
     /// Kept to the width of `EN → TH` or shorter. The segments divide the row evenly, so the

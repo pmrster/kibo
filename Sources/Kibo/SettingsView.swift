@@ -37,10 +37,10 @@ struct SettingsView: View {
             // really for — the vowel and tone marks are the hard part to read.
             section("PREVIEW") {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("l;ylfu ไำะ ครับ")
+                    Text("l;ylfu ้ำสสน ครับ")
                         .font(AppFont.thai(11))
                         .foregroundStyle(Palette.dim)
-                    Text("สวัสดี wet ครับ")
+                    Text("สวัสดี hello ครับ")
                         .font(AppFont.thai(13))
                         .foregroundStyle(Palette.text)
                 }
