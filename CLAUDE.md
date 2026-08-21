@@ -23,6 +23,9 @@ swift test --filter KeyboardConverterTests    # one test class
 swift test --filter RunJudgeTests/test_neutral_runs_are_never_converted   # one method
 swift Tools/dump-kedmanee.swift               # re-dump the key table from macOS layout data
 swift Tools/dump-kedmanee.swift --json        # same, as the Fixtures mapping array
+python3 Tools/make-banner.py                  # → docs/banner-{light,dark}.png
+python3 Tools/make-mockups.py                 # → docs/mockup-converter-{light,dark}.png (needs Chrome)
+python3 Tools/make-ghost-gif.py               # → docs/kibo-{idle,boo}-{light,dark}.gif
 Packaging/package.sh [version]                # → dist/Kibo.app + .dmg
 
 # Design review. Opt-in behind a compile flag, so it is absent from normal debug AND release
@@ -65,6 +68,27 @@ Two targets, with a deliberate split:
 
 `ConverterModel` lives in Core, not the shell, because it is logic. The shell supplies it a
 `SystemClipboard`; tests supply an `InMemoryClipboard` that counts accesses.
+
+### The two entry paths
+
+- **The popover / pinned panel** — `ConverterModel.input` → `output`, with Paste and Copy.
+- **The macOS Service** (`ConversionService.swift`, declared under `NSServices` in
+  `Packaging/Info.plist`) — select text in any app, right-click → Services → *Fix Layout with
+  Kibo*, and the selection is replaced in place. It calls `ConverterModel.convert(_:)`, which
+  uses the **mode the picker is currently set to** (one control for both paths, chosen over
+  always-Both and always-Mixed) and deliberately bypasses `input`, so a conversion in another
+  app never overwrites what is in the popover. There is no preview on this path; the host app's
+  Undo is the safety net. **Only a real `.app` registers Services** — `swift run` cannot exercise
+  this, so verify with `package.sh`, copy to `/Applications`, and either use it from TextEdit or
+  call `NSPerformService("Fix Layout with Kibo", pasteboard)` from a throwaway script;
+  `/System/Library/CoreServices/pbs -dump_pboard` shows whether the system has registered it.
+  `NSRequiredContext` is deliberately absent: its documented values are URL/Date/Address/Email/
+  FilePath, and the item should appear on any text.
+- **Launch at login** (`LaunchAtLogin.swift`) is `SMAppService.mainApp`, with **no defaults
+  key** — the system is the source of truth, and `AppSettings.setLaunchAtLogin` reads the status
+  back after every request rather than trusting the toggle. It too needs a bundle; under
+  `swift run` the call throws and the switch stays off. `ThemedToggle` exists for the same reason
+  as `ThemedSegmentedControl`: a SwiftUI `Toggle` paints with the system accent.
 
 ### Design
 
@@ -302,7 +326,11 @@ it contradicts the dictionary-free design, and `swapAll` covers the reported cas
   AppKit would otherwise encode a text view's contents into `~/Library/Saved Application State/`.
 - **The clipboard is read only from Paste and written only from Copy.** `Clipboard` is a
   two-method protocol with no "watch" operation to start using by accident, and
-  `ConverterModelTests` counts accesses and fails if anything else reaches for it.
+  `ConverterModelTests` counts accesses and fails if anything else reaches for it. **The Service
+  is not a third touch**: macOS hands the selection over on a private, single-use pasteboard and
+  takes the result back the same way, so `NSPasteboard.general` — the one Universal Clipboard
+  syncs and clipboard managers watch — is never involved. `ConverterModel.convert(_:)` is tested
+  for exactly that. No Accessibility permission, no selection watching.
 - **No entered or converted text is stored.** `SettingsStore` holds appearance, text size, and the
   last mode — there is nowhere to put anything else.
 
@@ -331,6 +359,6 @@ The script owns three things the test suite cannot see, so read its output rathe
 
 Before every commit, review `git status --short --ignored` and keep local-only files out. Do not
 commit build outputs, release artifacts, local state, agent caches, IDE metadata, secrets, or
-temporary files. Expected local-only paths: `.build/`, `dist/`, `state/`, `.superpowers/`,
+temporary files. Expected local-only paths: `.build/`, `dist/`, `state/`, `brand/`, `.superpowers/`,
 `.DS_Store`, `.env*`, certificates and profiles. If a new local-only artifact appears, add it to
 `.gitignore` before committing.

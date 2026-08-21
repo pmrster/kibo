@@ -83,7 +83,8 @@ A dictionary-backed judgement was considered and rejected for the MVP — writte
 - **System appearance**: Follow macOS light/dark appearance by default.
 - **Privacy-first**: All conversion happens on-device; no server calls or analytics.
 - **Optional global shortcut**: Open or focus the converter without reaching for the mouse. This follows the core MVP.
-- **Optional launch at login**: User-controlled and disabled by default.
+- **Optional launch at login**: User-controlled and disabled by default. A switch in Settings, backed by `SMAppService` — the system is the source of truth, nothing is stored in the app's own preferences.
+- **Fix in place via Services**: Select text in any app, right-click → Services → *Fix Layout with Kibo*, and the selection is replaced in the converter's current mode. The text travels on a private per-invocation pasteboard, not the clipboard, and no Accessibility permission is involved. No preview on this path; the host app's Undo is the safety net.
 
 ## Design
 
@@ -122,4 +123,4 @@ The app uses the Thai Kedmanee layout mapped to the US QWERTY layout. Every supp
 - Add opt-in, local-only recent conversion history.
 - Add a WidgetKit companion that displays the last result and offers supported shortcut actions.
 - Add a Windows notification-area utility using the same behavior contract and test fixtures.
-- Explore selection replacement through macOS Accessibility only as an explicit opt-in feature; it is not required for the privacy-minimal MVP.
+- ~~Explore selection replacement through macOS Accessibility only as an explicit opt-in feature~~ — **superseded** by the Services item above, which replaces the selection without any Accessibility permission.
