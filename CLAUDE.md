@@ -23,6 +23,9 @@ swift test --filter KeyboardConverterTests    # one test class
 swift test --filter RunJudgeTests/test_neutral_runs_are_never_converted   # one method
 swift Tools/dump-kedmanee.swift               # re-dump the key table from macOS layout data
 swift Tools/dump-kedmanee.swift --json        # same, as the Fixtures mapping array
+python3 Tools/make-banner.py                  # → docs/banner-{light,dark}.png
+python3 Tools/make-mockups.py                 # → docs/mockup-converter-{light,dark}.png (needs Chrome)
+python3 Tools/make-ghost-gif.py               # → docs/kibo-{idle,boo}-{light,dark}.gif
 Packaging/package.sh [version]                # → dist/Kibo.app + .dmg
 
 # Design review. Opt-in behind a compile flag, so it is absent from normal debug AND release
@@ -356,6 +359,6 @@ The script owns three things the test suite cannot see, so read its output rathe
 
 Before every commit, review `git status --short --ignored` and keep local-only files out. Do not
 commit build outputs, release artifacts, local state, agent caches, IDE metadata, secrets, or
-temporary files. Expected local-only paths: `.build/`, `dist/`, `state/`, `.superpowers/`,
+temporary files. Expected local-only paths: `.build/`, `dist/`, `state/`, `brand/`, `.superpowers/`,
 `.DS_Store`, `.env*`, certificates and profiles. If a new local-only artifact appears, add it to
 `.gitignore` before committing.
