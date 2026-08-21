@@ -55,7 +55,7 @@ enum Snapshot {
             write(AboutView().frame(width: 320, height: 360)
                     .environment(\.colorScheme, name == "dark" ? .dark : .light),
                   to: directory, "about-\(name)")
-            write(SettingsView().frame(width: 320, height: 320)
+            write(SettingsView().frame(width: 320, height: 400)
                     .environment(\.colorScheme, name == "dark" ? .dark : .light),
                   to: directory, "settings-\(name)")
             write(mascotSheet.environment(\.colorScheme, name == "dark" ? .dark : .light),

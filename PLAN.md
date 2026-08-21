@@ -121,7 +121,7 @@ Carried into Slice 2: app icon artwork, and a signing identity for a notarized b
 ### Slice 2 — desktop-quality release
 
 - Add keyboard-first focus behavior and a user-configurable global shortcut.
-- Add a Settings scene for shortcut and launch-at-login preferences.
+- ~~Add a Settings scene for launch-at-login~~ — done, as an `SMAppService`-backed switch in Settings. A global shortcut preference remains open; the Services item (right-click → Services → *Fix Layout with Kibo*) can be given a system-wide shortcut in System Settings, which covers the most common want without the app registering a hotkey of its own.
 - Add UI tests for the primary flow and clipboard feedback.
 - Polish Thai localization, empty/error states, VoiceOver labels, contrast, and compact-window sizing.
 - Add app icon, versioning, signing configuration, hardened runtime, archive validation, and notarized distribution.

@@ -14,6 +14,7 @@ No account, no telemetry, no analytics, no crash reporting, no update check.
 | **Written to disk** | Nothing. Not the input, not the result, not a history. |
 | **Kept in memory** | The current input and result, for as long as the window is open. |
 | **Put on the clipboard** | Only the result, only when you press Copy. |
+| **Seen from other apps** | Only the text you select and then hand over via Services → Fix Layout with Kibo. It arrives on a private pasteboard, not the clipboard. |
 
 The only things Kibo stores anywhere are three display preferences: appearance, text size, and the
 last conversion mode you used. They live in `~/Library/Containers/pmrster.kibo/Data/Library/
@@ -31,6 +32,13 @@ signing that the sandbox actually made it into the signature.
 with no "watch" or "poll" operation to start using by accident. `ConverterModel` calls read only
 from Paste and write only from Copy. `ConverterModelTests` counts every access and fails the build
 if anything else reaches for it.
+
+**The Services item is not a third touch.** When you pick *Fix Layout with Kibo* from another
+app's right-click menu, macOS copies your selection onto a private, single-use pasteboard and
+hands that to Kibo; the converted text goes back the same way. The general clipboard — the one
+Universal Clipboard syncs and clipboard managers watch — is never involved, and the tests above
+assert that the code path the Service uses does not reach for it. Nothing is read until you pick
+the item: there is no selection watching, and no Accessibility permission is requested.
 
 **Copies are marked as secrets.** A Copy writes the text with the `org.nspasteboard.ConcealedType`
 and `org.nspasteboard.TransientType` markers, which clipboard managers (Raycast, Maccy, Paste,

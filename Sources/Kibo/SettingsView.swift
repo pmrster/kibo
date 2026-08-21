@@ -33,6 +33,23 @@ struct SettingsView: View {
                 }
             }
 
+            section("STARTUP") {
+                VStack(alignment: .leading, spacing: 6) {
+                    ThemedToggle(title: "Open Kibo at login", isOn: settings.launchAtLogin) {
+                        settings.setLaunchAtLogin($0)
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+                    .background(Palette.fieldFill, in: RoundedRectangle(cornerRadius: 8))
+                    if let note = settings.launchAtLoginNote {
+                        Text(note)
+                            .font(AppFont.ui(10))
+                            .foregroundStyle(Palette.dim)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
+
             // Shows the Thai face at the chosen size, since that is what the text-size setting is
             // really for — the vowel and tone marks are the hard part to read.
             section("PREVIEW") {
@@ -60,6 +77,8 @@ struct SettingsView: View {
         .padding(20)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(Palette.panel)
+        // The user may have flipped it in System Settings since the window was last open.
+        .onAppear { settings.refreshLaunchAtLogin() }
     }
 
     private static func label(for appearance: Appearance) -> String {

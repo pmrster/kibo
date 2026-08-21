@@ -122,3 +122,44 @@ struct PanelCloseButton: View {
         .accessibilityLabel("Close window")
     }
 }
+
+/// A switch the app paints itself, for the same reason `ThemedSegmentedControl` exists: a SwiftUI
+/// `Toggle` takes the system accent colour when on, which is whatever the user chose in System
+/// Settings and not this palette. Also renders under `--snapshot`, unlike the AppKit-backed one.
+///
+/// `isOn` is reported through `onToggle` rather than bound, because the setting it drives lives
+/// with the system (`LaunchAtLogin`) and the real state is read back *after* the request — a
+/// `Binding` would show the switch flipped before the system had agreed to it.
+struct ThemedToggle: View {
+    let title: String
+    let isOn: Bool
+    let onToggle: (Bool) -> Void
+
+    var body: some View {
+        Button {
+            onToggle(!isOn)
+        } label: {
+            HStack {
+                Text(title)
+                    .font(AppFont.ui(12))
+                    .foregroundStyle(Palette.text)
+                Spacer()
+                ZStack(alignment: isOn ? .trailing : .leading) {
+                    Capsule()
+                        .fill(isOn ? Palette.accent : Palette.track)
+                        .frame(width: 34, height: 20)
+                    Circle()
+                        .fill(Palette.panel)
+                        .frame(width: 16, height: 16)
+                        .padding(2)
+                }
+                .animation(.easeInOut(duration: 0.15), value: isOn)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(title)
+        .accessibilityValue(isOn ? "On" : "Off")
+        .accessibilityAddTraits(.isToggle)
+    }
+}

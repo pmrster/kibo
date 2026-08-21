@@ -88,7 +88,7 @@ enum Panels {
     static var pinned: FloatingPanel?
 
     static let settings = FloatingPanel(title: "Settings",
-                                        size: NSSize(width: 320, height: 320)) { SettingsView() }
+                                        size: NSSize(width: 320, height: 400)) { SettingsView() }
 
     static let about = FloatingPanel(title: "About",
                                      size: NSSize(width: 320, height: 360)) { AboutView() }
