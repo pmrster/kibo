@@ -17,6 +17,7 @@ struct KiboApp: App {
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusController: StatusItemController?
+    private var service: ConversionService?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Self.disableTypographicSubstitution()
@@ -45,6 +46,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             ConverterView(model: model, fixedWidth: nil)
         }
         statusController = StatusItemController(model: model)
+
+        // The right-click → Services entry path. Held strongly here because `servicesProvider`
+        // is an unowned reference; the registration itself lives in Info.plist, and
+        // `NSUpdateDynamicServices` asks the system to re-read it so a freshly installed build
+        // appears in the menu without a logout.
+        let service = ConversionService(model: model)
+        self.service = service
+        NSApp.servicesProvider = service
+        NSUpdateDynamicServices()
     }
 
     /// Keeps the input field from rewriting the keystroke before the converter sees it.

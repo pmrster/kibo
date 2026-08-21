@@ -82,6 +82,19 @@ public final class ConverterModel {
         didCopy = false
     }
 
+    /// Converts text that did not come through the input field — the macOS Service, where the
+    /// user selects text in another app and asks for it fixed in place.
+    ///
+    /// It uses the mode the converter is currently set to, so the picker in the popover is the
+    /// one control for both paths, and it deliberately bypasses `input`: the field in the popover
+    /// belongs to whatever the user was working on there, and a conversion that happened in
+    /// another app must not overwrite it. Nor does it go near the clipboard — a Service carries
+    /// its text on a private pasteboard the system provides, which is what keeps this path off
+    /// clipboard managers and Universal Clipboard.
+    public func convert(_ text: String) -> String {
+        converter.convert(text, mode: mode).output
+    }
+
     private func refresh() {
         output = converter.convert(input, mode: mode).output
         didCopy = false

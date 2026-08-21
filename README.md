@@ -52,6 +52,11 @@ shuts its eyes after a copy, and says *boo~*.
 - **Right-click** for About, Settings, and Quit.
 - **Pin** (top-right of the window) floats the converter above other apps, so it stays put while
   you switch away to paste.
+- **Fix it where it is.** Select mistyped text in any app, right-click → **Services** → **Fix
+  Layout with Kibo**, and the selection is replaced in place, in whatever mode the converter is
+  set to. There is no preview on this path, so `⌘Z` in that app is the undo. To make it a hotkey,
+  give it a shortcut in System Settings → Keyboard → Keyboard Shortcuts → Services → Text.
+- **Open at login** is a switch in Settings, off by default.
 
 Three modes:
 
@@ -122,7 +127,8 @@ built on that assumption.
   `lsof` ORs its filters and shows you every other program's network activity.)
 - **The clipboard is touched only when you ask.** Read on Paste, written on Copy, never watched or
   polled. Copies are marked *concealed* and *transient*, the flags clipboard managers use to keep
-  passwords out of their history.
+  passwords out of their history. The Services item never touches the clipboard at all: macOS
+  hands the selection over on a private pasteboard that exists for that one call.
 - **Nothing you type is stored.** Preferences hold your theme, text size, and last mode. That's
   it. Window restoration is switched off so the text cannot reach disk that way either.
 - **One caveat, honestly.** Right-clicking inside a text field gives you the standard macOS menu,
