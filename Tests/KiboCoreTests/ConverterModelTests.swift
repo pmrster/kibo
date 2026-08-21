@@ -203,3 +203,37 @@ final class ConverterModelTests: XCTestCase {
         XCTAssertEqual(memory.saves, 0)
     }
 }
+
+@MainActor
+final class ConverterModelSelectionTests: XCTestCase {
+
+    /// The Services entry path — select text in another app, pick "Fix Layout with Kibo" — goes
+    /// through here rather than through `input`, because the popover's field must not be
+    /// overwritten by a conversion that happened somewhere else.
+    func test_converting_a_selection_uses_the_current_mode() {
+        let model = ConverterModel(mode: .englishToThai, clipboard: InMemoryClipboard())
+        XCTAssertEqual(model.convert("l;ylfu"), "สวัสดี")
+
+        model.mode = .thaiToEnglish
+        XCTAssertEqual(model.convert("สวัสดี"), "l;ylfu")
+    }
+
+    func test_converting_a_selection_leaves_the_input_and_result_alone() {
+        let model = ConverterModel(mode: .englishToThai, clipboard: InMemoryClipboard())
+        model.input = "keep"
+        _ = model.convert("l;ylfu")
+        XCTAssertEqual(model.input, "keep")
+        XCTAssertEqual(model.output, "าำำย", "the result still belongs to the field, not the selection")
+    }
+
+    /// A Service hands the text over on its own private pasteboard. The general clipboard — the
+    /// one Universal Clipboard and clipboard managers watch — must stay out of it entirely.
+    func test_converting_a_selection_never_touches_the_clipboard() {
+        let clipboard = InMemoryClipboard(contents: "untouched")
+        let model = ConverterModel(mode: .swapAll, clipboard: clipboard)
+        _ = model.convert("l;ylfu")
+        XCTAssertEqual(clipboard.reads, 0)
+        XCTAssertEqual(clipboard.writes, 0)
+        XCTAssertEqual(clipboard.contents, "untouched")
+    }
+}

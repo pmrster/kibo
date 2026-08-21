@@ -21,10 +21,18 @@ final class AppSettings: ObservableObject {
     @Published var appearance: Appearance { didSet { store.appearance = appearance; applyAppearance() } }
     @Published var fontSize: FontSize { didSet { store.fontSize = fontSize } }
 
+    /// Mirrors `LaunchAtLogin.state`, not a stored preference — see that type. Set through
+    /// `setLaunchAtLogin`, which asks the system and then reads back what it actually did.
+    @Published private(set) var launchAtLogin = false
+    /// Why the switch is not where the user put it, when it is not: approval still pending in
+    /// System Settings, or the registration failed outright. `nil` when there is nothing to say.
+    @Published private(set) var launchAtLoginNote: String?
+
     init(store: SettingsStore = SettingsStore()) {
         self.store = store
         self.appearance = store.appearance
         self.fontSize = store.fontSize
+        refreshLaunchAtLogin()
     }
 
     var fontScale: Double { fontSize.factor }
@@ -46,5 +54,29 @@ final class AppSettings: ObservableObject {
     /// Force (or clear) the whole app's appearance. Call at launch and on every change.
     func applyAppearance() {
         NSApp.appearance = nsAppearance
+    }
+
+    func setLaunchAtLogin(_ enabled: Bool) {
+        do {
+            try LaunchAtLogin.set(enabled)
+            launchAtLoginNote = nil
+        } catch {
+            launchAtLoginNote = error.localizedDescription
+        }
+        refreshLaunchAtLogin()
+    }
+
+    /// Re-reads the system's answer. Called when the Settings window opens, since the user may
+    /// have changed it in System Settings in the meantime.
+    func refreshLaunchAtLogin() {
+        switch LaunchAtLogin.state {
+        case .on:
+            launchAtLogin = true
+        case .off:
+            launchAtLogin = false
+        case .awaitingApproval:
+            launchAtLogin = false
+            launchAtLoginNote = "Approve it in System Settings → General → Login Items."
+        }
     }
 }
