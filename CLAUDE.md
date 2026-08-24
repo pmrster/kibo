@@ -23,6 +23,7 @@ swift test --filter KeyboardConverterTests    # one test class
 swift test --filter RunJudgeTests/test_neutral_runs_are_never_converted   # one method
 swift Tools/dump-kedmanee.swift               # re-dump the key table from macOS layout data
 swift Tools/dump-kedmanee.swift --json        # same, as the Fixtures mapping array
+python3 Tools/make-download-button.py         # → docs/download.svg, the README's button
 python3 Tools/make-banner.py                  # → docs/banner-{light,dark}.png
 python3 Tools/make-mockups.py                 # → docs/mockup-converter-{light,dark}.png (needs Chrome)
 python3 Tools/make-ghost-gif.py               # → docs/kibo-{idle,boo}-{light,dark}.gif
@@ -339,7 +340,8 @@ it contradicts the dictionary-free design, and `swapAll` covers the reported cas
 
 `dist/` is gitignored. Build locally with `Packaging/package.sh <version>` and ship the DMG as a
 GitHub Release asset; git holds source, the Release holds binaries. Without `SIGN_IDENTITY` the
-app is ad-hoc signed and users must right-click → Open once. For a public build set
+app is ad-hoc signed and users must allow it once via System Settings → Privacy & Security →
+Open Anyway (right-click → Open still works on macOS 14, not 15). For a public build set
 `SIGN_IDENTITY`, `NOTARY_PROFILE`, and `REQUIRE_NOTARIZATION=1`. No signing identity is
 provisioned yet.
 

@@ -35,7 +35,8 @@ tampered release.
 
 Builds are currently **ad-hoc signed and not notarized** — there is no paid Developer ID behind
 this project yet. That means macOS cannot attribute a downloaded build to anyone, and Gatekeeper
-will make you right-click → Open the first time. If that trade is not one you want to make, build
+will make you allow it once — System Settings → Privacy & Security → Open Anyway (or right-click →
+Open on macOS 14). If that trade is not one you want to make, build
 from source; `Packaging/package.sh` produces the same app from the code in this repository.
 
 ## Hardening already in place
