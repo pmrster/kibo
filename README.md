@@ -47,8 +47,10 @@ what you typed into an unrelated string of the other script — never a blank, a
 
 ## Install
 
-Grab the DMG from [Releases](https://github.com/pmrster/kibo/releases/latest), open it, and drag
-**Kibo** to `/Applications`.
+**[Download Kibo.dmg](https://github.com/pmrster/kibo/releases/latest/download/Kibo.dmg)** — the
+latest release, for macOS 14 or later. Open it and drag **Kibo** to `/Applications`. Every
+release, with its SHA-256 beside it, is on the [Releases](https://github.com/pmrster/kibo/releases)
+page.
 
 No notarized build is published yet, so macOS will not trust a downloaded copy on sight. On first
 launch, right-click the app → **Open** once, and it will not ask again. If you would rather not
