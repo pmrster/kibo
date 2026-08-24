@@ -15,7 +15,7 @@ jobs:
     runs-on: macos-15
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Build (warnings are worth seeing)
         run: swift build
@@ -31,7 +31,7 @@ jobs:
     runs-on: macos-15
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # Builds the .app and DMG exactly as a release would, unsigned. This is here because the
       # packaging script is the only place the sandbox entitlement, the version injection and the
