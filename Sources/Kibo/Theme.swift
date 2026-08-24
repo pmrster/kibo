@@ -59,11 +59,13 @@ func scaled(_ size: CGFloat) -> CGFloat { size * CGFloat(AppSettings.shared.font
 ///
 /// The system font renders Thai through Thonburi, whose vowel marks and tone marks sit tight
 /// against the consonant at small sizes — exactly the detail this app asks people to read.
-/// Noto Sans Thai spaces them properly, and macOS ships it, so it costs nothing to use and no
-/// font has to be bundled (SPEC.md: "Prefer system fonts in the native utility").
+/// Noto Sans Thai spaces them properly, so it is used when the Mac has it. macOS does **not**
+/// ship it — it is in no system font directory, and resolved on the development machine only
+/// because it was installed in `~/Library/Fonts` — so a stock Mac falls back to the system
+/// face. Nothing is bundled (SPEC.md: "Prefer system fonts in the native utility").
 enum AppFont {
-    /// Resolved once. On a Mac without the family — it is present on macOS 14+, but this is not
-    /// worth crashing or looking wrong over — every call quietly falls back to the system font.
+    /// Resolved once. Absent the family, every call quietly falls back to the system font; that
+    /// is the normal case on a Mac without Noto Sans Thai installed.
     static let thaiFamily: String? = {
         NSFont(name: "Noto Sans Thai", size: 12) != nil ? "Noto Sans Thai" : nil
     }()
