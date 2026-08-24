@@ -1,0 +1,8 @@
+# The repository has no package dependencies — Package.swift declares none — so the only thing
+# to keep current is the GitHub Actions the CI workflow runs on.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

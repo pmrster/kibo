@@ -19,7 +19,7 @@ The menu-bar surface is an AppKit [`NSStatusItem`](https://developer.apple.com/d
 7. The app follows the system appearance and performs no network requests.
 8. Pin reopens the same converter as a floating panel, for copying between apps without it closing.
 
-The MVP deliberately excludes automatic clipboard monitoring, text replacement in other apps, login launch, conversion history, analytics, and a WidgetKit extension.
+The MVP deliberately excluded automatic clipboard monitoring, conversion history, analytics, and a WidgetKit extension. Text replacement in other apps and launch at login were left out of it too, and arrived in 0.3.0 — replacement as a macOS Service, so nothing watches the selection.
 
 ## Architecture
 

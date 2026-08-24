@@ -20,7 +20,7 @@ jobs:
       - name: Build (warnings are worth seeing)
         run: swift build
 
-      # The suite is the accuracy contract: it pins 36 of 36 precision, 15 of 24 English recall
+      # The suite is the accuracy contract: it pins 36 of 36 precision, 19 of 30 English recall
       # and 4 of 12 Thai recall, and checks Fixtures/conversion-cases.json against the same
       # corpus. A green run here is what makes those numbers in the README true.
       - name: Run tests
