@@ -10,7 +10,7 @@ no `.xcodeproj` and no `package.json`; it is a plain SwiftPM package.
 
 ```bash
 swift build
-swift test          # 97 tests, all in KiboCoreTests
+swift test          # all in KiboCoreTests; the suite is the accuracy contract
 swift run Kibo      # the glyph appears in the menu bar, top-right; quit with pkill -x Kibo
 ```
 

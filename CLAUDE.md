@@ -110,10 +110,11 @@ Two targets, with a deliberate split:
   `~/Library/Fonts`, so every other Mac would have fallen back silently. **Do not depend on a face
   the app cannot guarantee.** If this ever wants more character without bundling anything, macOS
   also ships Avenir Next and Chakra Petch (the latter covers Thai). `AppFont.ui` for other English
-  chrome; `AppFont.thai` for
-  the input and result fields, which can contain Thai. That is **Noto Sans Thai**, which macOS ships: the system
-  Thai face crowds vowel and tone marks at 11–13pt, and those marks are the whole point here.
-  Nothing is bundled, and the helper falls back to the system font if the family is missing.
+  chrome; `AppFont.thai` for the input and result fields, which can contain Thai. That is **Noto
+  Sans Thai** when the Mac has it: the system Thai face crowds vowel and tone marks at 11–13pt,
+  and those marks are the whole point here. **macOS does not ship it** — it is in no system font
+  directory, and resolved on the development Mac only because it was in `~/Library/Fonts` — so a
+  stock Mac falls back to the system face (Thonburi). Nothing is bundled.
 - **Mascot** (`KiboSprite.swift`, `KiboView.swift`) — an original 8-bit ghost. **One colour,
   features cut out as holes**, the same construction Tama uses; it flips between midnight and pale
   so it is always the opposite of what it sits on.

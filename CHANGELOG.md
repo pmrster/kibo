@@ -3,6 +3,42 @@
 All notable changes to this project are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.3.0] — 2026-08-24
+
+First public release.
+
+### Added
+
+- **Fix it where it is.** A macOS Service, *Fix Layout with Kibo*: select mistyped text in any
+  app, right-click → Services, and the selection is replaced in place, in whatever mode the
+  converter is set to. Declared under `NSServices`, so the system launches Kibo on demand. It goes
+  through `ConverterModel.convert(_:)`, which bypasses the input field — a conversion elsewhere
+  never overwrites the popover — and never touches the general clipboard: the selection travels
+  on the private per-invocation pasteboard macOS provides, and the tests count clipboard accesses
+  on that path and require zero. There is no preview on this path; the host app's ⌘Z is the undo.
+  It can be given a system-wide shortcut in System Settings → Keyboard → Keyboard Shortcuts →
+  Services.
+- **Open at login**, a switch in Settings, off by default. Backed by `SMAppService` with no
+  defaults key of its own: the status is read back from the system after every request, so the
+  switch cannot disagree with Login Items. `ThemedToggle` joins `ThemedSegmentedControl`, for the
+  same reason it exists — a SwiftUI `Toggle` paints with the system accent.
+- Neither works under `swift run`, which has no bundle; both are verified from a `package.sh`
+  build.
+
+### Changed
+
+- **The README is written for a public repository**: name, subtitle and badges first, then a
+  banner drawn from the sprite grid at a whole-number scale (`Tools/make-banner.py`), the worked
+  example, converter mockups rendered from the app's own palette (`Tools/make-mockups.py`), and
+  the mascot's blink and "boo~" as GIFs (`Tools/make-ghost-gif.py`). The status row carries no
+  version number, so it cannot go stale.
+- **Corrected a font claim.** `Theme.swift` and `CLAUDE.md` said macOS ships Noto Sans Thai. It
+  does not: it resolved on the development Mac only because it was installed in
+  `~/Library/Fonts`. The fallback to the system Thai face was already in place, so a stock Mac
+  shows Thonburi in the text fields; the docs now say so.
+- Stale counts in `CONTRIBUTING.md` and the CI workflow brought in line with the suite.
+- Dependabot watches the GitHub Actions used by CI — the repository's only dependency of any kind.
+
 ## [0.2.4] — 2026-08-14
 
 ### Changed
