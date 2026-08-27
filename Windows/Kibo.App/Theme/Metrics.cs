@@ -1,4 +1,3 @@
-using System.Windows;
 
 namespace Kibo.App.Theme;
 

@@ -1,5 +1,4 @@
 using System.IO;
-using System.Windows;
 using Kibo.App.Services;
 using Kibo.App.Theme;
 
