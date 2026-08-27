@@ -1,0 +1,15 @@
+<Project>
+  <!-- Applies to every project under Windows/. The macOS package at the repo root is untouched. -->
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <!-- The Swift side builds warning-free; the C# side holds the same line. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Deterministic>true</Deterministic>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <!-- Placeholder, like the literals in Packaging/Info.plist: package.ps1 injects the real
+         version with -p:Version, so editing this changes nothing that ships. -->
+    <Version>0.0.0-dev</Version>
+  </PropertyGroup>
+</Project>

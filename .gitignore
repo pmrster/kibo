@@ -50,3 +50,12 @@ Packaging/AppIcon.icns
 # Brand kit, website copy and the pitch-deck template. Local-only on purpose: the repo is going
 # public and the marketing material is not part of the source.
 brand/
+
+# The Windows port under Windows/ — .NET build outputs, IDE state, and the zips package.ps1 makes.
+Windows/**/bin/
+Windows/**/obj/
+.vs/
+*.user
+*.suo
+TestResults/
+*.zip

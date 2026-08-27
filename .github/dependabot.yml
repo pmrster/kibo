@@ -1,8 +1,14 @@
-# The repository has no package dependencies — Package.swift declares none — so the only thing
-# to keep current is the GitHub Actions the CI workflow runs on.
+# The macOS package has no dependencies — Package.swift declares none — so on that side the only
+# thing to keep current is the GitHub Actions the CI workflow runs on. The Windows port under
+# Windows/ has test-only NuGet packages (xunit and the test SDK); the app itself references
+# nothing outside the .NET runtime.
 version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
+    schedule:
+      interval: monthly
+  - package-ecosystem: nuget
+    directory: /Windows
     schedule:
       interval: monthly

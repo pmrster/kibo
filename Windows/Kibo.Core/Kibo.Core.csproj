@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- All logic, zero WPF/WinForms — the C# twin of Sources/KiboCore. Targets plain net10.0 so
+       it builds and tests on macOS, where development happens. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Kibo.Core</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Mirrors `@testable import KiboCore`: Run, RunSplitter, the orthographies and RunJudge
+         stay internal, exactly as they are non-public in Swift. -->
+    <InternalsVisibleTo Include="Kibo.Core.Tests" />
+  </ItemGroup>
+</Project>

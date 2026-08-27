@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Kibo.Core.Tests/Kibo.Core.Tests.csproj" />
+  <Project Path="Kibo.Core/Kibo.Core.csproj" />
+</Solution>
