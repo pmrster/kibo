@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The WPF shell — the C# twin of Sources/Kibo. Thin, not unit-tested; everything with logic
+       in it lives in Kibo.Core. Compiles on macOS (EnableWindowsTargeting) so the development
+       loop stays on the Mac; it runs on Windows, and package.ps1 publishes it. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <!-- For NotifyIcon, the tray icon. It lives in Microsoft.WindowsDesktop.App — the same runtime
+         a WPF publish already ships — so it costs no package and no bytes. -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>Kibo</AssemblyName>
+    <RootNamespace>Kibo.App</RootNamespace>
+    <ApplicationIcon>Assets/Kibo.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- The P/Invoke source generator emits unsafe code for string marshalling. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- The Mac compiles (never runs) this project. -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+    <!-- About shows `version+build.N`, injected by package.ps1; the SDK must not append a commit
+         hash to it. -->
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <!-- WFO0003 is the WinForms analyzer asking to own DPI config. This is a WPF-first app, and
+         WPF reads PerMonitorV2 from app.manifest, which applies process-wide — so the manifest is
+         the right place and the WinForms complaint does not apply. -->
+    <NoWarn>$(NoWarn);WFO0003</NoWarn>
+  </PropertyGroup>
+
+  <!-- Publish only. Keyed on RuntimeIdentifier so a plain `dotnet build` on the Mac is not forced
+       self-contained. One .exe, nothing to install; PublishTrimmed is unsupported for WPF. -->
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <!-- UseWindowsForms adds System.Windows.Forms and System.Drawing as implicit global usings,
+       which make Application, FontFamily and Appearance ambiguous against WPF and Core. WinForms
+       is reached through the `Forms.` alias in GlobalUsings.cs only, so drop both here. -->
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Kibo.Core/Kibo.Core.csproj" />
+    <Resource Include="Assets/Kibo.ico" />
+  </ItemGroup>
+</Project>

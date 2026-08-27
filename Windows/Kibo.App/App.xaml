@@ -1,0 +1,16 @@
+<Application x:Class="Kibo.App.KiboApplication"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             ShutdownMode="OnExplicitShutdown">
+    <!-- No StartupUri: there is no main window. The tray icon, the flyout and the bubble are
+         created in KiboApplication.OnStartup, in the same order KiboApp.swift does it. -->
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Index 0 is the palette; ThemeManager swaps it for the dark one. -->
+                <ResourceDictionary Source="Theme/Palette.Light.xaml" />
+                <ResourceDictionary Source="Theme/Controls.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
