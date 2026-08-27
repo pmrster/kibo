@@ -19,6 +19,7 @@ public partial class KiboApplication : Application
 
     /// <summary>The tray icon, so menu actions can reach it for balloon tips.</summary>
     internal TrayIcon? Tray { get; private set; }
+    private HotkeyService? hotkeys;
 
     /// <summary>
     /// <c>%LOCALAPPDATA%\Kibo\settings.json</c> — display preferences and the last mode, nothing
@@ -49,11 +50,23 @@ public partial class KiboApplication : Application
 
         Panels.Flyout = new FlyoutWindow(Model);
         Panels.Pinned = new PinnedWindow(Model);
+        Panels.Bubble = new BubbleWindow();
         Panels.Settings = new SettingsWindow();
         Panels.About = new AboutWindow();
+        if (store.ShowBubble) Panels.Bubble.ApplyVisibility(true);
 
         // The tray icon last, so nothing it points at is null when a click arrives.
         Tray = new TrayIcon();
+
+        hotkeys = new HotkeyService();
+        hotkeys.Apply(store.HotkeyEnabled);
+
+        // The two Windows-only toggles drive the bubble and the hotkey live.
+        AppSettings.Shared.PropertyChanged += (_, args) =>
+        {
+            if (args.PropertyName == nameof(AppSettings.ShowBubble)) Panels.Bubble?.ApplyVisibility(AppSettings.Shared.ShowBubble);
+            else if (args.PropertyName == nameof(AppSettings.HotkeyEnabled)) hotkeys?.Apply(AppSettings.Shared.HotkeyEnabled);
+        };
     }
 
     /// <summary>Opens the converter — from a second launch's signal.</summary>
@@ -61,7 +74,11 @@ public partial class KiboApplication : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        hotkeys?.Dispose();
         Tray?.Dispose();
+        Panels.Pinned?.CloseForReal();
+        Panels.Settings?.CloseForReal();
+        Panels.About?.CloseForReal();
         singleInstance?.Dispose();
         base.OnExit(e);
     }
