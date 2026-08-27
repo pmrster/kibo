@@ -38,7 +38,9 @@ __pycache__/
 
 # Design-review output from `--snapshot`, which defaults to ./assets. Regenerated on demand and
 # never reviewed as source. The two screenshots the README uses live in docs/ and ARE tracked.
-assets/
+# Anchored to the repo root: unanchored, it also matched Windows/Kibo.App/Assets/ (the app icon
+# lives there, and the macOS filesystem is case-insensitive, so `assets/` caught `Assets/` too).
+/assets/
 
 # Generated during packaging from icon.png; nothing to commit.
 Packaging/icon-1024.png

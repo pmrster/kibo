@@ -242,6 +242,7 @@ has to pass the same file, and passing it means holding the same accuracy figure
 | --- | --- |
 | `Sources/KiboCore/` | All logic, zero AppKit/SwiftUI. Fully unit-tested. |
 | `Sources/Kibo/` | The SwiftUI/AppKit shell: status item, panel, views, the mascot. |
+| `Windows/` | The .NET port: `Kibo.Core` (the same engine in C#), its tests, the WPF shell, and `package.ps1`. |
 | `Tests/KiboCoreTests/` | The suite, including the pinned accuracy corpus. |
 | `Fixtures/` | The portable behaviour contract. |
 | `Packaging/` | `package.sh`, `Info.plist`, the sandbox entitlements. |
@@ -286,8 +287,20 @@ tool could dump another pair.
 
 ### Does it work on Windows?
 
-No — macOS 14 or later only. `Fixtures/conversion-cases.json` exists so that a Windows port can
-be held to the same behaviour, but none has been written.
+Yes, as of 0.4.0 — Windows 10 (1809) or 11, x64 or Arm64. Grab
+[`Kibo-win-x64.zip`](https://github.com/pmrster/kibo/releases/latest/download/Kibo-win-x64.zip)
+(or [`-arm64`](https://github.com/pmrster/kibo/releases/latest/download/Kibo-win-arm64.zip)),
+unzip, and run `Kibo.exe` — it is self-contained, so there is no runtime to install. The build is
+unsigned, so on first launch Windows SmartScreen shows a warning: click **More info → Run anyway**.
+If the tray icon starts hidden in the `^` overflow, drag it out to keep it visible.
+
+The converter, the four modes and the whole accuracy contract are identical to the Mac — the
+Windows build reimplements the engine in C# and passes the same `Fixtures/conversion-cases.json`.
+The shell differs where the platforms do: a **tray icon** and a floating **desktop bubble** open
+the converter (or press **Ctrl+Alt+K** from anywhere), and there is no Services menu, so
+right-clicking either and choosing **Fix clipboard** takes the place of *Fix Layout with Kibo* —
+it converts whatever you last copied, in place. Copies are kept out of clipboard history and cloud
+clipboard, the same secret-handling the Mac gives them.
 
 ### Is it free?
 

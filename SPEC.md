@@ -6,7 +6,7 @@ _“Who Forgot To Change Lang” · ใครลืมเปลี่ยนภ�
 
 A macOS-first desktop utility for Thai users who occasionally type with the wrong keyboard layout active. It lives in the menu bar, converts mistyped text between Thai and English instantly, and works without a network connection.
 
-A WidgetKit widget may be added as a companion for glanceable state and shortcuts. It is not the primary converter because system widgets do not support the free-form text-entry workflow this product needs. A Windows tray utility is planned after the macOS version is stable.
+A WidgetKit widget may be added as a companion for glanceable state and shortcuts. It is not the primary converter because system widgets do not support the free-form text-entry workflow this product needs. A Windows tray utility shipped in 0.4.0 (see `Windows/` and `PLAN.md` Slice 4): the same conversion engine reimplemented in .NET, held to the shared behaviour contract.
 
 ## Problem
 
@@ -30,7 +30,7 @@ The three mechanical modes exist as the escape hatch for when Mixed's judgement 
 
 ## Target user
 
-Thai speakers who type in both Thai and English on macOS. Windows users are the next target after the macOS release.
+Thai speakers who type in both Thai and English, on macOS and — since 0.4.0 — Windows.
 
 ## User stories
 
@@ -122,5 +122,5 @@ The app uses the Thai Kedmanee layout mapped to the US QWERTY layout. Every supp
 - Support other Thai layouts (Pattachote).
 - Add opt-in, local-only recent conversion history.
 - Add a WidgetKit companion that displays the last result and offers supported shortcut actions.
-- Add a Windows notification-area utility using the same behavior contract and test fixtures.
+- ~~Add a Windows notification-area utility using the same behavior contract and test fixtures.~~ Shipped in 0.4.0.
 - ~~Explore selection replacement through macOS Accessibility only as an explicit opt-in feature~~ — **superseded** by the Services item above, which replaces the selection without any Accessibility permission.

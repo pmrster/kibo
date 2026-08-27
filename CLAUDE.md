@@ -27,7 +27,15 @@ python3 Tools/make-download-button.py         # → docs/download.svg, the READM
 python3 Tools/make-banner.py                  # → docs/banner-{light,dark}.png
 python3 Tools/make-mockups.py                 # → docs/mockup-converter-{light,dark}.png (needs Chrome)
 python3 Tools/make-ghost-gif.py               # → docs/kibo-{idle,boo}-{light,dark}.gif
+python3 Tools/make-ico.py                     # → Windows/Kibo.App/Assets/Kibo.ico (committed)
 Packaging/package.sh [version]                # → dist/Kibo.app + .dmg
+
+# The Windows port (see the Windows section below). Runs on the Mac; only launching the app needs
+# Windows. `dotnet` via `brew install dotnet`; the MTP `dotnet test` opt-in lives in Windows/global.json.
+dotnet test --solution Windows/Kibo.slnx      # full C# suite (must run from a dir with global.json in scope)
+dotnet test --project Windows/Kibo.Core.Tests # Core only, faster
+dotnet build Windows/Kibo.App -c Release      # compile the WPF shell on macOS (EnableWindowsTargeting)
+pwsh Windows/package.ps1 [version]            # → dist/Kibo-<ver>-win-{x64,arm64}.zip (needs pwsh + Windows to run fully)
 
 # Design review. Opt-in behind a compile flag, so it is absent from normal debug AND release
 # builds — renders the surfaces to PNGs offscreen and exits:
@@ -296,6 +304,51 @@ The conclusion is not "try harder": **Thai-on-QWERTY and English are the same di
 spelling shape.** The only signal with real information is a Thai wordlist, which would segment
 `อะไรนะ` into `อะไร` + `นะ` while `let me make some` flips to non-words. That stays unbuilt —
 it contradicts the dictionary-free design, and `swapAll` covers the reported case for nothing.
+
+## Windows port
+
+`Windows/` is a **.NET 10 + WPF (C#)** port, a separate stack from the Swift app — `PLAN.md:53`
+forbids a shared cross-platform framework. Two projects plus tests: `Kibo.Core` (the engine, plain
+`net10.0`, zero UI, the C# twin of `Sources/KiboCore`), `Kibo.App` (the WPF shell, `net10.0-windows`),
+`Kibo.Core.Tests` (xunit v3). **Everything runs on the Mac** — `dotnet test` on the Core suite,
+`dotnet build` on the shell via `EnableWindowsTargeting` — and only *launching* the app needs
+Windows (the user's Windows 11 Arm VM, or CI's `windows-2025`).
+
+- **The port is held to the same contract, not a copy of it.** `Kibo.Core.Tests` reads the repo's
+  `Fixtures/conversion-cases.json` through `[CallerFilePath]` (`RepoPaths.cs`) — no copied fixture —
+  and re-asserts the whole `AccuracyCorpus` and the 36/36 · 19/30 · 4/12 figures. 163 tests; the
+  Swift and C# suites diff by eye because the method names match.
+- **Walk `Rune`s, never `char`.** `string` is UTF-16, so `foreach (char …)` splits a surrogate pair
+  and an emoji fails the fixture. Use `EnumerateRunes()` everywhere, `StringComparison.Ordinal` for
+  compares, `InvariantCulture` for the bubble coordinates, and never `.Normalize()`. This is the
+  same trap as Swift's scalars-not-Characters rule.
+- **The key table and the fold are transcribed, then verified.** `KedmaneeMapping.cs` carries the
+  94 pairs in keyboard-row order with the 15 combining marks as `\u` escapes; the dictionaries are
+  built with `.Add` so a duplicate throws at load. `FixtureConformanceTests` proves it against the
+  dumped JSON.
+- **The engine is byte-identical in behaviour**, but two things are Windows-only: `FixClipboard()`
+  on `ConverterModel` (read once → convert in the current mode → write back, the stand-in for the
+  macOS Service, which Windows has no equivalent of), and three settings keys (`showBubble`,
+  `hotkeyEnabled`, `bubbleX`/`bubbleY`) that the macOS app never reads. `SettingsStore` persists to
+  `%LOCALAPPDATA%\Kibo\settings.json` via an injected `IKeyValueStore`, the seam `UserDefaults`
+  fills on macOS.
+- **No network is proven, not promised.** Windows has no sandbox entitlement for an unpackaged app,
+  so `NoNetworkTests` scans the built assembly's metadata (`System.Reflection.Metadata`) for any
+  reference under `System.Net*` / `Windows.Networking*` / `Windows.Web*` or a `WebBrowser` type — a
+  negative-control test proves the scanner can see networking when it is there. `package.ps1` and CI
+  point `KIBO_APP_ASSEMBLY` at the published `Kibo.dll` so the release artifact itself is scanned.
+- **The clipboard is raw Win32** (`WindowsClipboard.cs`), not `DataObject`, because two of the three
+  secret-handling formats — `ExcludeClipboardContentFromMonitorProcessing`,
+  `CanIncludeInClipboardHistory`=0, `CanUploadToCloudClipboard`=0 — need an exact DWORD payload.
+  Those are the Windows analogue of `ConcealedType`/`TransientType`, and they matter for the same
+  reason: the text is often a password.
+- **Shell facts worth not rediscovering.** The tray icon is `System.Windows.Forms.NotifyIcon`
+  (in-box under `UseWindowsForms`, so no package) — but its `System.Windows.Forms` and
+  `System.Drawing` implicit usings are *removed* in the csproj, because they make `Application`,
+  `FontFamily` and `Appearance` ambiguous; WinForms is reached through the `Forms.` alias only. The
+  mascot (`KiboSpriteControl`) is drawn at whole device pixels and **never scale-transformed**, the
+  same rule as `KiboView`. The segmented control and toggle are hand-rolled for the same reason as
+  on macOS: the system chrome paints selection with the user's accent colour.
 
 ## Testing
 

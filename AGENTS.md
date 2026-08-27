@@ -26,6 +26,12 @@ It is a plain SwiftPM package (Swift 6, macOS 14+) with no `.xcodeproj` and no d
 - **No segmented `Picker` and no SwiftUI `Toggle`** — both paint with the system accent. Use
   `ThemedSegmentedControl` and `ThemedToggle`.
 - **No dependencies.** `Package.swift` declares none, and that is a feature.
+- **The Windows port (`Windows/`) inherits every rule above.** `Rune`s stand in for scalars; logic
+  lives in `Kibo.Core`, never the WPF shell; no-network is proven by a metadata scan of the built
+  assembly (there is no sandbox to check); the clipboard is touched only on Paste/Copy/Fix-clipboard
+  with the exclude-from-history/no-cloud formats; `dotnet` runtime packages aside, the app depends
+  on nothing outside the framework. It reimplements — it does not share code — and passes the same
+  `Fixtures/conversion-cases.json`. See the **Windows port** section of `CLAUDE.md`.
 
 ## Documentation
 

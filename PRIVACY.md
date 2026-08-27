@@ -80,6 +80,26 @@ Handoff if you would rather it never happened.
 **Whatever you paste it into.** Once the corrected text is on your clipboard, it is subject to
 whatever the destination app does with it.
 
+## On Windows
+
+The Windows build (0.4.0+) makes the same promises, enforced the Windows way.
+
+- **No network** is proven by a metadata scan of the shipped assembly for any reference to a
+  networking type — an unpackaged Windows app has no sandbox entitlement to check, so the artifact
+  itself is inspected instead, in the test suite and again during packaging.
+- **The clipboard is touched only on Paste, Copy, and Fix clipboard**, and every Copy is written
+  with three formats that keep it out of Windows Clipboard History (**Win+V**) and off Cloud
+  Clipboard: `ExcludeClipboardContentFromMonitorProcessing`, `CanIncludeInClipboardHistory` = 0,
+  `CanUploadToCloudClipboard` = 0 — the analogue of the macOS concealed/transient markers.
+- **Nothing you type is stored.** Settings — appearance, text size, last mode, whether the bubble
+  shows, whether the hotkey is on, and the bubble's position — live in
+  `%LOCALAPPDATA%\Kibo\settings.json`, a flat file with nowhere to put text. On first run the
+  self-contained `.exe` unpacks its runtime to `%TEMP%\.net\Kibo\` — program files only, never your
+  text.
+- **What Windows still controls**, as with Universal Clipboard on the Mac: Cloud Clipboard sync is a
+  system feature (the *no cloud* format asks it to skip Kibo's copies), and whatever app you paste
+  into does what it does.
+
 ## Contact
 
 Report a privacy or security concern via [`SECURITY.md`](SECURITY.md).

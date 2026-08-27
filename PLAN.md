@@ -137,14 +137,31 @@ Exit condition: a signed build is comfortable to use daily and installable on an
 
 Exit condition: the widget adds convenience without becoming a second implementation of conversion behavior.
 
-### Slice 4 — Windows utility
+### Slice 4 — Windows utility ✅
 
-- Implement a Windows notification-area shell with a compact converter window.
-- Reimplement the small converter module in the selected Windows stack and run the shared JSON fixtures against it.
-- Preserve the same privacy defaults: local conversion, explicit clipboard access, no analytics.
-- Adapt visual styling to Windows rather than copying SwiftUI layout literally.
+Done in 0.4.0. Stack: **.NET 10 + WPF (C#)**, under `Windows/`, no shared framework (see the
+paragraph above). See the **Windows port** section of `CLAUDE.md` for how it holds the line.
 
-Exit condition: macOS and Windows pass the same conversion cases and provide equivalent paste → convert → copy flows.
+- ~~Implement a Windows notification-area shell with a compact converter window.~~ Tray icon
+  (`NotifyIcon`) + a floating desktop **bubble** + a global **Ctrl+Alt+K**, any of which opens the
+  converter flyout; a resizable pinned window over the same model.
+- ~~Reimplement the small converter module in the selected Windows stack and run the shared JSON
+  fixtures against it.~~ `Kibo.Core` ports the engine 1:1; `Kibo.Core.Tests` reads the repo's
+  `Fixtures/conversion-cases.json` directly and re-asserts the 36/36 · 19/30 · 4/12 figures — 163
+  tests, all run on the Mac.
+- ~~Preserve the same privacy defaults.~~ Clipboard read/write only on Paste/Copy/Fix-clipboard
+  (counted by tests); writes carry the exclude-from-history / no-cloud formats; no network, proven
+  by a metadata scan of the built assembly rather than promised.
+- ~~Adapt visual styling to Windows rather than copying SwiftUI layout literally.~~ Same palette and
+  mascot; native title bars, DWM rounded corners, Segoe UI / Leelawadee UI, hand-rolled themed
+  controls so nothing paints with the system accent.
+
+The one deliberate gap vs. macOS: no in-place selection replacement (Windows has no Services menu),
+so **Fix clipboard** — convert whatever was last copied — stands in for *Fix Layout with Kibo*. No
+simulated keystrokes, no clipboard watching.
+
+Exit condition met: macOS and Windows pass the same conversion cases and provide equivalent
+paste → convert → copy flows.
 
 ## Acceptance criteria for the first build
 

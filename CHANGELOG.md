@@ -3,6 +3,26 @@
 All notable changes to this project are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Added
+
+- **Kibo runs on Windows.** A native **.NET 10 + WPF** port under `Windows/`, Windows 10 (1809) or
+  11, x64 and Arm64, shipped as a self-contained `.exe` (no runtime to install). A tray icon and an
+  always-on-top desktop **bubble** open the converter, or press **Ctrl+Alt+K** from any app; the
+  flyout pins into a resizable window. Because Windows has no Services menu, a **Fix clipboard**
+  command — convert whatever you last copied, in place — takes the place of *Fix Layout with Kibo*.
+- **The Windows engine is held to the exact same contract.** `Kibo.Core` reimplements the converter
+  in C# and passes the repo's `Fixtures/conversion-cases.json` and the pinned accuracy figures
+  (precision 36 of 36, English recall 19 of 30, Thai recall 4 of 12) — 163 tests that run on macOS,
+  so the two platforms cannot drift.
+- **The same privacy guarantees, enforced the Windows way.** No network — proven by a metadata scan
+  of the built assembly, since an unpackaged Windows app has no sandbox entitlement to check.
+  Clipboard read only on Paste/Fix-clipboard and written only on Copy/Fix-clipboard, and every write
+  carries the *exclude from clipboard history* and *no cloud clipboard* formats — the Windows
+  analogue of the macOS concealed/transient markers. Settings live in
+  `%LOCALAPPDATA%\Kibo\settings.json`; no entered or converted text is ever stored.
+
 ## [0.3.0] — 2026-08-24
 
 First public release.

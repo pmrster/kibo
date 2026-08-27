@@ -14,8 +14,17 @@ swift test          # all in KiboCoreTests; the suite is the accuracy contract
 swift run Kibo      # the glyph appears in the menu bar, top-right; quit with pkill -x Kibo
 ```
 
-`CLAUDE.md` is the architecture document — read it before a non-trivial change. `SPEC.md` has the
-product behaviour, `PLAN.md` the sequencing.
+The **Windows port** in `Windows/` is a .NET 10 + WPF (C#) app; `brew install dotnet` gets the
+toolchain, and it develops entirely on the Mac — only launching the app needs Windows:
+
+```bash
+dotnet test --solution Windows/Kibo.slnx      # the full C# suite (same contract as swift test)
+dotnet build Windows/Kibo.App -c Release      # the WPF shell compiles on macOS
+```
+
+`CLAUDE.md` is the architecture document — read it before a non-trivial change, and its **Windows
+port** section before touching `Windows/`. `SPEC.md` has the product behaviour, `PLAN.md` the
+sequencing.
 
 ## The two rules that matter most
 
