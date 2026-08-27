@@ -9,6 +9,11 @@ on:
 permissions:
   contents: read
 
+# The .NET SDK phones home by default, which sits badly in a repo whose whole point is no network.
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_NOLOGO: 1
+
 jobs:
   swift:
     name: Swift tests
@@ -42,3 +47,71 @@ jobs:
 
       - name: Confirm the app is sandboxed
         run: codesign -d --entitlements - dist/Kibo.app 2>&1 | grep -q app-sandbox
+
+  dotnet:
+    name: Windows tests
+    runs-on: windows-2025
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: Windows/global.json
+
+      # Warnings are errors here too (TreatWarningsAsErrors in Directory.Build.props), so a build
+      # is the first gate. Then the same 163-test suite the Mac runs — the port passes the shared
+      # Fixtures/conversion-cases.json and the pinned accuracy figures, so both platforms hold the
+      # same behaviour contract.
+      - name: Build
+        run: dotnet build Windows/Kibo.slnx -c Release
+
+      - name: Run tests
+        run: dotnet test --solution Windows/Kibo.slnx -c Release --no-build
+
+  dotnet-macos:
+    name: Windows core on macOS
+    runs-on: macos-15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: Windows/global.json
+
+      # Development happens on a Mac, so prove Core is portable there and the WPF shell compiles
+      # under EnableWindowsTargeting — the thing that keeps the day-to-day loop off Windows.
+      - name: Test the core
+        run: dotnet test --project Windows/Kibo.Core.Tests
+
+      - name: Compile the shell
+        run: dotnet build Windows/Kibo.App -c Release
+
+  package-windows:
+    name: Package the Windows build
+    runs-on: windows-2025
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: Windows/global.json
+
+      # Publishes the self-contained .exe for both architectures, zips them, and — the reason this
+      # is its own job, like the sandbox check on the macOS side — proves the artifact references
+      # no networking type. The script fails on its own if it does.
+      - name: Build the zips
+        shell: pwsh
+        run: Windows/package.ps1 0.0.0-ci
+
+      - name: Upload the zips
+        uses: actions/upload-artifact@v4
+        with:
+          name: kibo-windows
+          path: dist/Kibo-*-win-*.zip
+          retention-days: 7
