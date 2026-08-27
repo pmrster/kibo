@@ -1,6 +1,7 @@
 using System.IO;
 using Kibo.App.Services;
 using Kibo.App.Theme;
+using Kibo.App.Views;
 
 namespace Kibo.App;
 
@@ -15,6 +16,9 @@ public partial class KiboApplication : Application
 
     /// <summary>The one model behind every converter surface.</summary>
     public ConverterModel Model { get; private set; } = null!;
+
+    /// <summary>The tray icon, so menu actions can reach it for balloon tips.</summary>
+    internal TrayIcon? Tray { get; private set; }
 
     /// <summary>
     /// <c>%LOCALAPPDATA%\Kibo\settings.json</c> — display preferences and the last mode, nothing
@@ -42,16 +46,22 @@ public partial class KiboApplication : Application
 
         // No mode passed: the model opens in the remembered one, or in Both on a fresh install.
         Model = new ConverterModel(new WindowsClipboard(), memory: store);
+
+        Panels.Flyout = new FlyoutWindow(Model);
+        Panels.Pinned = new PinnedWindow(Model);
+        Panels.Settings = new SettingsWindow();
+        Panels.About = new AboutWindow();
+
+        // The tray icon last, so nothing it points at is null when a click arrives.
+        Tray = new TrayIcon();
     }
 
-    /// <summary>Opens the converter — from the tray, the bubble, the hotkey, or a second launch.</summary>
-    public void ShowFlyout()
-    {
-        // The flyout arrives with the tray icon; until then there is nothing to show.
-    }
+    /// <summary>Opens the converter — from a second launch's signal.</summary>
+    public void ShowFlyout() => Panels.ShowFlyout(FlyoutAnchor.TrayCorner);
 
     protected override void OnExit(ExitEventArgs e)
     {
+        Tray?.Dispose();
         singleInstance?.Dispose();
         base.OnExit(e);
     }
